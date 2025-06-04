@@ -11,10 +11,10 @@ import OutlinedInput from "@mui/material/OutlinedInput";
 import Paper from "@mui/material/Paper";
 import { styled } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
-import useLogin from "../app/actions/useLogin";
-import { LoginPayload } from "../types/login";
+import useLogin from "../../hooks/useLogin";
+import { LoginPayload } from "../../types/login";
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   width: 500,
@@ -45,22 +45,33 @@ const SubmitButton = styled(Button)(({ theme }) => ({
 }));
 
 export default function LoginPage() {
-  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [{ loading, error }, login] = useLogin();
+  const router = useRouter();
+  const [localError, setLocalError] = useState<string | null>(null);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLocalError(null);
     const formData = new FormData(e.currentTarget);
     const jsonData = Object.fromEntries(formData.entries());
 
     try {
-      const result = await login({ data: jsonData as LoginPayload });
-      console.log("Login success:", result);
-
+      await login({ data: jsonData as LoginPayload });
       router.push("/");
-    } catch (error) {
-      console.error("Login failed:", error);
+    } catch (err) {
+      if (err instanceof Error) {
+        setLocalError(err.message || "Đăng nhập thất bại. Vui lòng thử lại!");
+      } else if (
+        typeof err === "object" &&
+        err &&
+        "message" in err &&
+        typeof (err as { message?: unknown }).message === "string"
+      ) {
+        setLocalError((err as { message: string }).message);
+      } else {
+        setLocalError("Đăng nhập thất bại. Vui lòng thử lại!");
+      }
     }
   };
 
@@ -70,8 +81,9 @@ export default function LoginPage() {
         variant="h3"
         gutterBottom
         sx={{ fontWeight: 700, marginBottom: "8px" }}
+        fontFamily={"fantasy"}
       >
-        MotorRental
+        SPRINT FLOW
       </Typography>
       <Typography
         variant="h6"
@@ -117,14 +129,15 @@ export default function LoginPage() {
             </InputAdornment>
           }
         />
-        {error && (
+        {(error || localError) && (
           <Alert
             severity="error"
             sx={{ mt: 2 }}
           >
-            Tên đăng nhập hoặc mật khẩu chưa đúng!
+            {localError || "Tên đăng nhập hoặc mật khẩu chưa đúng!"}
           </Alert>
         )}
+
         <SubmitButton
           size="large"
           type={"submit"}

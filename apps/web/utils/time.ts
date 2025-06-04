@@ -10,7 +10,7 @@ export const getPeriodTime = (startTime: Date, endTime: Date) => {
   return duration;
 };
 
-export const formatDateTime = (value: string | number, mode = "default") => {
+export const formatDateTime = (value: string | number) => {
   const date = new Date(value);
   return date.toLocaleTimeString("vi-VN", {
     day: "2-digit",
@@ -21,7 +21,7 @@ export const formatDateTime = (value: string | number, mode = "default") => {
   });
 };
 
-export const formatDateVN = (value: string | number, mode = "default") => {
+export const formatDateVN = (value: string | number) => {
   const date = new Date(value);
   return date.toLocaleDateString("vi-VN", {
     day: "2-digit",
@@ -34,5 +34,5 @@ export const formatDateVN = (value: string | number, mode = "default") => {
 export const formatDate = (dateString: string | number | Date) => {
   if (!dateString) return "";
   const date = new Date(dateString);
-  return date.toLocaleDateString('en-CA');
+  return date.toLocaleDateString("en-CA");
 };

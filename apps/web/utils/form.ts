@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export function jsonForm<T extends Record<string, unknown>>(form: HTMLFormElement) {
   const formData = new FormData(form);
   const jsonData = {} as Record<string, unknown>;
