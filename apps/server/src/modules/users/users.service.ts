@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { genSaltSync, hashSync } from 'bcrypt';
+import { Model, Types } from 'mongoose';
 import { BaseService } from 'src/shared/base.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -27,6 +28,17 @@ export class UsersService extends BaseService<
     return await this.userModel.countDocuments({
       createdAt: { $gte: sevenDaysAgo, $lte: today },
     });
+  }
+
+  update(
+    id: string | Types.ObjectId,
+    input: UpdateUserDto,
+  ): Promise<User | null | undefined> {
+    if (!!input.password) {
+      const salt = genSaltSync(10);
+      input.password = hashSync(input.password, salt);
+    }
+    return super.update(id, input);
   }
 
   async getRecentUsers(): Promise<User[]> {

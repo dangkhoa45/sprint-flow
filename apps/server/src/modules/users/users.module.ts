@@ -2,9 +2,9 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './entities/user.entity';
 import { UserSession, UserSessionSchema } from './entities/userSession.entity';
+import { UserSessionsService } from './user-sessions.service';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
-import { UserSessionsService } from './userSessions.service';
 
 @Module({
   imports: [

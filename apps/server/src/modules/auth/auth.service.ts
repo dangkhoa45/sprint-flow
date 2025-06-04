@@ -1,56 +1,113 @@
+import { REFRESH_TOKEN_EXPIRE } from '@api/app.config';
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { compare, hashSync } from 'bcrypt';
+import { compareSync, hashSync } from 'bcrypt';
+import { UAParser } from 'ua-parser-js';
 import { CreateUserDto } from '../users/dto/create-user.dto';
-import { User } from '../users/entities/user.entity';
+import { User, UserStatus } from '../users/entities/user.entity';
+import { UserSessionsService } from '../users/user-sessions.service';
 import { UsersService } from '../users/users.service';
+import { TokenPayload } from './dto/tokenPayload';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    private sessionService: UserSessionsService,
   ) {}
 
-  async signIn(uname: string, pass: string) {
+  async signIn(username: string, pass: string, ip: string, ua: string) {
     const user = await this.usersService.findOne({
-      username: uname,
+      username,
+      status: UserStatus.Active,
     });
-
-    if (!user || !user.password) {
+    if (!user) {
       throw new UnauthorizedException();
     }
 
-    const isAuthenticated = await compare(pass, user.password);
-
+    const isAuthenticated = await compareSync(pass, user.password);
     if (!isAuthenticated) {
       throw new UnauthorizedException();
     }
 
-    const payload = {
-      _id: user._id,
-      username: user.username,
-      displayName: user.displayName,
-      tel: user.tel,
-      role: user.role,
+    const uaData = ua ? new UAParser(ua).getResult() : {};
+
+    const session = await this.sessionService.create({
+      user: user._id.toString(),
+      startAt: new Date(),
+      endAt: new Date(Date.now() + 1000 * 60 * 1),
+      ip,
+      ...uaData,
+    });
+
+    const payload: TokenPayload = {
+      sub: user._id.toString(),
+      una: user.username,
+      dna: user.displayName,
+      rol: user.role,
+      ses: session._id.toString(),
     };
 
+    await this.usersService.update(user._id, { lastLogin: new Date() });
+
     return {
-      user: payload,
-      token: await this.jwtService.signAsync(payload),
+      accessToken: await this.jwtService.signAsync(payload),
+      refreshToken: await this.jwtService.signAsync(payload, {
+        expiresIn: REFRESH_TOKEN_EXPIRE,
+      }),
+      profile: {
+        _id: user._id.toString(),
+        username: user.username,
+        displayName: user.displayName,
+        role: user.role,
+        avatar: user.avatar,
+      },
     };
   }
 
-  async renew(token: string) {
-    const payload = await this.jwtService.verifyAsync(token);
+  async refreshToken(token: string, ip: string, ua: string) {
+    const payload = (await this.jwtService.verifyAsync(token)) as TokenPayload;
+
+    const user = await this.usersService.findById(payload.sub);
+
+    if (!user || user.status !== UserStatus.Active) {
+      throw new ForbiddenException();
+    }
+
+    await this.usersService.update(user._id, { lastLogin: new Date() });
+
+    const session = await this.sessionService.findById(payload.ses);
+
+    if (!session?.endAt || Date.now() - +session.endAt > 1000 * 60 * 5) {
+      const uaData = ua ? new UAParser(ua).getResult() : {};
+      const newSession = await this.sessionService.create({
+        user: payload.sub,
+        startAt: new Date(),
+        endAt: new Date(Date.now() + 1000 * 60 * 1),
+        ip,
+        ...uaData,
+      });
+      payload.ses = newSession._id.toString();
+    } else {
+      await this.sessionService.update(session._id, {
+        endAt: new Date(Date.now() + 1000 * 60 * 1),
+      });
+    }
+
+    delete payload.iat;
+    delete payload.exp;
 
     return {
-      user: payload,
-      token: await this.jwtService.signAsync(payload),
+      accessToken: await this.jwtService.signAsync(payload),
+      refreshToken: await this.jwtService.signAsync(payload, {
+        expiresIn: REFRESH_TOKEN_EXPIRE,
+      }),
     };
   }
 

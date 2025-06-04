@@ -2,21 +2,22 @@ import {
   Body,
   Controller,
   Get,
+  Headers,
   HttpCode,
   HttpStatus,
   Post,
   Req,
-  Session,
+  UnauthorizedException,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { Request } from 'express';
-import { SessionData } from 'express-session';
 import { CurrentUser } from 'src/decorators/current-user.decor';
 import { Public } from 'src/decorators/public.decor';
 import { BadRequestResponse } from 'src/shared/base.dto';
@@ -26,6 +27,7 @@ import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { LoginResponse } from './dto/loginResponse.dto';
+import { TokenPayload } from './dto/tokenPayload';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -41,14 +43,43 @@ export class AuthController {
   @ApiBody({ type: LoginDto })
   @ApiOkResponse({ type: LoginResponse })
   @ApiBadRequestResponse({ type: BadRequestResponse })
-  async login(@Body() signInDto: LoginDto, @Session() session: SessionData) {
-    const data = await this.authService.signIn(
+  signIn(
+    @Body() signInDto: LoginDto,
+    @Headers('x-user-agent') ua: string,
+    @Headers('x-forwarded-for') xIP: string,
+  ) {
+    const [ip] = xIP.split(',');
+    return this.authService.signIn(
       signInDto.username,
       signInDto.password,
+      ip.trim(),
+      ua,
     );
+  }
 
-    session.token = data.token;
-    return data;
+  @Public()
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  @ApiBody({
+    schema: {
+      properties: {
+        token: { type: 'string' },
+      },
+    },
+  })
+  @ApiOkResponse({ type: LoginResponse })
+  @ApiBadRequestResponse({ type: BadRequestResponse })
+  async refreshToken(
+    @Body('token') token: string,
+    @Headers('x-user-agent') ua: string,
+    @Headers('x-forwarded-for') xIP: string,
+  ) {
+    try {
+      const [ip] = xIP.split(',');
+      return await this.authService.refreshToken(token, ip.trim(), ua);
+    } catch {
+      throw new UnauthorizedException();
+    }
   }
 
   @Public()
@@ -65,17 +96,11 @@ export class AuthController {
     });
   }
 
-  @Post('check-session')
-  checkSession(@CurrentUser() user: User) {
-    return { user };
-  }
-
+  @ApiBearerAuth()
   @Get('profile')
   @ApiOkResponse({ type: User })
-  getProfile(@CurrentUser() user: User) {
-    const dataUser = this.userService.findById(user._id);
-
-    return dataUser;
+  getProfile(@CurrentUser() user: TokenPayload) {
+    return this.userService.findById(user.sub);
   }
 
   @Public()

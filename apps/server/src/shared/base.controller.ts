@@ -8,7 +8,6 @@ import {
 } from '@nestjs/swagger';
 import { Types } from 'mongoose';
 import { CurrentUser } from 'src/decorators/current-user.decor';
-import { Public } from 'src/decorators/public.decor';
 import { TokenPayload } from 'src/modules/auth/dto/tokenPayload';
 import { BadRequestResponse, ListDataResponse } from './base.dto';
 import { BaseEntity } from './base.entity';
@@ -37,7 +36,6 @@ export class BaseController<
   }
 
   @Get()
-  @Public()
   @ApiQuery({ type: BaseQuery })
   @ApiOkResponse({ type: ListDataResponse<Data> })
   @ApiBadRequestResponse({ type: BadRequestResponse })
@@ -54,7 +52,6 @@ export class BaseController<
 
   @Get('count')
   @ApiQuery({ type: BaseQuery })
-  @Public()
   @ApiOkResponse({ type: ListDataResponse<Data> })
   @ApiBadRequestResponse({ type: BadRequestResponse })
   countAll(@Query() query: Data & BaseQuery<Data>) {
@@ -63,7 +60,6 @@ export class BaseController<
 
   @Get(':id')
   @ApiOkResponse({ type: Object })
-  @Public()
   @ApiBadRequestResponse({ type: BadRequestResponse })
   findOne(@Param('id') id: string) {
     return this.baseService.findById(id);

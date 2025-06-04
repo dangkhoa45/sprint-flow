@@ -11,12 +11,10 @@ export class TokenPayload {
   dna: string;
 
   /** user role */
-  role: UserRole;
+  rol: UserRole;
 
   /** user session id */
   ses: string;
-
-  ownerId: string;
 
   iat?: number;
   exp?: number;

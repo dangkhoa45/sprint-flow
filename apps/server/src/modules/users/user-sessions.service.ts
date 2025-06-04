@@ -31,7 +31,7 @@ export class UserSessionsService extends BaseService<
       sortOrder,
     } = this.buildFilter(filter);
 
-    return (await this.sessionModel
+    return await this.sessionModel
       .aggregate([
         {
           $match: filterOption,
@@ -82,14 +82,14 @@ export class UserSessionsService extends BaseService<
                 _id: -1,
               },
             }
-          : ({
+          : {
               $sort: {
                 [sortField]: sortOrder == SortOrder.Asc ? 1 : -1,
               },
-            } as never),
+            },
       ])
       .skip(offset ?? 0)
-      .limit(limit ?? 10)) as never;
+      .limit(limit ?? 10);
   }
 
   async workHourStat(
@@ -172,7 +172,9 @@ export class UserSessionsService extends BaseService<
     ]);
   }
 
-  workSummary(filter?: FilterQuery<UserSession> & TimeFrameQuery<UserSession>) {
+  async workSummary(
+    filter?: FilterQuery<UserSession> & TimeFrameQuery<UserSession>,
+  ) {
     const { filter: filterOption } = this.buildFilter(filter);
     return this.sessionModel
       .aggregate([
@@ -252,7 +254,7 @@ export class UserSessionsService extends BaseService<
           },
         },
       ])
-      .then((res) => (res[0] ?? {}) as never) as never;
+      .then(res => res[0] ?? {});
   }
 
   async statisticUsersMonthly(
@@ -260,7 +262,7 @@ export class UserSessionsService extends BaseService<
     startTime: Date,
     endTime: Date,
   ) {
-    return (await this.sessionModel.aggregate([
+    return await this.sessionModel.aggregate([
       {
         $match: {
           user: {
@@ -383,7 +385,7 @@ export class UserSessionsService extends BaseService<
           minutes: -1,
         },
       },
-    ])) as never;
+    ]);
   }
 
   async getTopAgentsByDate(
@@ -566,7 +568,7 @@ export class UserSessionsService extends BaseService<
     if (!response.length) {
       return {
         total: 0,
-        items: [] as any[],
+        items: [],
         query: filter,
       };
     }

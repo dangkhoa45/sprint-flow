@@ -48,20 +48,11 @@ export class UsersController extends BaseController<
   @ApiBody({ type: CreateUserDto })
   @ApiCreatedResponse({ type: User })
   @ApiBadRequestResponse({ type: BadRequestResponse })
-  async create(
+  create(
     @Body() createInput: CreateUserDto,
     @CurrentUser() user: TokenPayload,
-  ) {
-    const exists = await this.usersService.findOne({
-      username: createInput.username,
-    });
-
-    if (exists) {
-      throw new BadRequestException('User is existed, try another username .');
-    }
-
-    const res = await super.create(createInput, user);
-    return res;
+  ): Promise<User> {
+    return super.create(createInput, user);
   }
 
   @Public()
