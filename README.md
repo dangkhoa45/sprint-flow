@@ -12,8 +12,8 @@ pnpm install
 # start services
 docker compose up -d
 
-# install package to api
-pnpm i --filter api <package-name>
+# install package to server
+pnpm i --filter server <package-name>
 
 # install package to web
 pnpm i --filter web <package-name>
