@@ -28,6 +28,7 @@ import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { LoginResponse } from './dto/loginResponse.dto';
 import { TokenPayload } from './dto/tokenPayload';
+import { ForgotPasswordDto, ResetPasswordDto } from './dto/forgot-password.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -111,5 +112,28 @@ export class AuthController {
   @ApiBadRequestResponse({ type: BadRequestResponse })
   async registerUser(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.authService.registerUser(createUserDto);
+  }
+
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  @Post('forgot-password')
+  @ApiBody({ type: ForgotPasswordDto })
+  @ApiOkResponse({ description: 'Password reset email sent successfully' })
+  @ApiBadRequestResponse({ type: BadRequestResponse })
+  async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+    return this.authService.forgotPassword(forgotPasswordDto.email);
+  }
+
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  @Post('reset-password')
+  @ApiBody({ type: ResetPasswordDto })
+  @ApiOkResponse({ description: 'Password reset successfully' })
+  @ApiBadRequestResponse({ type: BadRequestResponse })
+  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+    return this.authService.resetPassword(
+      resetPasswordDto.token,
+      resetPasswordDto.newPassword
+    );
   }
 }

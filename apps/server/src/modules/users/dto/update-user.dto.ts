@@ -5,4 +5,7 @@ import { ApiProperty } from '@nestjs/swagger';
 export class UpdateUserDto extends PartialType(CreateUserDto) {
   @ApiProperty()
   lastLogin?: Date;
+
+  resetPasswordToken?: string;
+  resetPasswordExpires?: Date;
 }

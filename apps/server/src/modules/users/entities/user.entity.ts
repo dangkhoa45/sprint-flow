@@ -55,6 +55,12 @@ export class User extends BaseEntity {
   @Prop()
   @ApiProperty()
   avatar?: string;
+
+  @Prop()
+  resetPasswordToken?: string;
+
+  @Prop()
+  resetPasswordExpires?: Date;
 }
 
 export type UserDocument = HydratedDocument<User>;
