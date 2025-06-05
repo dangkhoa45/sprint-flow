@@ -224,12 +224,11 @@ export default function LoginForm({ error }: LoginFormProps) {
                         border: "none",
                       },
                       "&.Mui-focused fieldset": {
-                        border: "2px solid #3b82f6",
+                        border: "2px solid #1e40af",
                       },
                     },
                     "& .MuiInputBase-input": {
                       py: 1.5,
-                      fontWeight: 500,
                     },
                   }}
                 />
@@ -287,12 +286,11 @@ export default function LoginForm({ error }: LoginFormProps) {
                         border: "none",
                       },
                       "&.Mui-focused fieldset": {
-                        border: "2px solid #3b82f6",
+                        border: "2px solid #1e40af",
                       },
                     },
                     "& .MuiInputBase-input": {
                       py: 1.5,
-                      fontWeight: 500,
                     },
                   }}
                 />
@@ -357,7 +355,7 @@ export default function LoginForm({ error }: LoginFormProps) {
                   py: 1.5,
                   mb: 3,
                   borderRadius: "12px",
-                  backgroundColor: "#3b82f6",
+                  backgroundColor: "#1e40af",
                   fontWeight: 600,
                   fontSize: "1rem",
                   textTransform: "none",
