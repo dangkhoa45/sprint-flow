@@ -291,6 +291,7 @@ export default function UsersPage() {
               onClick={handleBackToDashboard}
               sx={{
                 mr: 2,
+                ml: -3,
                 background: "linear-gradient(45deg, #667eea, #764ba2)",
                 color: "white",
                 "&:hover": {
@@ -333,6 +334,7 @@ export default function UsersPage() {
               sx={{
                 background: "linear-gradient(45deg, #667eea, #764ba2)",
                 borderRadius: 2,
+                mr: -3,
                 px: 3,
                 py: 1.5,
                 textTransform: "none",
