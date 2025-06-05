@@ -26,6 +26,9 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import LoadingComponent from "../../../components/LoadingComponent";
 import { User, UserRole, UserStatus } from "../../../types/user";
+import CreateUserDialog from "./components/CreateUserDialog";
+import DeleteUserDialog from "./components/DeleteUserDialog";
+import EditUserDialog from "./components/EditUserDialog";
 
 // Mock data for testing - Expanded with more information
 const mockUsers: User[] = [
@@ -155,6 +158,12 @@ export default function UsersPage() {
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
 
+  // Dialog states
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+
   useEffect(() => {
     setMounted(true);
     // Simulate loading data
@@ -188,16 +197,62 @@ export default function UsersPage() {
   };
 
   const handleEditUser = (userId: string) => {
-    router.push(`/dashboard/users/edit/${userId}`);
+    const user = users.find((u) => u._id === userId);
+    if (user) {
+      setSelectedUser(user);
+      setEditDialogOpen(true);
+    }
   };
 
   const handleDeleteUser = (userId: string) => {
-    // TODO: Implement delete functionality
-    console.log("Delete user:", userId);
+    const user = users.find((u) => u._id === userId);
+    if (user) {
+      setSelectedUser(user);
+      setDeleteDialogOpen(true);
+    }
   };
 
   const handleAddUser = () => {
-    router.push("/dashboard/users/create");
+    setCreateDialogOpen(true);
+  };
+
+  // Dialog handlers
+  const handleCreateUser = (userData: any) => {
+    // Generate a new ID for the user
+    const newUser: User = {
+      ...userData,
+      _id: (users.length + 1).toString(),
+      createdAt: new Date().toISOString(),
+      lastLogin: null,
+      avatar: null,
+    };
+
+    setUsers((prev) => [...prev, newUser]);
+    setCreateDialogOpen(false);
+    console.log("Created user:", newUser);
+  };
+
+  const handleEditUserSave = (userData: User) => {
+    setUsers((prev) => prev.map((user) => (user._id === userData._id ? userData : user)));
+    setEditDialogOpen(false);
+    setSelectedUser(null);
+    console.log("Updated user:", userData);
+  };
+
+  const handleDeleteUserConfirm = () => {
+    if (selectedUser) {
+      setUsers((prev) => prev.filter((user) => user._id !== selectedUser._id));
+      setDeleteDialogOpen(false);
+      setSelectedUser(null);
+      console.log("Deleted user:", selectedUser._id);
+    }
+  };
+
+  const handleCloseDialogs = () => {
+    setCreateDialogOpen(false);
+    setEditDialogOpen(false);
+    setDeleteDialogOpen(false);
+    setSelectedUser(null);
   };
 
   const handleBackToDashboard = () => {
@@ -639,6 +694,27 @@ export default function UsersPage() {
             />
           </Box>
         </Paper>
+
+        {/* Dialog Components */}
+        <CreateUserDialog
+          open={createDialogOpen}
+          onCloseAction={handleCloseDialogs}
+          onSaveAction={handleCreateUser}
+        />
+
+        <EditUserDialog
+          open={editDialogOpen}
+          onCloseAction={handleCloseDialogs}
+          onSaveAction={handleEditUserSave}
+          user={selectedUser}
+        />
+
+        <DeleteUserDialog
+          open={deleteDialogOpen}
+          onCloseAction={handleCloseDialogs}
+          onConfirmAction={handleDeleteUserConfirm}
+          user={selectedUser}
+        />
       </Container>
     </Box>
   );
