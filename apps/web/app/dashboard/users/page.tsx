@@ -27,7 +27,7 @@ import { useEffect, useState } from "react";
 import LoadingComponent from "../../../components/LoadingComponent";
 import { User, UserRole, UserStatus } from "../../../types/user";
 
-// Mock data for testing
+// Mock data for testing - Expanded with more information
 const mockUsers: User[] = [
   {
     _id: "1",
@@ -61,6 +61,39 @@ const mockUsers: User[] = [
     email: "levanc@example.com",
     tel: "0369852147",
     createdAt: "2024-03-10T09:20:00.000Z",
+  },
+  {
+    _id: "4",
+    displayName: "Phạm Thị D",
+    username: "phamthid",
+    role: UserRole.User,
+    status: UserStatus.Active,
+    email: "phamthid@example.com",
+    tel: "0912345678",
+    createdAt: "2024-03-25T11:00:00.000Z",
+    lastLogin: "2024-06-03T09:15:00.000Z",
+  },
+  {
+    _id: "5",
+    displayName: "Hoàng Văn E",
+    username: "hoangvane",
+    role: UserRole.Admin,
+    status: UserStatus.Active,
+    email: "hoangvane@example.com",
+    tel: "0945678901",
+    createdAt: "2024-04-01T16:30:00.000Z",
+    lastLogin: "2024-06-05T14:20:00.000Z",
+  },
+  {
+    _id: "6",
+    displayName: "Đỗ Thị F",
+    username: "dothif",
+    role: UserRole.User,
+    status: UserStatus.Banned,
+    email: "dothif@example.com",
+    tel: "0987123456",
+    createdAt: "2024-04-15T10:45:00.000Z",
+    lastLogin: "2024-05-20T08:30:00.000Z",
   },
 ];
 
@@ -117,8 +150,10 @@ export default function UsersPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(15);
   const [mounted, setMounted] = useState(false);
+  const [roleFilter, setRoleFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
 
   useEffect(() => {
     setMounted(true);
@@ -131,12 +166,17 @@ export default function UsersPage() {
     return () => clearTimeout(timer);
   }, []);
 
-  const filteredUsers = users.filter(
-    (user) =>
+  const filteredUsers = users.filter((user) => {
+    const matchesSearch =
       user.displayName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email?.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
+      user.email?.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesRole = roleFilter === "all" || user.role === roleFilter;
+    const matchesStatus = statusFilter === "all" || user.status === statusFilter;
+
+    return matchesSearch && matchesRole && matchesStatus;
+  });
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -176,7 +216,7 @@ export default function UsersPage() {
         py: 4,
       }}
     >
-      <Container maxWidth="lg">
+      <Container maxWidth={false}>
         {/* Header Section with Glass Effect */}
         <Paper
           elevation={0}
