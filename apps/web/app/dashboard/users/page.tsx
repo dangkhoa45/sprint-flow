@@ -23,7 +23,7 @@ import TextField from "@mui/material/TextField";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LoadingComponent from "../../../components/LoadingComponent";
 import { User, UserRole, UserStatus } from "../../../types/user";
 
@@ -92,22 +92,50 @@ const getRoleColor = (role: UserRole) => {
 
 const formatDateTime = (dateString?: string) => {
   if (!dateString) return "Chưa có";
-  return new Date(dateString).toLocaleString("vi-VN");
+
+  // Client-side safe date formatting
+  if (typeof window === "undefined") {
+    return "Đang tải...";
+  }
+
+  try {
+    return new Date(dateString).toLocaleString("vi-VN", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  } catch (error) {
+    return "Không hợp lệ";
+  }
 };
 
 export default function UsersPage() {
   const router = useRouter();
-  const [users] = useState<User[]>(mockUsers);
-  const [loading] = useState(false);
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    // Simulate loading data
+    const timer = setTimeout(() => {
+      setUsers(mockUsers);
+      setLoading(false);
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const filteredUsers = users.filter(
     (user) =>
       user.displayName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email?.toLowerCase().includes(searchTerm.toLowerCase())
+      user.email?.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -136,140 +164,442 @@ export default function UsersPage() {
     router.push("/dashboard");
   };
 
-  if (loading) {
+  if (loading || !mounted) {
     return <LoadingComponent loadingPage />;
   }
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Paper elevation={3} sx={{ p: 3 }}>
-        <Toolbar sx={{ px: 0, mb: 3 }}>
-          <IconButton
-            edge="start"
-            onClick={handleBackToDashboard}
-            sx={{ mr: 2 }}
-          >
-            <ArrowBackIcon />
-          </IconButton>
-          
-          <Typography variant="h4" component="h1" sx={{ flexGrow: 1, fontWeight: 600 }}>
-            Quản lý người dùng
-          </Typography>
-          
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={handleAddUser}
-            sx={{ bgcolor: "#1976d2" }}
-          >
-            Thêm người dùng
-          </Button>
-        </Toolbar>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+        py: 4,
+      }}
+    >
+      <Container maxWidth="lg">
+        {/* Header Section with Glass Effect */}
+        <Paper
+          elevation={0}
+          sx={{
+            p: 3,
+            mb: 3,
+            background: "rgba(255, 255, 255, 0.95)",
+            backdropFilter: "blur(20px)",
+            borderRadius: 3,
+            border: "1px solid rgba(255, 255, 255, 0.2)",
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
+          }}
+        >
+          <Toolbar sx={{ px: 0, mb: 2 }}>
+            <IconButton
+              edge="start"
+              onClick={handleBackToDashboard}
+              sx={{
+                mr: 2,
+                background: "linear-gradient(45deg, #667eea, #764ba2)",
+                color: "white",
+                "&:hover": {
+                  background: "linear-gradient(45deg, #764ba2, #667eea)",
+                  transform: "scale(1.05)",
+                },
+                transition: "all 0.3s ease",
+              }}
+            >
+              <ArrowBackIcon />
+            </IconButton>
 
-        <Box sx={{ mb: 3 }}>
-          <TextField
-            fullWidth
-            variant="outlined"
-            placeholder="Tìm kiếm theo tên, username hoặc email..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
+            <Box sx={{ flexGrow: 1 }}>
+              <Typography
+                variant="h4"
+                component="h1"
+                sx={{
+                  fontWeight: 700,
+                  background: "linear-gradient(45deg, #667eea, #764ba2)",
+                  backgroundClip: "text",
+                  WebkitBackgroundClip: "text",
+                  color: "transparent",
+                  mb: 0.5,
+                }}
+              >
+                Quản lý người dùng
+              </Typography>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+              >
+                Quản lý và theo dõi tất cả người dùng trong hệ thống
+              </Typography>
+            </Box>
+
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={handleAddUser}
+              sx={{
+                background: "linear-gradient(45deg, #667eea, #764ba2)",
+                borderRadius: 2,
+                px: 3,
+                py: 1.5,
+                textTransform: "none",
+                fontWeight: 600,
+                boxShadow: "0 4px 20px rgba(102, 126, 234, 0.4)",
+                "&:hover": {
+                  background: "linear-gradient(45deg, #764ba2, #667eea)",
+                  transform: "translateY(-2px)",
+                  boxShadow: "0 6px 25px rgba(102, 126, 234, 0.5)",
+                },
+                transition: "all 0.3s ease",
+              }}
+            >
+              Thêm người dùng
+            </Button>
+          </Toolbar>
+
+          {/* Search Box with Enhanced Design */}
+          <Box sx={{ mb: 2 }}>
+            <TextField
+              fullWidth
+              variant="outlined"
+              placeholder="Tìm kiếm theo tên, username hoặc email..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: 3,
+                  background: "rgba(255, 255, 255, 0.8)",
+                  backdropFilter: "blur(10px)",
+                  transition: "all 0.3s ease",
+                  "&:hover": {
+                    background: "rgba(255, 255, 255, 0.9)",
+                    transform: "translateY(-1px)",
+                    boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                  },
+                  "&.Mui-focused": {
+                    background: "rgba(255, 255, 255, 1)",
+                    boxShadow: "0 0 0 3px rgba(102, 126, 234, 0.1)",
+                  },
+                },
+              }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ color: "#667eea" }} />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Box>
+
+          {/* Stats Cards */}
+          <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
+            <Paper
+              sx={{
+                flex: 1,
+                p: 2,
+                borderRadius: 2,
+                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                color: "white",
+                textAlign: "center",
+              }}
+            >
+              <Typography
+                variant="h4"
+                fontWeight="bold"
+              >
+                {filteredUsers.length}
+              </Typography>
+              <Typography variant="body2">Tổng người dùng</Typography>
+            </Paper>
+            <Paper
+              sx={{
+                flex: 1,
+                p: 2,
+                borderRadius: 2,
+                background: "linear-gradient(135deg, #11998e 0%, #38ef7d 100%)",
+                color: "white",
+                textAlign: "center",
+              }}
+            >
+              <Typography
+                variant="h4"
+                fontWeight="bold"
+              >
+                {filteredUsers.filter((u) => u.status === UserStatus.Active).length}
+              </Typography>
+              <Typography variant="body2">Đang hoạt động</Typography>
+            </Paper>
+            <Paper
+              sx={{
+                flex: 1,
+                p: 2,
+                borderRadius: 2,
+                background: "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)",
+                color: "#333",
+                textAlign: "center",
+              }}
+            >
+              <Typography
+                variant="h4"
+                fontWeight="bold"
+              >
+                {filteredUsers.filter((u) => u.status === UserStatus.Pending).length}
+              </Typography>
+              <Typography variant="body2">Chờ duyệt</Typography>
+            </Paper>
+          </Box>
+        </Paper>
+
+        {/* Main Table Container */}
+        <Paper
+          elevation={0}
+          sx={{
+            background: "rgba(255, 255, 255, 0.95)",
+            backdropFilter: "blur(20px)",
+            borderRadius: 3,
+            border: "1px solid rgba(255, 255, 255, 0.2)",
+            overflow: "hidden",
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
+          }}
+        >
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow
+                  sx={{
+                    background: "linear-gradient(45deg, #667eea, #764ba2)",
+                    "& .MuiTableCell-head": {
+                      color: "white",
+                      fontWeight: 600,
+                      fontSize: "0.9rem",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.5px",
+                    },
+                  }}
+                >
+                  <TableCell>Avatar</TableCell>
+                  <TableCell>Tên hiển thị</TableCell>
+                  <TableCell>Username</TableCell>
+                  <TableCell>Email</TableCell>
+                  <TableCell>Số điện thoại</TableCell>
+                  <TableCell>Vai trò</TableCell>
+                  <TableCell>Trạng thái</TableCell>
+                  <TableCell>Đăng nhập cuối</TableCell>
+                  <TableCell align="center">Thao tác</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {filteredUsers
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((user, index) => (
+                    <TableRow
+                      key={user._id}
+                      hover
+                      sx={{
+                        "&:hover": {
+                          background:
+                            "linear-gradient(90deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%)",
+                          transform: "scale(1.001)",
+                          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+                        },
+                        transition: "all 0.3s ease",
+                        borderBottom: "1px solid rgba(0, 0, 0, 0.05)",
+                        "&:last-child": {
+                          borderBottom: "none",
+                        },
+                      }}
+                    >
+                      <TableCell>
+                        <Avatar
+                          src={user.avatar}
+                          alt={user.displayName}
+                          sx={{
+                            width: 50,
+                            height: 50,
+                            background: `linear-gradient(45deg, ${
+                              index % 2 === 0 ? "#667eea, #764ba2" : "#11998e, #38ef7d"
+                            })`,
+                            fontSize: "1.2rem",
+                            fontWeight: "bold",
+                            border: "3px solid white",
+                            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                          }}
+                        >
+                          {user.displayName.charAt(0).toUpperCase()}
+                        </Avatar>
+                      </TableCell>
+                      <TableCell>
+                        <Box>
+                          <Typography
+                            variant="body1"
+                            fontWeight={600}
+                            color="text.primary"
+                          >
+                            {user.displayName}
+                          </Typography>
+                          <Typography
+                            variant="caption"
+                            color="text.secondary"
+                          >
+                            Tạo: {formatDateTime(user.createdAt)}
+                          </Typography>
+                        </Box>
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={user.username}
+                          variant="outlined"
+                          size="small"
+                          sx={{
+                            borderColor: "#667eea",
+                            color: "#667eea",
+                            fontWeight: 500,
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                        >
+                          {user.email || "Chưa có"}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                        >
+                          {user.tel || "Chưa có"}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={user.role}
+                          color={getRoleColor(user.role) as any}
+                          size="small"
+                          sx={{
+                            fontWeight: 600,
+                            "&.MuiChip-colorPrimary": {
+                              background: "linear-gradient(45deg, #667eea, #764ba2)",
+                              color: "white",
+                            },
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={user.status}
+                          color={getStatusColor(user.status) as any}
+                          size="small"
+                          sx={{
+                            fontWeight: 600,
+                            "&.MuiChip-colorSuccess": {
+                              background: "linear-gradient(45deg, #11998e, #38ef7d)",
+                              color: "white",
+                            },
+                            "&.MuiChip-colorWarning": {
+                              background: "linear-gradient(45deg, #ffecd2, #fcb69f)",
+                              color: "#333",
+                            },
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                        >
+                          {formatDateTime(user.lastLogin)}
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="center">
+                        <Box sx={{ display: "flex", gap: 1, justifyContent: "center" }}>
+                          <IconButton
+                            onClick={() => handleEditUser(user._id)}
+                            size="small"
+                            sx={{
+                              background: "linear-gradient(45deg, #667eea, #764ba2)",
+                              color: "white",
+                              "&:hover": {
+                                background: "linear-gradient(45deg, #764ba2, #667eea)",
+                                transform: "scale(1.1)",
+                              },
+                              transition: "all 0.3s ease",
+                            }}
+                          >
+                            <EditIcon fontSize="small" />
+                          </IconButton>
+                          <IconButton
+                            onClick={() => handleDeleteUser(user._id)}
+                            size="small"
+                            sx={{
+                              background: "linear-gradient(45deg, #ff6b6b, #ee5a52)",
+                              color: "white",
+                              "&:hover": {
+                                background: "linear-gradient(45deg, #ee5a52, #ff6b6b)",
+                                transform: "scale(1.1)",
+                              },
+                              transition: "all 0.3s ease",
+                            }}
+                          >
+                            <DeleteIcon fontSize="small" />
+                          </IconButton>
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+
+          {/* Enhanced Pagination */}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              mt: 3,
+              p: 2,
+              background: "rgba(102, 126, 234, 0.05)",
+              borderRadius: 2,
             }}
-          />
-        </Box>
-
-        <TableContainer component={Paper} variant="outlined">
-          <Table>
-            <TableHead>
-              <TableRow sx={{ bgcolor: "#f5f5f5" }}>
-                <TableCell>Avatar</TableCell>
-                <TableCell>Tên hiển thị</TableCell>
-                <TableCell>Username</TableCell>
-                <TableCell>Email</TableCell>
-                <TableCell>Số điện thoại</TableCell>
-                <TableCell>Vai trò</TableCell>
-                <TableCell>Trạng thái</TableCell>
-                <TableCell>Đăng nhập cuối</TableCell>
-                <TableCell align="center">Thao tác</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredUsers
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((user) => (
-                  <TableRow key={user._id} hover>
-                    <TableCell>
-                      <Avatar
-                        src={user.avatar}
-                        alt={user.displayName}
-                        sx={{ width: 40, height: 40 }}
-                      >
-                        {user.displayName.charAt(0).toUpperCase()}
-                      </Avatar>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body1" fontWeight={500}>
-                        {user.displayName}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>{user.username}</TableCell>
-                    <TableCell>{user.email || "Chưa có"}</TableCell>
-                    <TableCell>{user.tel || "Chưa có"}</TableCell>
-                    <TableCell>
-                      <Chip
-                        label={user.role}
-                        color={getRoleColor(user.role) as any}
-                        size="small"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        label={user.status}
-                        color={getStatusColor(user.status) as any}
-                        size="small"
-                      />
-                    </TableCell>
-                    <TableCell>{formatDateTime(user.lastLogin)}</TableCell>
-                    <TableCell align="center">
-                      <IconButton
-                        color="primary"
-                        onClick={() => handleEditUser(user._id)}
-                        size="small"
-                      >
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton
-                        color="error"
-                        onClick={() => handleDeleteUser(user._id)}
-                        size="small"
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-
-        <TablePagination
-          component="div"
-          count={filteredUsers.length}
-          page={page}
-          onPageChange={handleChangePage}
-          rowsPerPage={rowsPerPage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          labelRowsPerPage="Số dòng mỗi trang:"
-          labelDisplayedRows={({ from, to, count }) =>
-            `${from}-${to} của ${count !== -1 ? count : `hơn ${to}`}`
-          }
-        />
-      </Paper>
-    </Container>
+          >
+            <TablePagination
+              component="div"
+              count={filteredUsers.length}
+              page={page}
+              onPageChange={handleChangePage}
+              rowsPerPage={rowsPerPage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+              labelRowsPerPage="Số dòng mỗi trang:"
+              labelDisplayedRows={({ from, to, count }) =>
+                `${from}-${to} của ${count !== -1 ? count : `hơn ${to}`}`
+              }
+              sx={{
+                "& .MuiTablePagination-select": {
+                  borderRadius: 1,
+                  background: "white",
+                  border: "1px solid #e0e0e0",
+                },
+                "& .MuiTablePagination-actions button": {
+                  background: "linear-gradient(45deg, #667eea, #764ba2)",
+                  color: "white",
+                  borderRadius: 1,
+                  mx: 0.5,
+                  "&:hover": {
+                    background: "linear-gradient(45deg, #764ba2, #667eea)",
+                    transform: "scale(1.05)",
+                  },
+                  "&.Mui-disabled": {
+                    background: "#e0e0e0",
+                    color: "#999",
+                  },
+                  transition: "all 0.3s ease",
+                },
+              }}
+            />
+          </Box>
+        </Paper>
+      </Container>
+    </Box>
   );
 }
