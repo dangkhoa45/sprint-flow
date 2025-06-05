@@ -4,6 +4,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import SearchIcon from "@mui/icons-material/Search";
+import LockResetIcon from "@mui/icons-material/LockReset"; // Import LockResetIcon
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -29,6 +30,7 @@ import { User, UserRole, UserStatus } from "../../../types/user";
 import CreateUserDialog from "./components/CreateUserDialog";
 import DeleteUserDialog from "./components/DeleteUserDialog";
 import EditUserDialog from "./components/EditUserDialog";
+import ChangePasswordDialog from "./components/ChangePasswordDialog"; // Import ChangePasswordDialog
 
 // Mock data for testing - Expanded with more information
 const mockUsers: User[] = [
@@ -163,6 +165,7 @@ export default function UsersPage() {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [changePasswordDialogOpen, setChangePasswordDialogOpen] = useState(false); // State for ChangePasswordDialog
 
   useEffect(() => {
     setMounted(true);
@@ -216,6 +219,14 @@ export default function UsersPage() {
     setCreateDialogOpen(true);
   };
 
+  const handleChangePassword = (userId: string) => {
+    const user = users.find((u) => u._id === userId);
+    if (user) {
+      setSelectedUser(user);
+      setChangePasswordDialogOpen(true);
+    }
+  };
+
   // Dialog handlers
   const handleCreateUser = (userData: any) => {
     // Generate a new ID for the user
@@ -252,6 +263,15 @@ export default function UsersPage() {
     setCreateDialogOpen(false);
     setEditDialogOpen(false);
     setDeleteDialogOpen(false);
+    setSelectedUser(null);
+    setChangePasswordDialogOpen(false); // Close ChangePasswordDialog
+  };
+
+  const handleSavePassword = (userId: string, newPassword: string) => {
+    // Here you would typically make an API call to update the password
+    console.log(`Password changed for user ${userId} to ${newPassword}`);
+    // For now, we'll just close the dialog
+    setChangePasswordDialogOpen(false);
     setSelectedUser(null);
   };
 
@@ -625,6 +645,21 @@ export default function UsersPage() {
                             <EditIcon fontSize="small" />
                           </IconButton>
                           <IconButton
+                            onClick={() => handleChangePassword(user._id)} // Add this IconButton
+                            size="small"
+                            sx={{
+                              background: "linear-gradient(45deg, #ffc107, #ff9800)", // Example color
+                              color: "white",
+                              "&:hover": {
+                                background: "linear-gradient(45deg, #ff9800, #ffc107)",
+                                transform: "scale(1.1)",
+                              },
+                              transition: "all 0.3s ease",
+                            }}
+                          >
+                            <LockResetIcon fontSize="small" />
+                          </IconButton>
+                          <IconButton
                             onClick={() => handleDeleteUser(user._id)}
                             size="small"
                             sx={{
@@ -713,6 +748,12 @@ export default function UsersPage() {
           open={deleteDialogOpen}
           onCloseAction={handleCloseDialogs}
           onConfirmAction={handleDeleteUserConfirm}
+          user={selectedUser}
+        />
+        <ChangePasswordDialog
+          open={changePasswordDialogOpen}
+          onCloseAction={handleCloseDialogs}
+          onSaveAction={handleSavePassword}
           user={selectedUser}
         />
       </Container>
