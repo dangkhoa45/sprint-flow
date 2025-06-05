@@ -493,8 +493,6 @@ export default function UsersPage() {
                         "&:hover": {
                           background:
                             "linear-gradient(90deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%)",
-                          transform: "scale(1.001)",
-                          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
                         },
                         transition: "all 0.3s ease",
                         borderBottom: "1px solid rgba(0, 0, 0, 0.05)",
