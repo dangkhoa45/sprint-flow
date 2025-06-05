@@ -17,12 +17,12 @@ import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { useState } from "react";
-import { UserRole, UserStatus } from "../../../../types/user";
+import { User, UserRole, UserStatus } from "../../../../types/user";
 
 interface CreateUserDialogProps {
   open: boolean;
   onCloseAction: () => void;
-  onSaveAction: (userData: any) => void;
+  onSaveAction: (userData: User) => void;
 }
 
 export default function CreateUserDialog({
@@ -41,16 +41,16 @@ export default function CreateUserDialog({
     confirmPassword: "",
   });
 
-  const [errors, setErrors] = useState<any>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const handleChange = (field: string, value: any) => {
+  const handleChange = (field: string, value: string | UserRole | UserStatus) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
     }));
     // Clear error when user starts typing
     if (errors[field]) {
-      setErrors((prev: any) => ({
+      setErrors((prev: Record<string, string>) => ({
         ...prev,
         [field]: "",
       }));
@@ -58,7 +58,7 @@ export default function CreateUserDialog({
   };
 
   const validateForm = () => {
-    const newErrors: any = {};
+    const newErrors: Record<string, string> = {};
 
     if (!formData.displayName.trim()) {
       newErrors.displayName = "Tên hiển thị là bắt buộc";
@@ -92,9 +92,9 @@ export default function CreateUserDialog({
     if (validateForm()) {
       const userData = {
         ...formData,
-        _id: Date.now().toString(), // Temporary ID
+        _id: Date.now().toString(),
         createdAt: new Date().toISOString(),
-        lastLogin: null,
+        lastLogin: undefined,
       };
       onSaveAction(userData);
       handleClose();
@@ -127,7 +127,8 @@ export default function CreateUserDialog({
           borderRadius: 4,
           background: "rgba(255, 255, 255, 0.95)",
           backdropFilter: "blur(30px)",
-          boxShadow: "0 20px 60px rgba(102, 126, 234, 0.2), 0 8px 32px rgba(0, 0, 0, 0.1)",
+          boxShadow:
+            "0 20px 60px rgba(102, 126, 234, 0.2), 0 8px 32px rgba(0, 0, 0, 0.1)",
           border: "1px solid rgba(255, 255, 255, 0.3)",
           overflow: "hidden",
           transform: open ? "scale(1)" : "scale(0.9)",
@@ -160,7 +161,8 @@ export default function CreateUserDialog({
             left: 0,
             right: 0,
             bottom: 0,
-            background: "linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 50%, rgba(255,255,255,0.1) 100%)",
+            background:
+              "linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 50%, rgba(255,255,255,0.1) 100%)",
             pointerEvents: "none",
           },
           "@keyframes gradientShift": {
@@ -217,10 +219,11 @@ export default function CreateUserDialog({
         </IconButton>
       </DialogTitle>
 
-      <DialogContent 
-        sx={{ 
+      <DialogContent
+        sx={{
           p: 4,
-          background: "linear-gradient(180deg, rgba(102, 126, 234, 0.02) 0%, rgba(255, 255, 255, 0.8) 100%)",
+          background:
+            "linear-gradient(180deg, rgba(102, 126, 234, 0.02) 0%, rgba(255, 255, 255, 0.8) 100%)",
         }}
       >
         {/* Avatar Preview Section */}
@@ -231,11 +234,13 @@ export default function CreateUserDialog({
             my: 4,
             p: 3,
             borderRadius: 3,
-            background: "linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%)",
+            background:
+              "linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%)",
             border: "2px dashed rgba(102, 126, 234, 0.2)",
             transition: "all 0.3s ease",
             "&:hover": {
-              background: "linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%)",
+              background:
+                "linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%)",
               border: "2px dashed rgba(102, 126, 234, 0.4)",
               transform: "translateY(-2px)",
             },
@@ -271,14 +276,14 @@ export default function CreateUserDialog({
           container
           spacing={3}
         >
-
           {/* Personal Information Section */}
           <Grid size={{ xs: 12 }}>
             <Box
               sx={{
                 p: 3,
                 borderRadius: 3,
-                background: "linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%)",
+                background:
+                  "linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%)",
                 border: "1px solid rgba(102, 126, 234, 0.1)",
                 mb: 2,
               }}
@@ -299,8 +304,11 @@ export default function CreateUserDialog({
               >
                 👤 Thông tin cá nhân
               </Typography>
-              
-              <Grid container spacing={3}>
+
+              <Grid
+                container
+                spacing={3}
+              >
                 <Grid size={{ xs: 12, md: 6 }}>
                   <TextField
                     fullWidth
@@ -409,7 +417,8 @@ export default function CreateUserDialog({
               sx={{
                 p: 3,
                 borderRadius: 3,
-                background: "linear-gradient(135deg, rgba(17, 153, 142, 0.05) 0%, rgba(56, 239, 125, 0.05) 100%)",
+                background:
+                  "linear-gradient(135deg, rgba(17, 153, 142, 0.05) 0%, rgba(56, 239, 125, 0.05) 100%)",
                 border: "1px solid rgba(17, 153, 142, 0.1)",
                 mb: 2,
               }}
@@ -430,8 +439,11 @@ export default function CreateUserDialog({
               >
                 ⚙️ Cài đặt tài khoản
               </Typography>
-              
-              <Grid container spacing={3}>
+
+              <Grid
+                container
+                spacing={3}
+              >
                 <Grid size={{ xs: 12, md: 6 }}>
                   <FormControl fullWidth>
                     <InputLabel>Vai trò</InputLabel>
@@ -492,7 +504,8 @@ export default function CreateUserDialog({
               sx={{
                 p: 3,
                 borderRadius: 3,
-                background: "linear-gradient(135deg, rgba(255, 107, 107, 0.05) 0%, rgba(238, 90, 82, 0.05) 100%)",
+                background:
+                  "linear-gradient(135deg, rgba(255, 107, 107, 0.05) 0%, rgba(238, 90, 82, 0.05) 100%)",
                 border: "1px solid rgba(255, 107, 107, 0.1)",
               }}
             >
@@ -512,8 +525,11 @@ export default function CreateUserDialog({
               >
                 🔒 Bảo mật
               </Typography>
-              
-              <Grid container spacing={3}>
+
+              <Grid
+                container
+                spacing={3}
+              >
                 <Grid size={{ xs: 12, md: 6 }}>
                   <TextField
                     fullWidth

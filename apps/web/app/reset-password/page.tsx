@@ -11,8 +11,8 @@ import InputAdornment from "@mui/material/InputAdornment";
 import Link from "@mui/material/Link";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function ResetPasswordPage() {
   const [password, setPassword] = useState("");
@@ -23,7 +23,7 @@ export default function ResetPasswordPage() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [token, setToken] = useState("");
-  
+
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -38,7 +38,7 @@ export default function ResetPasswordPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!token) {
       setError("Invalid reset token.");
       return;
@@ -70,14 +70,16 @@ export default function ResetPasswordPage() {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage("Password has been reset successfully. Redirecting to login...");
+        setMessage(
+          "Password has been reset successfully. Redirecting to login..."
+        );
         setTimeout(() => {
           router.push("/login");
         }, 2000);
       } else {
         setError(data.message || "An error occurred. Please try again.");
       }
-    } catch (error) {
+    } catch {
       setError("Network error. Please check your connection and try again.");
     } finally {
       setIsLoading(false);
@@ -89,7 +91,8 @@ export default function ResetPasswordPage() {
       sx={{
         width: "100vw",
         height: "100vh",
-        background: "linear-gradient(135deg, #0ea5e9 0%, #3b82f6 50%, #6366f1 100%)",
+        background:
+          "linear-gradient(135deg, #0ea5e9 0%, #3b82f6 50%, #6366f1 100%)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -162,10 +165,7 @@ export default function ResetPasswordPage() {
           >
             Reset Password
           </Typography>
-          <Typography
-            variant="body1"
-            sx={{ color: "#6b7280", mb: 4 }}
-          >
+          <Typography variant="body1" sx={{ color: "#6b7280", mb: 4 }}>
             Enter your new password below.
           </Typography>
         </Box>
@@ -263,7 +263,9 @@ export default function ResetPasswordPage() {
                 endAdornment: (
                   <InputAdornment position="end">
                     <IconButton
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
                       edge="end"
                       sx={{ color: "#9ca3af" }}
                     >

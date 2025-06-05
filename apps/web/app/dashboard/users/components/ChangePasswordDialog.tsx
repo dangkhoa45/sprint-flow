@@ -30,7 +30,7 @@ export default function ChangePasswordDialog({
     newPassword: "",
     confirmPassword: "",
   });
-  const [errors, setErrors] = useState<any>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     // Reset form when dialog opens or user changes
@@ -50,7 +50,7 @@ export default function ChangePasswordDialog({
     }));
     // Clear error when user starts typing
     if (errors[field]) {
-      setErrors((prev: any) => ({
+      setErrors((prev: Record<string, string>) => ({
         ...prev,
         [field]: "",
       }));
@@ -58,7 +58,7 @@ export default function ChangePasswordDialog({
   };
 
   const validateForm = () => {
-    const newErrors: any = {};
+    const newErrors: Record<string, string> = {};
 
     if (!formData.newPassword) {
       newErrors.newPassword = "Mật khẩu mới là bắt buộc";

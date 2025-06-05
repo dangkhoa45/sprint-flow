@@ -41,7 +41,7 @@ export default function EditUserDialog({
     status: UserStatus.Active,
   });
 
-  const [errors, setErrors] = useState<any>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (user) {
@@ -56,14 +56,14 @@ export default function EditUserDialog({
     }
   }, [user]);
 
-  const handleChange = (field: string, value: any) => {
+  const handleChange = (field: string, value: string | UserRole | UserStatus) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
     }));
     // Clear error when user starts typing
     if (errors[field]) {
-      setErrors((prev: any) => ({
+      setErrors((prev: Record<string, string>) => ({
         ...prev,
         [field]: "",
       }));
@@ -71,7 +71,7 @@ export default function EditUserDialog({
   };
 
   const validateForm = () => {
-    const newErrors: any = {};
+    const newErrors: Record<string, string> = {};
 
     if (!formData.displayName.trim()) {
       newErrors.displayName = "Tên hiển thị là bắt buộc";

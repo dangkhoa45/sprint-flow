@@ -1,24 +1,21 @@
 "use client";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
-import Grid from "@mui/material/Grid";
 import InputAdornment from "@mui/material/InputAdornment";
 import Link from "@mui/material/Link";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,7 +39,7 @@ export default function ForgotPasswordPage() {
       } else {
         setError(data.message || "An error occurred. Please try again.");
       }
-    } catch (error) {
+    } catch {
       setError("Network error. Please check your connection and try again.");
     } finally {
       setIsLoading(false);
@@ -54,7 +51,8 @@ export default function ForgotPasswordPage() {
       sx={{
         width: "100vw",
         height: "100vh",
-        background: "linear-gradient(135deg, #0ea5e9 0%, #3b82f6 50%, #6366f1 100%)",
+        background:
+          "linear-gradient(135deg, #0ea5e9 0%, #3b82f6 50%, #6366f1 100%)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -127,11 +125,8 @@ export default function ForgotPasswordPage() {
           >
             Forgot Password?
           </Typography>
-          <Typography
-            variant="body1"
-            sx={{ color: "#6b7280", mb: 4 }}
-          >
-            No worries, we'll send you reset instructions.
+          <Typography variant="body1" sx={{ color: "#6b7280", mb: 4 }}>
+            No worries, we&apos;ll send you reset instructions.
           </Typography>
         </Box>
 

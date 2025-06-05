@@ -1,6 +1,5 @@
 "use client";
 import CloseIcon from "@mui/icons-material/Close";
-import DeleteIcon from "@mui/icons-material/Delete";
 import WarningIcon from "@mui/icons-material/Warning";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
@@ -184,8 +183,8 @@ export default function DeleteUserDialog({
             {user.email}
           </Typography>
           <Box sx={{ display: "flex", gap: 1, mb: 1 }}>
-            <Chip label={user.role} color={getRoleColor(user.role) as any} size="small" sx={{ fontWeight: 600 }} />
-            <Chip label={user.status} color={getStatusColor(user.status) as any} size="small" sx={{ fontWeight: 600 }} />
+            <Chip label={user.role} color={getRoleColor(user.role) as "primary" | "secondary" | "default" | "error" | "info" | "success" | "warning"} size="small" sx={{ fontWeight: 600 }} />
+            <Chip label={user.status} color={getStatusColor(user.status) as "primary" | "secondary" | "default" | "error" | "info" | "success" | "warning"} size="small" sx={{ fontWeight: 600 }} />
           </Box>
           <Typography variant="body2" color="error" sx={{ mt: 2, fontWeight: 600, textAlign: "center" }}>
             Bạn có chắc chắn muốn xóa người dùng này?<br />

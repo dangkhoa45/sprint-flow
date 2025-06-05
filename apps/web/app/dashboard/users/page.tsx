@@ -3,8 +3,8 @@ import AddIcon from "@mui/icons-material/Add";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import SearchIcon from "@mui/icons-material/Search";
 import LockResetIcon from "@mui/icons-material/LockReset"; // Import LockResetIcon
+import SearchIcon from "@mui/icons-material/Search";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -27,10 +27,10 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import LoadingComponent from "../../../components/LoadingComponent";
 import { User, UserRole, UserStatus } from "../../../types/user";
+import ChangePasswordDialog from "./components/ChangePasswordDialog"; // Import ChangePasswordDialog
 import CreateUserDialog from "./components/CreateUserDialog";
 import DeleteUserDialog from "./components/DeleteUserDialog";
 import EditUserDialog from "./components/EditUserDialog";
-import ChangePasswordDialog from "./components/ChangePasswordDialog"; // Import ChangePasswordDialog
 
 // Mock data for testing - Expanded with more information
 const mockUsers: User[] = [
@@ -144,7 +144,7 @@ const formatDateTime = (dateString?: string) => {
       hour: "2-digit",
       minute: "2-digit",
     });
-  } catch (error) {
+  } catch{
     return "Không hợp lệ";
   }
 };
@@ -157,8 +157,8 @@ export default function UsersPage() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(15);
   const [mounted, setMounted] = useState(false);
-  const [roleFilter, setRoleFilter] = useState<string>("all");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [roleFilter,] = useState<string>("all");
+  const [statusFilter] = useState<string>("all");
 
   // Dialog states
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -232,14 +232,14 @@ export default function UsersPage() {
   };
 
   // Dialog handlers
-  const handleCreateUser = (userData: any) => {
+  const handleCreateUser = (userData: User) => {
     // Generate a new ID for the user
     const newUser: User = {
       ...userData,
       _id: (users.length + 1).toString(),
       createdAt: new Date().toISOString(),
-      lastLogin: null,
-      avatar: null,
+      lastLogin: "",
+      avatar: "",
     };
 
     setUsers((prev) => [...prev, newUser]);
@@ -610,7 +610,7 @@ export default function UsersPage() {
                       <TableCell>
                         <Chip
                           label={user.role}
-                          color={getRoleColor(user.role) as any}
+                          color={getRoleColor(user.role) as never}
                           size="small"
                           sx={{
                             fontWeight: 600,
@@ -624,7 +624,7 @@ export default function UsersPage() {
                       <TableCell>
                         <Chip
                           label={user.status}
-                          color={getStatusColor(user.status) as any}
+                          color={getStatusColor(user.status) as never}
                           size="small"
                           sx={{
                             fontWeight: 600,

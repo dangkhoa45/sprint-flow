@@ -137,7 +137,7 @@ const formatDateTime = (dateString?: string) => {
       hour: "2-digit",
       minute: "2-digit",
     });
-  } catch (error) {
+  } catch {
     return "Không hợp lệ";
   }
 };
@@ -421,7 +421,7 @@ export default function UserDetailPage({ params }: UserDetailProps) {
                 <Box sx={{ display: "flex", gap: 1, justifyContent: "center", mb: 2 }}>
                   <Chip
                     label={user.role}
-                    color={getRoleColor(user.role) as any}
+                    color={getRoleColor(user.role) as "primary" | "secondary" | "default" | "error" | "info" | "success" | "warning"}
                     sx={{
                       fontWeight: 600,
                       "&.MuiChip-colorPrimary": {
@@ -432,7 +432,7 @@ export default function UserDetailPage({ params }: UserDetailProps) {
                   />
                   <Chip
                     label={user.status}
-                    color={getStatusColor(user.status) as any}
+                    color={getStatusColor(user.status) as "primary" | "secondary" | "default" | "error" | "info" | "success" | "warning"}
                     sx={{
                       fontWeight: 600,
                       "&.MuiChip-colorSuccess": {
