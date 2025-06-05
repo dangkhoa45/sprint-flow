@@ -227,6 +227,10 @@ export default function UsersPage() {
     }
   };
 
+  const handleViewUserDetail = (userId: string) => {
+    router.push(`/dashboard/users/${userId}`);
+  };
+
   // Dialog handlers
   const handleCreateUser = (userData: any) => {
     // Generate a new ID for the user
@@ -537,7 +541,14 @@ export default function UsersPage() {
                             fontWeight: "bold",
                             border: "3px solid white",
                             boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                            cursor: "pointer",
+                            "&:hover": {
+                              transform: "scale(1.1)",
+                              boxShadow: "0 6px 16px rgba(0, 0, 0, 0.2)",
+                            },
+                            transition: "all 0.3s ease",
                           }}
+                          onClick={() => handleViewUserDetail(user._id)}
                         >
                           {user.displayName.charAt(0).toUpperCase()}
                         </Avatar>
@@ -548,6 +559,15 @@ export default function UsersPage() {
                             variant="body1"
                             fontWeight={600}
                             color="text.primary"
+                            sx={{
+                              cursor: "pointer",
+                              "&:hover": {
+                                color: "#667eea",
+                                textDecoration: "underline",
+                              },
+                              transition: "all 0.3s ease",
+                            }}
+                            onClick={() => handleViewUserDetail(user._id)}
                           >
                             {user.displayName}
                           </Typography>
