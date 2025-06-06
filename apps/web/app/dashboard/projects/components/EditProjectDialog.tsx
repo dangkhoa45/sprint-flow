@@ -726,11 +726,26 @@ export default function EditProjectDialog({
         </Grid>
       </DialogContent>
 
-      <DialogActions sx={{ p: 3, pt: 2 }}>
-        <Button onClick={onCloseAction} variant="outlined">
+      <DialogActions sx={{ p: 3, pt: 0 }}>
+        <Button
+          onClick={onCloseAction}
+          variant="outlined"
+          sx={{ minWidth: 120 }}
+        >
           Hủy
         </Button>
-        <Button onClick={handleSubmit} variant="contained" disabled={loading}>
+        <Button
+          onClick={handleSubmit}
+          variant="contained"
+          disabled={loading}
+          sx={{
+            minWidth: 120,
+            background: "linear-gradient(135deg, #42a5f5 0%, #1976d2 100%)",
+            "&:hover": {
+              background: "linear-gradient(135deg, #1976d2 0%, #1565c0 100%)",
+            },
+          }}
+        >
           {loading ? "Đang cập nhật..." : "Cập nhật dự án"}
         </Button>
       </DialogActions>
