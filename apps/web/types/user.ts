@@ -75,3 +75,18 @@ export type UserChangePassword = {
 
 export type UserUpdateInput = Partial<UserCreateInput>;
 export type UserFilterParams = ListOptions<User>;
+
+export interface UserFilters {
+  search?: string;
+  role?: UserRole[];
+  status?: UserStatus[];
+}
+
+export interface UserStats {
+  total: number;
+  active: number;
+  pending: number;
+  banned: number;
+  admins: number;
+  users: number;
+}
