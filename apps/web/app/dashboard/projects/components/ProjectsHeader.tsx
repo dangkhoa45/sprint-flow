@@ -28,7 +28,9 @@ import {
 interface ProjectsHeaderProps {
   onCreateProjectAction: () => void;
   onFiltersChangeAction: (filters: ProjectFilters) => void;
+  onViewModeChange?: (mode: "grid" | "list") => void;
   filters: ProjectFilters;
+  viewMode?: "grid" | "list";
 }
 
 const statusOptions = [
@@ -57,10 +59,11 @@ const priorityOptions = [
 export default function ProjectsHeader({
   onCreateProjectAction,
   onFiltersChangeAction,
+  onViewModeChange,
   filters,
+  viewMode = "grid",
 }: ProjectsHeaderProps) {
   const [searchValue, setSearchValue] = useState(filters.search || "");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showFilters, setShowFilters] = useState(false);
   const router = useRouter();
 
@@ -257,7 +260,7 @@ export default function ProjectsHeader({
           }}
         >
           <IconButton
-            onClick={() => setViewMode("grid")}
+            onClick={() => onViewModeChange?.("grid")}
             sx={{
               color: "white",
               background:
@@ -270,7 +273,7 @@ export default function ProjectsHeader({
             <GridViewIcon />
           </IconButton>
           <IconButton
-            onClick={() => setViewMode("list")}
+            onClick={() => onViewModeChange?.("list")}
             sx={{
               color: "white",
               background:

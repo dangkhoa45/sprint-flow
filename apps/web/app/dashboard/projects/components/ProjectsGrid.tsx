@@ -9,9 +9,11 @@ import Skeleton from "@mui/material/Skeleton";
 import Typography from "@mui/material/Typography";
 import { Project } from "../../../../types/project";
 import ProjectCard from "./ProjectCard";
+import ProjectList from "./ProjectList";
 
 interface ProjectsGridProps {
   projects: Project[];
+  viewMode?: "grid" | "list";
   loading?: boolean;
   onCreateProject?: () => void;
   onEditProject?: (project: Project) => void;
@@ -240,6 +242,7 @@ const EmptyState = ({ onCreateProject }: { onCreateProject?: () => void }) => (
 
 export default function ProjectsGrid({
   projects,
+  viewMode = "grid",
   loading = false,
   onCreateProject,
   onEditProject,
@@ -262,6 +265,19 @@ export default function ProjectsGrid({
     return <EmptyState onCreateProject={onCreateProject} />;
   }
 
+  // Render list view
+  if (viewMode === "list") {
+    return (
+      <ProjectList
+        projects={projects}
+        onEdit={onEditProject}
+        onDelete={onDeleteProject}
+        onView={onViewProject}
+      />
+    );
+  }
+
+  // Render grid view (default)
   return (
     <Grid container spacing={3}>
       {projects.map((project) => (

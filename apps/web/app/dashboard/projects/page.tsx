@@ -220,6 +220,7 @@ export default function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>(mockProjects);
   const [stats, setStats] = useState<ProjectStats>(mockStats);
   const [filters, setFilters] = useState<ProjectFilters>({});
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -227,9 +228,77 @@ export default function ProjectsPage() {
   const [loading, setLoading] = useState(false);
   const route = useRouter();
 
+  // Filter projects based on current filters
+  const filteredProjects = projects.filter((project) => {
+    // Search filter
+    if (filters.search) {
+      const searchLower = filters.search.toLowerCase();
+      const matchesName = project.name.toLowerCase().includes(searchLower);
+      const matchesDescription = project.description.toLowerCase().includes(searchLower);
+      const matchesTags = project.tags.some(tag => tag.toLowerCase().includes(searchLower));
+      const matchesOwner = project.owner.displayName.toLowerCase().includes(searchLower);
+      
+      if (!matchesName && !matchesDescription && !matchesTags && !matchesOwner) {
+        return false;
+      }
+    }
+
+    // Status filter
+    if (filters.status && filters.status.length > 0) {
+      if (!filters.status.includes(project.status)) {
+        return false;
+      }
+    }
+
+    // Priority filter
+    if (filters.priority && filters.priority.length > 0) {
+      if (!filters.priority.includes(project.priority)) {
+        return false;
+      }
+    }
+
+    // Owner filter
+    if (filters.owner) {
+      if (project.owner._id !== filters.owner) {
+        return false;
+      }
+    }
+
+    // Tags filter
+    if (filters.tags && filters.tags.length > 0) {
+      const hasMatchingTag = filters.tags.some(filterTag => 
+        project.tags.some(projectTag => 
+          projectTag.toLowerCase().includes(filterTag.toLowerCase())
+        )
+      );
+      if (!hasMatchingTag) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+
+  // Update stats based on filtered projects
+  const calculateStats = (projectList: Project[]): ProjectStats => {
+    return {
+      total: projectList.length,
+      planning: projectList.filter(p => p.status === ProjectStatus.PLANNING).length,
+      inProgress: projectList.filter(p => p.status === ProjectStatus.IN_PROGRESS).length,
+      completed: projectList.filter(p => p.status === ProjectStatus.COMPLETED).length,
+      onHold: projectList.filter(p => p.status === ProjectStatus.ON_HOLD).length,
+      cancelled: projectList.filter(p => p.status === ProjectStatus.CANCELLED).length,
+    };
+  };
+
+  const currentStats = calculateStats(filteredProjects);
+
   const handleFiltersChange = (newFilters: ProjectFilters) => {
     setFilters(newFilters);
-    // TODO: Apply filters to projects
+  };
+
+  const handleViewModeChange = (mode: "grid" | "list") => {
+    setViewMode(mode);
   };
 
   const handleCreateProject = async (projectData: any) => {
@@ -317,13 +386,16 @@ export default function ProjectsPage() {
       <ProjectsHeader
         onCreateProjectAction={() => setIsCreateDialogOpen(true)}
         onFiltersChangeAction={handleFiltersChange}
+        onViewModeChange={handleViewModeChange}
         filters={filters}
+        viewMode={viewMode}
       />
 
-      <ProjectsStats stats={stats} />
+      <ProjectsStats stats={currentStats} />
 
       <ProjectsGrid
-        projects={projects}
+        projects={filteredProjects}
+        viewMode={viewMode}
         loading={loading}
         onCreateProject={() => setIsCreateDialogOpen(true)}
         onEditProject={handleOpenEditDialog}
