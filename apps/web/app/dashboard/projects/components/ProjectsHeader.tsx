@@ -1,5 +1,6 @@
 "use client";
 import AddIcon from "@mui/icons-material/Add";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import FilterIcon from "@mui/icons-material/FilterList";
 import GridViewIcon from "@mui/icons-material/GridView";
 import SearchIcon from "@mui/icons-material/Search";
@@ -16,6 +17,8 @@ import TextField from "@mui/material/TextField";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import { useState } from "react";
+
+import { useRouter } from "next/navigation";
 import {
   ProjectFilters,
   ProjectPriority,
@@ -59,6 +62,7 @@ export default function ProjectsHeader({
   const [searchValue, setSearchValue] = useState(filters.search || "");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showFilters, setShowFilters] = useState(false);
+  const router = useRouter();
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -82,6 +86,10 @@ export default function ProjectsHeader({
       : [...currentPriorities, priority];
 
     onFiltersChangeAction({ ...filters, priority: newPriorities });
+  };
+
+  const handleBackToDashboard = () => {
+    router.push("/dashboard");
   };
 
   const clearFilters = () => {
@@ -110,26 +118,43 @@ export default function ProjectsHeader({
           mb: 2,
         }}
       >
-        <Box>
-          <Typography
-            variant="h4"
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <IconButton
+            onClick={handleBackToDashboard}
             sx={{
-              fontWeight: 700,
-              background: "linear-gradient(135deg, #ffffff 0%, #e3f2fd 100%)",
-              backgroundClip: "text",
-              WebkitBackgroundClip: "text",
-              color: "transparent",
-              mb: 0.5,
+              mr: 2,
+              background: "linear-gradient(45deg, #667eea, #764ba2)",
+              color: "white",
+              "&:hover": {
+                background: "linear-gradient(45deg, #764ba2, #667eea)",
+                transform: "scale(1.05)",
+              },
+              transition: "all 0.3s ease",
             }}
           >
-            Quản lý dự án
-          </Typography>
-          <Typography
-            variant="body1"
-            sx={{ color: "rgba(255, 255, 255, 0.8)" }}
-          >
-            Tạo, theo dõi và quản lý các dự án của bạn
-          </Typography>
+            <ArrowBackIcon />
+          </IconButton>
+          <Box>
+            <Typography
+              variant="h4"
+              sx={{
+                fontWeight: 700,
+                background: "linear-gradient(135deg, #ffffff 0%, #e3f2fd 100%)",
+                backgroundClip: "text",
+                WebkitBackgroundClip: "text",
+                color: "transparent",
+                mb: 0.5,
+              }}
+            >
+              Quản lý dự án
+            </Typography>
+            <Typography
+              variant="body1"
+              sx={{ color: "rgba(255, 255, 255, 0.8)" }}
+            >
+              Tạo, theo dõi và quản lý các dự án
+            </Typography>
+          </Box>
         </Box>
 
         <Button
