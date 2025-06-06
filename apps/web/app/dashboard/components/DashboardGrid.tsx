@@ -15,7 +15,7 @@ const menuItems = [
     title: "Quản lý dự án",
     description: "Tạo và quản lý dự án",
     icon: <AccountTreeIcon sx={{ fontSize: 40 }} />,
-    path: "/dashboard/teams",
+    path: "/dashboard/projects",
     color: "#00796b",
     bgColor: "#e0f2f1",
     gradient: "linear-gradient(135deg, #00796b 0%, #26a69a 100%)",
