@@ -9,6 +9,8 @@ import {
   ProjectStatus,
 } from "../../../types/project";
 import CreateProjectDialog from "./components/CreateProjectDialog";
+import DeleteProjectDialog from "./components/DeleteProjectDialog";
+import EditProjectDialog from "./components/EditProjectDialog";
 import ProjectsGrid from "./components/ProjectsGrid";
 import ProjectsHeader from "./components/ProjectsHeader";
 import ProjectsStats from "./components/ProjectsStats";
@@ -218,6 +220,9 @@ export default function ProjectsPage() {
   const [stats, setStats] = useState<ProjectStats>(mockStats);
   const [filters, setFilters] = useState<ProjectFilters>({});
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleFiltersChange = (newFilters: ProjectFilters) => {
@@ -238,6 +243,60 @@ export default function ProjectsPage() {
     }
   };
 
+  const handleEditProject = async (projectId: string, projectData: Partial<Project>) => {
+    setLoading(true);
+    try {
+      // TODO: API call to update project
+      console.log("Updating project:", projectId, projectData);
+      
+      // Update local state for demo
+      setProjects(prev => prev.map(p => 
+        p._id === projectId ? { ...p, ...projectData } : p
+      ));
+      
+      setIsEditDialogOpen(false);
+      setSelectedProject(null);
+    } catch (error) {
+      console.error("Error updating project:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteProject = async (projectId: string) => {
+    setLoading(true);
+    try {
+      // TODO: API call to delete project
+      console.log("Deleting project:", projectId);
+      
+      // Update local state for demo
+      setProjects(prev => prev.filter(p => p._id !== projectId));
+      
+      // Update stats
+      setStats(prev => ({
+        ...prev,
+        total: prev.total - 1,
+      }));
+      
+      setIsDeleteDialogOpen(false);
+      setSelectedProject(null);
+    } catch (error) {
+      console.error("Error deleting project:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleOpenEditDialog = (project: Project) => {
+    setSelectedProject(project);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleOpenDeleteDialog = (project: Project) => {
+    setSelectedProject(project);
+    setIsDeleteDialogOpen(true);
+  };
+
   return (
     <Box
       sx={{
@@ -254,12 +313,35 @@ export default function ProjectsPage() {
 
       <ProjectsStats stats={stats} />
 
-      <ProjectsGrid projects={projects} loading={loading} />
+      <ProjectsGrid 
+        projects={projects} 
+        loading={loading}
+        onCreateProject={() => setIsCreateDialogOpen(true)}
+        onEditProject={handleOpenEditDialog}
+        onDeleteProject={handleOpenDeleteDialog}
+        onViewProject={(project) => console.log("View project:", project)}
+      />
 
       <CreateProjectDialog
         open={isCreateDialogOpen}
         onCloseAction={() => setIsCreateDialogOpen(false)}
         onSubmitAction={handleCreateProject}
+        loading={loading}
+      />
+
+      <EditProjectDialog
+        open={isEditDialogOpen}
+        project={selectedProject}
+        onCloseAction={() => setIsEditDialogOpen(false)}
+        onSubmitAction={handleEditProject}
+        loading={loading}
+      />
+
+      <DeleteProjectDialog
+        open={isDeleteDialogOpen}
+        project={selectedProject}
+        onCloseAction={() => setIsDeleteDialogOpen(false)}
+        onConfirmAction={handleDeleteProject}
         loading={loading}
       />
     </Box>
