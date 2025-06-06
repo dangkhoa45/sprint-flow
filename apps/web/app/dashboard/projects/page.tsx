@@ -1,5 +1,6 @@
 "use client";
 import Box from "@mui/material/Box";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
   Project,
@@ -224,6 +225,7 @@ export default function ProjectsPage() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(false);
+  const route = useRouter();
 
   const handleFiltersChange = (newFilters: ProjectFilters) => {
     setFilters(newFilters);
@@ -243,17 +245,20 @@ export default function ProjectsPage() {
     }
   };
 
-  const handleEditProject = async (projectId: string, projectData: Partial<Project>) => {
+  const handleEditProject = async (
+    projectId: string,
+    projectData: Partial<Project>
+  ) => {
     setLoading(true);
     try {
       // TODO: API call to update project
       console.log("Updating project:", projectId, projectData);
-      
+
       // Update local state for demo
-      setProjects(prev => prev.map(p => 
-        p._id === projectId ? { ...p, ...projectData } : p
-      ));
-      
+      setProjects((prev) =>
+        prev.map((p) => (p._id === projectId ? { ...p, ...projectData } : p))
+      );
+
       setIsEditDialogOpen(false);
       setSelectedProject(null);
     } catch (error) {
@@ -268,16 +273,16 @@ export default function ProjectsPage() {
     try {
       // TODO: API call to delete project
       console.log("Deleting project:", projectId);
-      
+
       // Update local state for demo
-      setProjects(prev => prev.filter(p => p._id !== projectId));
-      
+      setProjects((prev) => prev.filter((p) => p._id !== projectId));
+
       // Update stats
-      setStats(prev => ({
+      setStats((prev) => ({
         ...prev,
         total: prev.total - 1,
       }));
-      
+
       setIsDeleteDialogOpen(false);
       setSelectedProject(null);
     } catch (error) {
@@ -297,6 +302,10 @@ export default function ProjectsPage() {
     setIsDeleteDialogOpen(true);
   };
 
+  const handleDetail = (project: Project) => {
+    route.push(`/dashboard/projects/${project._id}`);
+  };
+
   return (
     <Box
       sx={{
@@ -313,13 +322,13 @@ export default function ProjectsPage() {
 
       <ProjectsStats stats={stats} />
 
-      <ProjectsGrid 
-        projects={projects} 
+      <ProjectsGrid
+        projects={projects}
         loading={loading}
         onCreateProject={() => setIsCreateDialogOpen(true)}
         onEditProject={handleOpenEditDialog}
         onDeleteProject={handleOpenDeleteDialog}
-        onViewProject={(project) => console.log("View project:", project)}
+        onViewProject={handleDetail}
       />
 
       <CreateProjectDialog

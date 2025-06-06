@@ -4,8 +4,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import GroupIcon from "@mui/icons-material/Group";
 import InfoIcon from "@mui/icons-material/Info";
-import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import TagIcon from "@mui/icons-material/Tag";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -276,7 +276,11 @@ export default function EditProjectDialog({
           pb: 1,
         }}
       >
-        <Typography variant="h5" component="div" sx={{ fontWeight: 600, color: "#1976d2" }}>
+        <Typography
+          variant="h5"
+          component="div"
+          sx={{ fontWeight: 600, color: "#1976d2" }}
+        >
           Chỉnh sửa dự án
         </Typography>
         <IconButton
@@ -453,7 +457,10 @@ export default function EditProjectDialog({
                     type="date"
                     value={formData.startDate}
                     onChange={(e) =>
-                      setFormData((prev) => ({ ...prev, startDate: e.target.value }))
+                      setFormData((prev) => ({
+                        ...prev,
+                        startDate: e.target.value,
+                      }))
                     }
                     InputLabelProps={{ shrink: true }}
                     error={!!errors.startDate}
@@ -469,7 +476,10 @@ export default function EditProjectDialog({
                     type="date"
                     value={formData.endDate}
                     onChange={(e) =>
-                      setFormData((prev) => ({ ...prev, endDate: e.target.value }))
+                      setFormData((prev) => ({
+                        ...prev,
+                        endDate: e.target.value,
+                      }))
                     }
                     InputLabelProps={{ shrink: true }}
                     error={!!errors.endDate}
@@ -495,27 +505,12 @@ export default function EditProjectDialog({
                 variant="h6"
                 sx={{ mb: 2, color: "#ff9800", fontWeight: 600 }}
               >
-                <MonetizationOnIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-                Ngân sách & Tiến độ
+                <TrendingUpIcon sx={{ mr: 1, verticalAlign: "middle" }} />
+                Tiến độ
               </Typography>
 
               <Grid container spacing={2}>
-                <Grid size={{ xs: 12, sm: 6 }}>
-                  <TextField
-                    fullWidth
-                    label="Ngân sách (USD)"
-                    type="number"
-                    value={formData.budget}
-                    onChange={(e) =>
-                      setFormData((prev) => ({ ...prev, budget: e.target.value }))
-                    }
-                    error={!!errors.budget}
-                    helperText={errors.budget}
-                    placeholder="Nhập ngân sách dự án..."
-                  />
-                </Grid>
-
-                <Grid size={{ xs: 12, sm: 6 }}>
+                <Grid size={{ xs: 12 }}>
                   <TextField
                     fullWidth
                     label="Tiến độ (%)"
