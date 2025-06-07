@@ -137,31 +137,19 @@ const UsersGrid: React.FC<UsersGridProps> = ({
 
   if (viewMode === "grid") {
     return (
-      <Paper
-        elevation={0}
-        sx={{
-          p: 3,
-          background: "rgba(255, 255, 255, 0.95)",
-          backdropFilter: "blur(20px)",
-          borderRadius: 3,
-          border: "1px solid rgba(255, 255, 255, 0.2)",
-          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
-        }}
-      >
-        <Grid container spacing={3}>
-          {users.map((user) => (
-            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={user._id}>
-              <UserCard
-                user={user}
-                onEdit={() => onEditUser(user)}
-                onDelete={() => onDeleteUser(user)}
-                onView={() => onViewUser(user)}
-                onChangePassword={() => onChangePassword(user)}
-              />
-            </Grid>
-          ))}
-        </Grid>
-      </Paper>
+      <Grid container spacing={3}>
+        {users.map((user) => (
+          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={user._id}>
+            <UserCard
+              user={user}
+              onEdit={() => onEditUser(user)}
+              onDelete={() => onDeleteUser(user)}
+              onView={() => onViewUser(user)}
+              onChangePassword={() => onChangePassword(user)}
+            />
+          </Grid>
+        ))}
+      </Grid>
     );
   }
 
