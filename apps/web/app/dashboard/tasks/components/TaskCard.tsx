@@ -1,20 +1,19 @@
 "use client";
-import { useState } from "react";
+import AttachFileIcon from "@mui/icons-material/AttachFile";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import CommentIcon from "@mui/icons-material/Comment";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRight";
+import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
-import Typography from "@mui/material/Typography";
 import Chip from "@mui/material/Chip";
-import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
-import Tooltip from "@mui/material/Tooltip";
 import LinearProgress from "@mui/material/LinearProgress";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import AttachFileIcon from "@mui/icons-material/AttachFile";
-import CommentIcon from "@mui/icons-material/Comment";
-import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRight";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import Tooltip from "@mui/material/Tooltip";
+import Typography from "@mui/material/Typography";
+import { useState } from "react";
 import { Task, TaskPriority } from "../types/task";
 
 interface TaskCardProps {
@@ -23,61 +22,65 @@ interface TaskCardProps {
 }
 
 const priorityConfig = {
-  [TaskPriority.LOWEST]: { 
-    label: "Thấp nhất", 
-    color: "#64748b", 
+  [TaskPriority.LOWEST]: {
+    label: "Thấp nhất",
+    color: "#64748b",
     icon: "▼",
     bgColor: "#f8fafc",
-    gradient: "linear-gradient(135deg, #64748b20, #64748b10)"
+    gradient: "linear-gradient(135deg, #64748b20, #64748b10)",
   },
-  [TaskPriority.LOW]: { 
-    label: "Thấp", 
-    color: "#06b6d4", 
+  [TaskPriority.LOW]: {
+    label: "Thấp",
+    color: "#06b6d4",
     icon: "▼",
     bgColor: "#f0fdff",
-    gradient: "linear-gradient(135deg, #06b6d420, #06b6d410)"
+    gradient: "linear-gradient(135deg, #06b6d420, #06b6d410)",
   },
-  [TaskPriority.MEDIUM]: { 
-    label: "Trung bình", 
-    color: "#10b981", 
+  [TaskPriority.MEDIUM]: {
+    label: "Trung bình",
+    color: "#10b981",
     icon: "●",
     bgColor: "#f0fdf4",
-    gradient: "linear-gradient(135deg, #10b98120, #10b98110)"
+    gradient: "linear-gradient(135deg, #10b98120, #10b98110)",
   },
-  [TaskPriority.HIGH]: { 
-    label: "Cao", 
-    color: "#f59e0b", 
+  [TaskPriority.HIGH]: {
+    label: "Cao",
+    color: "#f59e0b",
     icon: "▲",
     bgColor: "#fffbeb",
-    gradient: "linear-gradient(135deg, #f59e0b20, #f59e0b10)"
+    gradient: "linear-gradient(135deg, #f59e0b20, #f59e0b10)",
   },
-  [TaskPriority.HIGHEST]: { 
-    label: "Cao nhất", 
-    color: "#ef4444", 
+  [TaskPriority.HIGHEST]: {
+    label: "Cao nhất",
+    color: "#ef4444",
     icon: "▲▲",
     bgColor: "#fef2f2",
-    gradient: "linear-gradient(135deg, #ef444420, #ef444410)"
+    gradient: "linear-gradient(135deg, #ef444420, #ef444410)",
   },
 };
 
 export default function TaskCard({ task, onClick }: TaskCardProps) {
   const [isHovered, setIsHovered] = useState(false);
 
-  const priority = priorityConfig[task.priority as TaskPriority] || priorityConfig[TaskPriority.MEDIUM];
-  
+  const priority =
+    priorityConfig[task.priority as TaskPriority] ||
+    priorityConfig[TaskPriority.MEDIUM];
+
   const isOverdue = task.dueDate && new Date(task.dueDate) < new Date();
-  const isDueSoon = task.dueDate && 
-    new Date(task.dueDate) > new Date() && 
+  const isDueSoon =
+    task.dueDate &&
+    new Date(task.dueDate) > new Date() &&
     new Date(task.dueDate) <= new Date(Date.now() + 3 * 24 * 60 * 60 * 1000); // 3 days
-  
-  const progress = task.estimatedHours ? 
-    Math.round((task.loggedHours || 0) / task.estimatedHours * 100) : 0;
+
+  const progress = task.estimatedHours
+    ? Math.round(((task.loggedHours || 0) / task.estimatedHours) * 100)
+    : 0;
 
   const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('vi-VN', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
+    return new Intl.DateTimeFormat("vi-VN", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
     }).format(new Date(date));
   };
 
@@ -87,13 +90,13 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
         cursor: "pointer",
         position: "relative",
         overflow: "hidden",
-        background: `linear-gradient(135deg, #ffffff 0%, #fafbff 100%)`,
+        background: "rgba(255, 255, 255, 0.1)",
+        backdropFilter: "blur(20px)",
         transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-        transform: isHovered ? "translateY(-8px) scale(1.02)" : "translateY(0) scale(1)",
-        boxShadow: isHovered 
-          ? "0 20px 40px rgba(0,0,0,0.12), 0 8px 16px rgba(0,0,0,0.08)" 
-          : "0 4px 12px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.02)",
-        border: isHovered ? "2px solid #3b82f620" : "1px solid #e2e8f0",
+        boxShadow: isHovered
+          ? "0 20px 40px rgba(0, 0, 0, 0.2)"
+          : "0 8px 24px rgba(0, 0, 0, 0.1)",
+        border: "1px solid rgba(255, 255, 255, 0.2)",
         borderRadius: 3,
         "&::before": {
           content: '""',
@@ -102,15 +105,9 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
           left: 0,
           right: 0,
           height: 4,
-          background: priority.gradient,
+          background: `linear-gradient(90deg, ${priority.color} 0%, transparent 100%)`,
           opacity: isHovered ? 1 : 0.7,
           transition: "opacity 0.3s ease",
-        },
-        "&:hover": {
-          "& .task-actions": {
-            opacity: 1,
-            transform: "translateX(0)",
-          },
         },
       }}
       onMouseEnter={() => setIsHovered(true)}
@@ -175,10 +172,10 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
               </Typography>
             </Box>
           </Box>
-          <IconButton 
-            size="small" 
+          <IconButton
+            size="small"
             className="task-actions"
-            sx={{ 
+            sx={{
               opacity: 0.5,
               transform: "translateX(10px)",
               transition: "all 0.3s ease",
@@ -225,7 +222,7 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
               lineHeight: 1.5,
               display: "-webkit-box",
               WebkitLineClamp: 3,
-              WebkitBoxOrient: "vertical", 
+              WebkitBoxOrient: "vertical",
               overflow: "hidden",
               "&:hover": {
                 color: "#475569",
@@ -240,13 +237,18 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
         {/* Progress Bar */}
         {task.estimatedHours && task.estimatedHours > 0 && (
           <Box sx={{ mb: 2.5 }}>
-            <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-              <Typography variant="caption" sx={{ color: "#64748b", fontWeight: 600 }}>
+            <Box
+              sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}
+            >
+              <Typography
+                variant="caption"
+                sx={{ color: "#64748b", fontWeight: 600 }}
+              >
                 Tiến độ
               </Typography>
-              <Typography 
-                variant="caption" 
-                sx={{ 
+              <Typography
+                variant="caption"
+                sx={{
                   color: progress >= 100 ? "#10b981" : "#64748b",
                   fontWeight: 700,
                   fontSize: "0.75rem",
@@ -264,11 +266,14 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
                   borderRadius: 4,
                   backgroundColor: "#e2e8f0",
                   "& .MuiLinearProgress-bar": {
-                    background: progress >= 100 
-                      ? "linear-gradient(90deg, #10b981, #059669)" 
-                      : "linear-gradient(90deg, #3b82f6, #2563eb)",
+                    background:
+                      progress >= 100
+                        ? "linear-gradient(90deg, #10b981, #059669)"
+                        : "linear-gradient(90deg, #3b82f6, #2563eb)",
                     borderRadius: 4,
-                    animation: isHovered ? "pulse 1.5s ease-in-out infinite" : "none",
+                    animation: isHovered
+                      ? "pulse 1.5s ease-in-out infinite"
+                      : "none",
                   },
                   "@keyframes pulse": {
                     "0%": { opacity: 1 },
@@ -351,17 +356,13 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
               mb: 2.5,
               p: 1.5,
               borderRadius: 2,
-              background: isOverdue 
-                ? "linear-gradient(135deg, #fef2f2, #fee2e2)" 
-                : isDueSoon 
-                ? "linear-gradient(135deg, #fffbeb, #fed7aa)" 
+              background: isOverdue
+                ? "linear-gradient(135deg, #fef2f2, #fee2e2)"
+                : isDueSoon
+                ? "linear-gradient(135deg, #fffbeb, #fed7aa)"
                 : "linear-gradient(135deg, #f8fafc, #f1f5f9)",
               border: `1px solid ${
-                isOverdue 
-                  ? "#fca5a5" 
-                  : isDueSoon 
-                  ? "#fbbf24" 
-                  : "#e2e8f0"
+                isOverdue ? "#fca5a5" : isDueSoon ? "#fbbf24" : "#e2e8f0"
               }`,
               transition: "all 0.2s ease",
             }}
@@ -369,20 +370,20 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
             <CalendarTodayIcon
               sx={{
                 fontSize: 16,
-                color: isOverdue 
-                  ? "#dc2626" 
-                  : isDueSoon 
-                  ? "#f59e0b" 
+                color: isOverdue
+                  ? "#dc2626"
+                  : isDueSoon
+                  ? "#f59e0b"
                   : "#64748b",
               }}
             />
             <Typography
               variant="caption"
               sx={{
-                color: isOverdue 
-                  ? "#dc2626" 
-                  : isDueSoon 
-                  ? "#f59e0b" 
+                color: isOverdue
+                  ? "#dc2626"
+                  : isDueSoon
+                  ? "#f59e0b"
                   : "#64748b",
                 fontWeight: 600,
                 fontSize: "0.8rem",
@@ -422,10 +423,10 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
         )}
 
         {/* Footer */}
-        <Box 
-          sx={{ 
-            display: "flex", 
-            justifyContent: "space-between", 
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
             alignItems: "center",
             pt: 2,
             borderTop: "1px solid #f1f5f9",
@@ -436,9 +437,9 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
             {task.assignee ? (
               <Tooltip title={`Được giao cho: ${task.assignee.displayName}`}>
                 <Avatar
-                  sx={{ 
-                    width: 32, 
-                    height: 32, 
+                  sx={{
+                    width: 32,
+                    height: 32,
                     fontSize: "0.9rem",
                     fontWeight: 600,
                     background: "linear-gradient(135deg, #3b82f6, #2563eb)",
@@ -456,10 +457,10 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
                 </Avatar>
               </Tooltip>
             ) : (
-              <Avatar 
-                sx={{ 
-                  width: 32, 
-                  height: 32, 
+              <Avatar
+                sx={{
+                  width: 32,
+                  height: 32,
                   backgroundColor: "#e2e8f0",
                   border: "2px dashed #cbd5e1",
                   color: "#64748b",
@@ -474,10 +475,10 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
           <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
             {task.subtasks && task.subtasks.length > 0 && (
               <Tooltip title={`${task.subtasks.length} công việc con`}>
-                <Box 
-                  sx={{ 
-                    display: "flex", 
-                    alignItems: "center", 
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
                     gap: 0.5,
                     px: 1,
                     py: 0.5,
@@ -490,20 +491,25 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
                     },
                   }}
                 >
-                  <SubdirectoryArrowRightIcon sx={{ fontSize: 14, color: "#64748b" }} />
-                  <Typography variant="caption" sx={{ color: "#64748b", fontWeight: 600 }}>
+                  <SubdirectoryArrowRightIcon
+                    sx={{ fontSize: 14, color: "#64748b" }}
+                  />
+                  <Typography
+                    variant="caption"
+                    sx={{ color: "#64748b", fontWeight: 600 }}
+                  >
                     {task.subtasks.length}
                   </Typography>
                 </Box>
               </Tooltip>
             )}
-            
+
             {task.attachments && task.attachments.length > 0 && (
               <Tooltip title={`${task.attachments.length} tệp đính kèm`}>
-                <Box 
-                  sx={{ 
-                    display: "flex", 
-                    alignItems: "center", 
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
                     gap: 0.5,
                     px: 1,
                     py: 0.5,
@@ -517,19 +523,22 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
                   }}
                 >
                   <AttachFileIcon sx={{ fontSize: 14, color: "#64748b" }} />
-                  <Typography variant="caption" sx={{ color: "#64748b", fontWeight: 600 }}>
+                  <Typography
+                    variant="caption"
+                    sx={{ color: "#64748b", fontWeight: 600 }}
+                  >
                     {task.attachments.length}
                   </Typography>
                 </Box>
               </Tooltip>
             )}
-            
+
             {task.comments && task.comments.length > 0 && (
               <Tooltip title={`${task.comments.length} bình luận`}>
-                <Box 
-                  sx={{ 
-                    display: "flex", 
-                    alignItems: "center", 
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
                     gap: 0.5,
                     px: 1,
                     py: 0.5,
@@ -543,7 +552,10 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
                   }}
                 >
                   <CommentIcon sx={{ fontSize: 14, color: "#64748b" }} />
-                  <Typography variant="caption" sx={{ color: "#64748b", fontWeight: 600 }}>
+                  <Typography
+                    variant="caption"
+                    sx={{ color: "#64748b", fontWeight: 600 }}
+                  >
                     {task.comments.length}
                   </Typography>
                 </Box>
