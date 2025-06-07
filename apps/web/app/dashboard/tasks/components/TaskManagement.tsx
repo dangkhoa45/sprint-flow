@@ -53,8 +53,6 @@ export default function TaskManagement() {
 
         <TaskStats />
 
-        <TaskFilter />
-
         <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}>
           <Tabs
             value={currentTab}

@@ -2,19 +2,22 @@
 import AddIcon from "@mui/icons-material/Add";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import FilterListIcon from "@mui/icons-material/FilterList";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import SearchIcon from "@mui/icons-material/Search";
+import SortIcon from "@mui/icons-material/Sort";
 import ViewKanbanIcon from "@mui/icons-material/ViewKanban";
 import ViewListIcon from "@mui/icons-material/ViewList";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import Chip from "@mui/material/Chip";
 import IconButton from "@mui/material/IconButton";
-import ToggleButton from "@mui/material/ToggleButton";
-import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import InputAdornment from "@mui/material/InputAdornment";
+import Paper from "@mui/material/Paper";
+import Stack from "@mui/material/Stack";
+import TextField from "@mui/material/TextField";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { TaskViewMode } from "../types/task";
 import CreateTaskDialog from "./CreateTaskDialog";
 
@@ -23,270 +26,354 @@ interface TaskHeaderProps {
   setViewModeAction: (mode: TaskViewMode) => void;
 }
 
-export default function TaskHeader({ viewMode, setViewModeAction }: TaskHeaderProps) {
+const statusOptions = [
+  { value: "TODO", label: "Cần làm", color: "#6b7280" },
+  { value: "IN_PROGRESS", label: "Đang thực hiện", color: "#f59e0b" },
+  { value: "IN_REVIEW", label: "Đang xem xét", color: "#8b5cf6" },
+  { value: "DONE", label: "Hoàn thành", color: "#10b981" },
+];
+
+const priorityOptions = [
+  { value: "LOW", label: "Thấp", color: "#10b981" },
+  { value: "MEDIUM", label: "Trung bình", color: "#f59e0b" },
+  { value: "HIGH", label: "Cao", color: "#ef4444" },
+  { value: "URGENT", label: "Khẩn cấp", color: "#dc2626" },
+];
+
+export default function TaskHeader({
+  viewMode,
+  setViewModeAction,
+}: TaskHeaderProps) {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState<{
+    status?: string[];
+    priority?: string[];
+    search?: string;
+  }>({});
   const router = useRouter();
 
-  const handleViewModeChange = (
-    event: React.MouseEvent<HTMLElement>,
-    newViewMode: TaskViewMode | null
-  ) => {
-    if (newViewMode !== null) {
-      setViewModeAction(newViewMode);
-    }
+  const handleViewModeChange = (mode: TaskViewMode) => {
+    setViewModeAction(mode);
   };
 
   const handleBackToDashboard = () => {
     router.push("/dashboard");
   };
 
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setSearchValue(value);
+    setFilters({ ...filters, search: value });
+  };
+
+  const handleStatusFilter = (status: string) => {
+    const currentStatuses = filters.status || [];
+    const newStatuses = currentStatuses.includes(status)
+      ? currentStatuses.filter((s) => s !== status)
+      : [...currentStatuses, status];
+
+    setFilters({ ...filters, status: newStatuses });
+  };
+
+  const handlePriorityFilter = (priority: string) => {
+    const currentPriorities = filters.priority || [];
+    const newPriorities = currentPriorities.includes(priority)
+      ? currentPriorities.filter((p) => p !== priority)
+      : [...currentPriorities, priority];
+
+    setFilters({ ...filters, priority: newPriorities });
+  };
+
+  const clearFilters = () => {
+    setSearchValue("");
+    setFilters({});
+  };
+
   return (
     <>
-      <Box
+      <Paper
+        elevation={0}
         sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mb: 4,
-          p: 4,
-          background: "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)",
-          borderRadius: 3,
-          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.08)",
-          border: "1px solid rgba(226, 232, 240, 0.6)",
-          position: "relative",
-          overflow: "hidden",
-          "&::before": {
-            content: '""',
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            height: "4px",
-            background: "linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4, #10b981)",
-            backgroundSize: "300% 100%",
-            animation: "gradientShift 3s ease infinite",
-          },
-          "@keyframes gradientShift": {
-            "0%": { backgroundPosition: "0% 50%" },
-            "50%": { backgroundPosition: "100% 50%" },
-            "100%": { backgroundPosition: "0% 50%" },
-          },
+          background: "rgba(255, 255, 255, 0.1)",
+          backdropFilter: "blur(20px)",
+          border: "1px solid rgba(255, 255, 255, 0.2)",
+          borderRadius: 4,
+          p: 3,
+          mb: 3,
         }}
       >
-        {/* Left Section */}
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <IconButton
-            onClick={handleBackToDashboard}
-            sx={{
-              mr: 2,
-              background: "linear-gradient(45deg, #667eea, #764ba2)",
-              color: "white",
-              "&:hover": {
-                background: "linear-gradient(45deg, #764ba2, #667eea)",
-                transform: "scale(1.05)",
-              },
-              transition: "all 0.3s ease",
-            }}
-          >
-            <ArrowBackIcon />
-          </IconButton>
-          <Box>
-            <Typography
-              variant="h4"
-              component="h1"
+        {/* Header chính */}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 2,
+          }}
+        >
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <IconButton
+              onClick={handleBackToDashboard}
               sx={{
-                fontWeight: 800,
-                background: "linear-gradient(135deg, #1e293b, #475569)",
-                backgroundClip: "text",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                mb: 1,
-                fontSize: "2.5rem",
-                lineHeight: 1.2,
+                mr: 2,
+                background: "linear-gradient(45deg, #667eea, #764ba2)",
+                color: "white",
+                "&:hover": {
+                  background: "linear-gradient(45deg, #764ba2, #667eea)",
+                  transform: "scale(1.05)",
+                },
+                transition: "all 0.3s ease",
               }}
             >
-              Quản lý công việc
-            </Typography>
-            <Typography
-              variant="body1"
-              sx={{
-                color: "#64748b",
-                fontSize: "1.1rem",
-                fontWeight: 500,
-                opacity: 0.9,
-              }}
-            >
-              Tạo, phân công và theo dõi tiến độ công việc trong dự án
-            </Typography>
+              <ArrowBackIcon />
+            </IconButton>
+            <Box>
+              <Typography
+                variant="h4"
+                sx={{
+                  fontWeight: 700,
+                  background:
+                    "linear-gradient(135deg, #ffffff 0%, #e3f2fd 100%)",
+                  backgroundClip: "text",
+                  WebkitBackgroundClip: "text",
+                  color: "transparent",
+                  mb: 0.5,
+                }}
+              >
+                Quản lý công việc
+              </Typography>
+              <Typography
+                variant="body1"
+                sx={{ color: "rgba(255, 255, 255, 0.8)" }}
+              >
+                Tạo, phân công và theo dõi tiến độ công việc trong dự án
+              </Typography>
+            </Box>
           </Box>
-        </Box>
 
-        {/* Right Section */}
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2.5 }}>
-          {/* View Mode Toggle */}
-          <ToggleButtonGroup
-            value={viewMode}
-            exclusive
-            onChange={handleViewModeChange}
-            aria-label="view mode"
-            size="small"
-            sx={{
-              backgroundColor: "rgba(255, 255, 255, 0.8)",
-              borderRadius: 2.5,
-              padding: "4px",
-              boxShadow: "0 4px 16px rgba(0, 0, 0, 0.08)",
-              backdropFilter: "blur(10px)",
-              border: "1px solid rgba(226, 232, 240, 0.8)",
-              "& .MuiToggleButton-root": {
-                border: "none",
-                borderRadius: 2,
-                px: 2,
-                py: 1,
-                color: "#64748b",
-                fontWeight: 600,
-                transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                "&:hover": {
-                  backgroundColor: "rgba(59, 130, 246, 0.1)",
-                  color: "#3b82f6",
-                  transform: "scale(1.05)",
-                },
-                "&.Mui-selected": {
-                  background: "linear-gradient(135deg, #3b82f6, #2563eb)",
-                  color: "white",
-                  boxShadow: "0 4px 12px rgba(59, 130, 246, 0.4)",
-                  transform: "scale(1.05)",
-                  "&:hover": {
-                    background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
-                    transform: "scale(1.05)",
-                  },
-                },
-              },
-            }}
-          >
-            <ToggleButton value="board" aria-label="board view">
-              <Tooltip title="Xem dạng bảng">
-                <ViewKanbanIcon />
-              </Tooltip>
-            </ToggleButton>
-            <ToggleButton value="list" aria-label="list view">
-              <Tooltip title="Xem dạng danh sách">
-                <ViewListIcon />
-              </Tooltip>
-            </ToggleButton>
-          </ToggleButtonGroup>
-
-          {/* Action Buttons */}
-          <Tooltip title="Tìm kiếm" arrow>
-            <IconButton
-              sx={{
-                backgroundColor: "rgba(241, 245, 249, 0.8)",
-                backdropFilter: "blur(10px)",
-                border: "1px solid rgba(226, 232, 240, 0.8)",
-                borderRadius: 2.5,
-                width: 48,
-                height: 48,
-                transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                "&:hover": {
-                  backgroundColor: "rgba(59, 130, 246, 0.1)",
-                  borderColor: "#3b82f6",
-                  transform: "translateY(-2px) scale(1.05)",
-                  boxShadow: "0 8px 25px rgba(59, 130, 246, 0.15)",
-                },
-              }}
-            >
-              <SearchIcon sx={{ color: "#64748b", fontSize: 20 }} />
-            </IconButton>
-          </Tooltip>
-
-          <Tooltip title="Bộ lọc" arrow>
-            <IconButton
-              sx={{
-                backgroundColor: "rgba(241, 245, 249, 0.8)",
-                backdropFilter: "blur(10px)",
-                border: "1px solid rgba(226, 232, 240, 0.8)",
-                borderRadius: 2.5,
-                width: 48,
-                height: 48,
-                transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                "&:hover": {
-                  backgroundColor: "rgba(139, 92, 246, 0.1)",
-                  borderColor: "#8b5cf6",
-                  transform: "translateY(-2px) scale(1.05)",
-                  boxShadow: "0 8px 25px rgba(139, 92, 246, 0.15)",
-                },
-              }}
-            >
-              <FilterListIcon sx={{ color: "#64748b", fontSize: 20 }} />
-            </IconButton>
-          </Tooltip>
-
-          {/* Create Task Button */}
           <Button
             variant="contained"
             startIcon={<AddIcon />}
             onClick={() => setCreateDialogOpen(true)}
             sx={{
-              background: "linear-gradient(135deg, #10b981, #059669)",
-              fontWeight: 700,
-              textTransform: "none",
-              fontSize: "0.95rem",
-              px: 4,
-              py: 1.5,
+              background: "linear-gradient(135deg, #42a5f5 0%, #1976d2 100%)",
+              boxShadow: "0 8px 32px rgba(66, 165, 245, 0.3)",
               borderRadius: 3,
-              boxShadow: "0 8px 25px rgba(16, 185, 129, 0.3)",
-              border: "1px solid rgba(255, 255, 255, 0.2)",
-              position: "relative",
-              overflow: "hidden",
-              transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-              "&::before": {
-                content: '""',
-                position: "absolute",
-                top: 0,
-                left: "-100%",
-                width: "100%",
-                height: "100%",
-                background: "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)",
-                transition: "left 0.6s ease",
-              },
+              px: 3,
+              py: 1.5,
+              fontWeight: 600,
+              textTransform: "none",
               "&:hover": {
-                background: "linear-gradient(135deg, #059669, #047857)",
-                boxShadow: "0 12px 35px rgba(16, 185, 129, 0.4)",
-                transform: "translateY(-2px) scale(1.02)",
-                "&::before": {
-                  left: "100%",
-                },
-              },
-              "&:active": {
-                transform: "translateY(0) scale(0.98)",
+                background: "linear-gradient(135deg, #1976d2 0%, #1565c0 100%)",
+                transform: "translateY(-2px)",
+                boxShadow: "0 12px 40px rgba(66, 165, 245, 0.4)",
               },
             }}
           >
             Tạo công việc
           </Button>
+        </Box>
 
-          <Tooltip title="Thêm tùy chọn" arrow>
+        {/* Thanh tìm kiếm và các nút action */}
+        <Box sx={{ display: "flex", gap: 2, alignItems: "center", mb: 2 }}>
+          <TextField
+            placeholder="Tìm kiếm công việc..."
+            value={searchValue}
+            onChange={handleSearchChange}
+            sx={{
+              flex: 1,
+              "& .MuiOutlinedInput-root": {
+                background: "rgba(255, 255, 255, 0.1)",
+                borderRadius: 3,
+                "& fieldset": {
+                  borderColor: "rgba(255, 255, 255, 0.3)",
+                },
+                "&:hover fieldset": {
+                  borderColor: "rgba(255, 255, 255, 0.5)",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "#10b981",
+                },
+              },
+              "& .MuiInputBase-input": {
+                color: "white",
+                "&::placeholder": {
+                  color: "rgba(255, 255, 255, 0.7)",
+                  opacity: 1,
+                },
+              },
+            }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon sx={{ color: "rgba(255, 255, 255, 0.7)" }} />
+                </InputAdornment>
+              ),
+            }}
+          />
+
+          <Tooltip title="Bộ lọc">
             <IconButton
+              onClick={() => setShowFilters(!showFilters)}
               sx={{
-                backgroundColor: "rgba(241, 245, 249, 0.8)",
-                backdropFilter: "blur(10px)",
-                border: "1px solid rgba(226, 232, 240, 0.8)",
-                borderRadius: 2.5,
-                width: 48,
-                height: 48,
-                transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                color: "white",
+                background: showFilters
+                  ? "rgba(255, 255, 255, 0.2)"
+                  : "rgba(255, 255, 255, 0.1)",
                 "&:hover": {
-                  backgroundColor: "rgba(99, 102, 241, 0.1)",
-                  borderColor: "#6366f1",
-                  transform: "translateY(-2px) scale(1.05)",
-                  boxShadow: "0 8px 25px rgba(99, 102, 241, 0.15)",
+                  background: "rgba(255, 255, 255, 0.2)",
                 },
               }}
             >
-              <MoreVertIcon sx={{ color: "#64748b", fontSize: 20 }} />
+              <FilterListIcon />
             </IconButton>
           </Tooltip>
+
+          <Tooltip title="Sắp xếp">
+            <IconButton
+              sx={{
+                color: "white",
+                background: "rgba(255, 255, 255, 0.1)",
+                "&:hover": {
+                  background: "rgba(255, 255, 255, 0.2)",
+                },
+              }}
+            >
+              <SortIcon />
+            </IconButton>
+          </Tooltip>
+
+          <Box
+            sx={{
+              display: "flex",
+              border: "1px solid rgba(255, 255, 255, 0.3)",
+              borderRadius: 2,
+            }}
+          >
+            <IconButton
+              onClick={() => handleViewModeChange("board")}
+              sx={{
+                color: "white",
+                background:
+                  viewMode === "board"
+                    ? "rgba(255, 255, 255, 0.2)"
+                    : "transparent",
+                borderRadius: "8px 0 0 8px",
+              }}
+            >
+              <ViewKanbanIcon />
+            </IconButton>
+            <IconButton
+              onClick={() => handleViewModeChange("list")}
+              sx={{
+                color: "white",
+                background:
+                  viewMode === "list"
+                    ? "rgba(255, 255, 255, 0.2)"
+                    : "transparent",
+                borderRadius: "0 8px 8px 0",
+              }}
+            >
+              <ViewListIcon />
+            </IconButton>
+          </Box>
         </Box>
-      </Box>
+
+        {/* Bộ lọc nâng cao */}
+        {showFilters && (
+          <Box sx={{ borderTop: "1px solid rgba(255, 255, 255, 0.2)", pt: 2 }}>
+            <Stack spacing={2}>
+              <Box>
+                <Typography
+                  variant="subtitle2"
+                  sx={{ color: "white", mb: 1, fontWeight: 600 }}
+                >
+                  Trạng thái:
+                </Typography>
+                <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                  {statusOptions.map((option) => (
+                    <Chip
+                      key={option.value}
+                      label={option.label}
+                      onClick={() => handleStatusFilter(option.value)}
+                      variant={
+                        filters.status?.includes(option.value)
+                          ? "filled"
+                          : "outlined"
+                      }
+                      sx={{
+                        color: "white",
+                        borderColor: option.color,
+                        backgroundColor: filters.status?.includes(option.value)
+                          ? option.color
+                          : "transparent",
+                        "&:hover": {
+                          backgroundColor: `${option.color}20`,
+                        },
+                      }}
+                    />
+                  ))}
+                </Stack>
+              </Box>
+
+              <Box>
+                <Typography
+                  variant="subtitle2"
+                  sx={{ color: "white", mb: 1, fontWeight: 600 }}
+                >
+                  Độ ưu tiên:
+                </Typography>
+                <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                  {priorityOptions.map((option) => (
+                    <Chip
+                      key={option.value}
+                      label={option.label}
+                      onClick={() => handlePriorityFilter(option.value)}
+                      variant={
+                        filters.priority?.includes(option.value)
+                          ? "filled"
+                          : "outlined"
+                      }
+                      sx={{
+                        color: "white",
+                        borderColor: option.color,
+                        backgroundColor: filters.priority?.includes(
+                          option.value
+                        )
+                          ? option.color
+                          : "transparent",
+                        "&:hover": {
+                          backgroundColor: `${option.color}20`,
+                        },
+                      }}
+                    />
+                  ))}
+                </Stack>
+              </Box>
+
+              <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={clearFilters}
+                  sx={{
+                    color: "white",
+                    borderColor: "rgba(255, 255, 255, 0.5)",
+                    "&:hover": {
+                      borderColor: "white",
+                      background: "rgba(255, 255, 255, 0.1)",
+                    },
+                  }}
+                >
+                  Xóa bộ lọc
+                </Button>
+              </Box>
+            </Stack>
+          </Box>
+        )}
+      </Paper>
 
       {/* Create Task Dialog */}
       <CreateTaskDialog
