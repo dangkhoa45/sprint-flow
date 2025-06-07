@@ -41,18 +41,20 @@ export default function TaskManagement() {
   };
 
   return (
-    <Box sx={{ minHeight: "100vh", backgroundColor: "#f8fafc" }}>
-      <Container maxWidth={false} sx={{ py: 3 }}>
-        {/* Header Section */}
+    <Box
+      sx={{
+        minHeight: "100vh",
+        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+        p: 3,
+      }}
+    >
+      <Container maxWidth={false}>
         <TaskHeader viewMode={viewMode} setViewModeAction={setViewMode} />
 
-        {/* Stats Section */}
         <TaskStats />
 
-        {/* Filter Section */}
         <TaskFilter />
 
-        {/* Main Content Tabs */}
         <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}>
           <Tabs
             value={currentTab}
@@ -76,7 +78,6 @@ export default function TaskManagement() {
           </Tabs>
         </Box>
 
-        {/* Content Panels */}
         <TabPanel value={currentTab} index={0}>
           {viewMode === "board" ? <TaskBoard /> : <TaskList />}
         </TabPanel>

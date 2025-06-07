@@ -133,30 +133,40 @@ const columns = [
     title: "Chưa bắt đầu",
     color: "#6b7280",
     bgColor: "#f9fafb",
+    gradient: "linear-gradient(135deg, #6b7280, #4b5563)",
+    lightGradient: "linear-gradient(135deg, #f9fafb, #f3f4f6)",
   },
   {
     id: TaskStatus.IN_PROGRESS,
     title: "Đang thực hiện",
     color: "#2563eb",
     bgColor: "#eff6ff",
+    gradient: "linear-gradient(135deg, #3b82f6, #2563eb)",
+    lightGradient: "linear-gradient(135deg, #eff6ff, #dbeafe)",
   },
   {
     id: TaskStatus.IN_REVIEW,
     title: "Đang xem xét",
     color: "#f59e0b",
     bgColor: "#fffbeb",
+    gradient: "linear-gradient(135deg, #fbbf24, #f59e0b)",
+    lightGradient: "linear-gradient(135deg, #fffbeb, #fef3c7)",
   },
   {
     id: TaskStatus.DONE,
     title: "Hoàn thành",
     color: "#059669",
     bgColor: "#f0fdf4",
+    gradient: "linear-gradient(135deg, #10b981, #059669)",
+    lightGradient: "linear-gradient(135deg, #f0fdf4, #dcfce7)",
   },
   {
     id: TaskStatus.BLOCKED,
     title: "Bị chặn",
     color: "#dc2626",
     bgColor: "#fef2f2",
+    gradient: "linear-gradient(135deg, #ef4444, #dc2626)",
+    lightGradient: "linear-gradient(135deg, #fef2f2, #fee2e2)",
   },
 ];
 
@@ -185,7 +195,28 @@ export default function TaskBoard({ filter }: TaskBoardProps) {
   };
 
   return (
-    <Box sx={{ display: "flex", gap: 3, overflowX: "auto", pb: 2 }}>
+    <Box 
+      sx={{ 
+        display: "flex", 
+        gap: 3, 
+        overflowX: "auto", 
+        pb: 2,
+        "&::-webkit-scrollbar": {
+          height: 8,
+        },
+        "&::-webkit-scrollbar-track": {
+          backgroundColor: "#f1f5f9",
+          borderRadius: 4,
+        },
+        "&::-webkit-scrollbar-thumb": {
+          backgroundColor: "#cbd5e1",
+          borderRadius: 4,
+          "&:hover": {
+            backgroundColor: "#94a3b8",
+          },
+        },
+      }}
+    >
       {columns.map((column) => {
         const columnTasks = getTasksByStatus(column.id);
 
@@ -193,39 +224,81 @@ export default function TaskBoard({ filter }: TaskBoardProps) {
           <Paper
             key={column.id}
             sx={{
-              minWidth: 320,
-              maxWidth: 320,
-              backgroundColor: column.bgColor,
-              border: `2px solid ${column.color}20`,
-              borderRadius: 2,
+              minWidth: 340,
+              maxWidth: 340,
+              background: column.lightGradient,
+              border: `2px solid ${column.color}15`,
+              borderRadius: 3,
               overflow: "hidden",
+              position: "relative",
+              boxShadow: "0 8px 24px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04)",
+              transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+              "&::before": {
+                content: '""',
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                height: 4,
+                background: column.gradient,
+              },
+              "&:hover": {
+                transform: "translateY(-2px)",
+                boxShadow: `0 12px 32px ${column.color}20, 0 6px 16px ${column.color}10`,
+                border: `2px solid ${column.color}25`,
+              },
             }}
           >
             {/* Column Header */}
             <Box
               sx={{
-                p: 2,
-                backgroundColor: column.color + "10",
-                borderBottom: `1px solid ${column.color}30`,
+                p: 2.5,
+                background: `linear-gradient(135deg, ${column.color}08, ${column.color}05)`,
+                borderBottom: `1px solid ${column.color}20`,
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
+                backdropFilter: "blur(10px)",
+                position: "relative",
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  height: 1,
+                  background: column.gradient,
+                  opacity: 0.3,
+                },
               }}
             >
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
                 <Box
                   sx={{
-                    width: 12,
-                    height: 12,
+                    width: 14,
+                    height: 14,
                     borderRadius: "50%",
-                    backgroundColor: column.color,
+                    background: column.gradient,
+                    boxShadow: `0 2px 8px ${column.color}40`,
+                    position: "relative",
+                    "&::after": {
+                      content: '""',
+                      position: "absolute",
+                      inset: 2,
+                      borderRadius: "50%",
+                      background: "rgba(255,255,255,0.3)",
+                    },
                   }}
                 />
                 <Typography
                   variant="subtitle1"
                   sx={{
-                    fontWeight: 600,
-                    color: column.color,
+                    fontWeight: 700,
+                    background: column.gradient,
+                    backgroundClip: "text",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    fontSize: "1rem",
                   }}
                 >
                   {column.title}
@@ -235,19 +308,44 @@ export default function TaskBoard({ filter }: TaskBoardProps) {
                   sx={{
                     pl: 1,
                     "& .MuiBadge-badge": {
-                      backgroundColor: column.color,
+                      background: column.gradient,
                       color: "white",
                       fontSize: "0.75rem",
+                      fontWeight: 600,
+                      boxShadow: `0 2px 6px ${column.color}40`,
+                      border: "2px solid white",
                     },
                   }}
                 />
               </Box>
-              <Box>
-                <IconButton size="small" sx={{ color: column.color }}>
-                  <AddIcon />
+              <Box sx={{ display: "flex", gap: 0.5 }}>
+                <IconButton 
+                  size="small" 
+                  sx={{ 
+                    color: column.color,
+                    transition: "all 0.2s ease",
+                    "&:hover": {
+                      background: `${column.color}15`,
+                      transform: "scale(1.1)",
+                      color: column.color,
+                    },
+                  }}
+                >
+                  <AddIcon fontSize="small" />
                 </IconButton>
-                <IconButton size="small" sx={{ color: column.color }}>
-                  <MoreVertIcon />
+                <IconButton 
+                  size="small" 
+                  sx={{ 
+                    color: column.color,
+                    transition: "all 0.2s ease",
+                    "&:hover": {
+                      background: `${column.color}15`,
+                      transform: "scale(1.1)",
+                      color: column.color,
+                    },
+                  }}
+                >
+                  <MoreVertIcon fontSize="small" />
                 </IconButton>
               </Box>
             </Box>
