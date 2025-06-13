@@ -8,6 +8,7 @@ import { ReactNode, useEffect, useState } from "react";
 import { User } from "../types/user";
 import { AppContext } from "./AppContext";
 import SWRProvider from "./SWRProvider";
+import { ThemeModeProvider } from "./ThemeContext";
 import ThemeRegistry from "./ThemeRegistry";
 
 const cache = new LRUCache({ max: 10 });
@@ -28,11 +29,15 @@ function AppProvider({ children, currentUser }: Props) {
 
   return (
     <AppContext.Provider value={{ user, setUser }}>
-      <ThemeRegistry>
-        <SnackbarProvider anchorOrigin={{ horizontal: "center", vertical: "top" }}>
-          <SWRProvider>{children}</SWRProvider>
-        </SnackbarProvider>
-      </ThemeRegistry>
+      <ThemeModeProvider>
+        <ThemeRegistry>
+          <SnackbarProvider
+            anchorOrigin={{ horizontal: "center", vertical: "top" }}
+          >
+            <SWRProvider>{children}</SWRProvider>
+          </SnackbarProvider>
+        </ThemeRegistry>
+      </ThemeModeProvider>
     </AppContext.Provider>
   );
 }
