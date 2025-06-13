@@ -51,42 +51,12 @@ export default function ForgotPasswordPage() {
       sx={{
         width: "100vw",
         height: "100vh",
-        background:
-          "linear-gradient(135deg, #0ea5e9 0%, #3b82f6 50%, #6366f1 100%)",
+        backgroundColor: (theme) => theme.palette.primary.main,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         position: "relative",
         overflow: "hidden",
-        "&::before": {
-          content: '""',
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background:
-            'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.05"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat',
-        },
-        "&::after": {
-          content: '""',
-          position: "absolute",
-          top: "-20%",
-          left: "-20%",
-          width: "140%",
-          height: "140%",
-          background: `
-            radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-            radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
-            radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%)
-          `,
-          animation: "float 6s ease-in-out infinite",
-        },
-        "@keyframes float": {
-          "0%, 100%": { transform: "translate(0px, 0px) rotate(0deg)" },
-          "33%": { transform: "translate(30px, -30px) rotate(120deg)" },
-          "66%": { transform: "translate(-20px, 20px) rotate(240deg)" },
-        },
       }}
     >
       <Card
@@ -189,17 +159,9 @@ export default function ForgotPasswordPage() {
               py: 1.5,
               mb: 3,
               borderRadius: "12px",
-              backgroundColor: "#3b82f6",
               fontWeight: 600,
               fontSize: "1rem",
               textTransform: "none",
-              boxShadow:
-                "0 4px 6px -1px rgba(59, 130, 246, 0.5), 0 2px 4px -1px rgba(59, 130, 246, 0.06)",
-              "&:hover": {
-                backgroundColor: "#2563eb",
-                boxShadow:
-                  "0 10px 15px -3px rgba(59, 130, 246, 0.5), 0 4px 6px -2px rgba(59, 130, 246, 0.05)",
-              },
               "&:disabled": {
                 backgroundColor: "#9ca3af",
               },

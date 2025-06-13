@@ -1,14 +1,11 @@
 "use client";
 import { useState, ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Card,
-  CardActionArea,
-  CardContent,
-  Typography,
-  Box,
-} from "@mui/material";
-
+import Card from '@mui/material/Card';
+import CardActionArea from '@mui/material/CardActionArea';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 interface MenuCardProps {
   title: string;
   description: string;
@@ -16,7 +13,6 @@ interface MenuCardProps {
   path: string;
   color: string;
   bgColor: string;
-  gradient: string;
 }
 
 const MenuCard = ({
@@ -26,7 +22,6 @@ const MenuCard = ({
   path,
   color,
   bgColor,
-  gradient,
 }: MenuCardProps) => {
   const router = useRouter();
   const [isHovered, setIsHovered] = useState(false);
@@ -42,26 +37,24 @@ const MenuCard = ({
       onMouseLeave={() => setIsHovered(false)}
       sx={{
         height: "100%",
-        background: isHovered
-          ? "rgba(255, 255, 255, 0.15)"
-          : "rgba(255, 255, 255, 0.08)",
-        backdropFilter: "blur(20px)",
-        border: "1px solid rgba(255, 255, 255, 0.1)",
+        backgroundColor: (theme) => theme.palette.mode === 'light' ? bgColor : theme.palette.grey[800],
+        border: (theme) => `1px solid ${theme.palette.mode === 'light' ? theme.palette.grey[200] : theme.palette.grey[700]}`,
         borderRadius: 3,
         transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-        transform: isHovered ? "translateY(-8px)" : "translateY(0)",
+        transform: isHovered ? "translateY(-4px)" : "translateY(0)",
         boxShadow: isHovered
-          ? "0 20px 40px rgba(0, 0, 0, 0.2)"
-          : "0 8px 24px rgba(0, 0, 0, 0.1)",
+          ? (theme) => theme.palette.mode === 'light' 
+            ? "0 8px 25px rgba(0, 0, 0, 0.12)" 
+            : "0 8px 25px rgba(0, 0, 0, 0.3)"
+          : (theme) => theme.palette.mode === 'light'
+            ? "0 2px 8px rgba(0, 0, 0, 0.08)"
+            : "0 2px 8px rgba(0, 0, 0, 0.2)",
         "&:hover": {
           "& .card-icon": {
-            transform: "scale(1.1) rotate(5deg)",
+            transform: "scale(1.05)",
           },
           "& .card-title": {
-            background: gradient,
-            backgroundClip: "text",
-            WebkitBackgroundClip: "text",
-            color: "transparent",
+            color: color,
           },
         },
       }}
@@ -103,9 +96,8 @@ const MenuCard = ({
               width: 64,
               height: 64,
               borderRadius: 2,
-              background: `linear-gradient(135deg, ${bgColor}20 0%, ${bgColor}40 100%)`,
-              backdropFilter: "blur(10px)",
-              border: `1px solid ${color}30`,
+              backgroundColor: (theme) => theme.palette.mode === 'light' ? bgColor : theme.palette.grey[700],
+              border: `2px solid ${color}30`,
             }}
           >
             {icon}
@@ -117,7 +109,7 @@ const MenuCard = ({
             sx={{
               fontWeight: 600,
               marginBottom: 1,
-              color: "#ffffff",
+              color: (theme) => theme.palette.text.primary,
               transition: "all 0.3s ease-in-out",
               letterSpacing: "0.25px",
             }}
@@ -127,7 +119,7 @@ const MenuCard = ({
           <Typography
             variant="body2"
             sx={{
-              color: "rgba(255, 255, 255, 0.8)",
+              color: (theme) => theme.palette.text.secondary,
               lineHeight: 1.6,
               fontSize: "0.9rem",
             }}

@@ -18,7 +18,6 @@ const menuItems = [
     path: "/dashboard/projects",
     color: "#00b63e",
     bgColor: "#e6f8ec",
-    gradient: "linear-gradient(135deg, #00b63e 0%, #33c565 100%)",
   },
   {
     title: "Quản lý công việc",
@@ -27,7 +26,6 @@ const menuItems = [
     path: "/dashboard/tasks",
     color: "#0070f4",
     bgColor: "#e6f1fe",
-    gradient: "linear-gradient(135deg, #0070f4 0%, #338df6 100%)",
   },
   {
     title: "Theo dõi tiến độ",
@@ -36,7 +34,6 @@ const menuItems = [
     path: "/dashboard/timeline",
     color: "#677484",
     bgColor: "#f0f1f3",
-    gradient: "linear-gradient(135deg, #677484 0%, #85909d 100%)",
   },
   {
     title: "Báo cáo & Thống kê",
@@ -45,7 +42,6 @@ const menuItems = [
     path: "/dashboard/reports",
     color: "#ff8800",
     bgColor: "#fff3e6",
-    gradient: "linear-gradient(135deg, #ff8800 0%, #ffa033 100%)",
   },
   {
     title: "Quản lý người dùng",
@@ -54,7 +50,6 @@ const menuItems = [
     path: "/dashboard/users",
     color: "#0070f4",
     bgColor: "#e6f1fe",
-    gradient: "linear-gradient(135deg, #0070f4 0%, #66a9f8 100%)",
   },
   {
     title: "Quản lý thông báo",
@@ -63,7 +58,6 @@ const menuItems = [
     path: "/dashboard/notifications",
     color: "#ed232f",
     bgColor: "#fde9ea",
-    gradient: "linear-gradient(135deg, #ed232f 0%, #f14f59 100%)",
   },
   {
     title: "Cài đặt hệ thống",
@@ -72,29 +66,13 @@ const menuItems = [
     path: "/dashboard/settings",
     color: "#ef06bc",
     bgColor: "#fde6f8",
-    gradient: "linear-gradient(135deg, #ef06bc 0%, #f238c9 100%)",
-  },
-  {
-    title: "Theme Test",
-    description: "Kiểm tra và test theme colors",
-    icon: <SettingsIcon sx={{ fontSize: 40 }} />,
-    path: "/dashboard/theme-test",
-    color: "#677484",
-    bgColor: "#f0f1f3", 
-    gradient: "linear-gradient(135deg, #677484 0%, #85909d 100%)",
   },
 ];
 
 const DashboardGrid = () => {
   return (
-    <Container
-      maxWidth="xl"
-      sx={{ py: 4 }}
-    >
-      <Grid
-        container
-        spacing={3}
-      >
+    <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Grid container spacing={3}>
         {menuItems.map((item, index) => (
           <Grid
             size={{ xs: 12, sm: 6, md: 4, lg: 3, xl: 2.4 }}

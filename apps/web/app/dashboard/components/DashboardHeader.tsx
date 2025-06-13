@@ -59,27 +59,23 @@ const DashboardHeader = () => {
   return (
     <AppBar
       position="sticky"
-      elevation={0}
+      elevation={1}
       sx={{
-        background: "rgba(255, 255, 255, 0.05)",
-        backdropFilter: "blur(20px)",
-        borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
-        boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
+        backgroundColor: (theme) => theme.palette.background.paper,
+        borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
+        boxShadow: (theme) => theme.shadows[1],
       }}
     >
       <Toolbar sx={{ justifyContent: "space-between" }}>
         {/* Logo section */}
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <DashboardIcon sx={{ fontSize: 32, color: "#ffffff" }} />
+          <DashboardIcon sx={{ fontSize: 32, color: (theme) => theme.palette.primary.main }} />
           <Typography
             variant="h5"
             component="div"
             sx={{
               fontWeight: 700,
-              background: "linear-gradient(135deg, #ffffff 0%, #e3f2fd 100%)",
-              backgroundClip: "text",
-              WebkitBackgroundClip: "text",
-              color: "transparent",
+              color: (theme) => theme.palette.primary.main,
               letterSpacing: "0.5px",
             }}
           >
@@ -91,9 +87,9 @@ const DashboardHeader = () => {
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <IconButton
             sx={{
-              color: "#ffffff",
+              color: (theme) => theme.palette.text.primary,
               "&:hover": {
-                background: "rgba(255, 255, 255, 0.1)",
+                backgroundColor: (theme) => theme.palette.action.hover,
                 transform: "scale(1.05)",
               },
               transition: "all 0.2s ease-in-out",
@@ -109,9 +105,9 @@ const DashboardHeader = () => {
 
           <IconButton
             sx={{
-              color: "#ffffff",
+              color: (theme) => theme.palette.text.primary,
               "&:hover": {
-                background: "rgba(255, 255, 255, 0.1)",
+                backgroundColor: (theme) => theme.palette.action.hover,
                 transform: "scale(1.05)",
               },
               transition: "all 0.2s ease-in-out",
@@ -130,7 +126,7 @@ const DashboardHeader = () => {
             sx={{
               ml: 1,
               "&:hover": {
-                background: "rgba(255, 255, 255, 0.1)",
+                backgroundColor: (theme) => theme.palette.action.hover,
                 transform: "scale(1.05)",
               },
               transition: "all 0.2s ease-in-out",
@@ -140,8 +136,8 @@ const DashboardHeader = () => {
               sx={{
                 width: 40,
                 height: 40,
-                background: "linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)",
-                border: "2px solid rgba(255, 255, 255, 0.2)",
+                backgroundColor: (theme) => theme.palette.primary.main,
+                border: (theme) => `2px solid ${theme.palette.primary.light}`,
               }}
             >
               <AccountCircleIcon />
@@ -158,15 +154,14 @@ const DashboardHeader = () => {
               sx: {
                 mt: 1,
                 minWidth: 220,
-                background: "rgba(255, 255, 255, 0.1)",
-                backdropFilter: "blur(20px)",
-                border: "1px solid rgba(255, 255, 255, 0.2)",
+                backgroundColor: (theme) => theme.palette.background.paper,
+                border: (theme) => `1px solid ${theme.palette.divider}`,
                 borderRadius: 2,
-                boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
+                boxShadow: (theme) => theme.shadows[8],
                 "& .MuiMenuItem-root": {
-                  color: "#ffffff",
+                  color: (theme) => theme.palette.text.primary,
                   "&:hover": {
-                    background: "rgba(255, 255, 255, 0.1)",
+                    backgroundColor: (theme) => theme.palette.action.hover,
                   },
                 },
               },
@@ -174,26 +169,26 @@ const DashboardHeader = () => {
           >
             <MenuItem onClick={handleProfileClick}>
               <ListItemIcon>
-                <PersonIcon sx={{ color: "#ffffff" }} />
+                <PersonIcon sx={{ color: (theme) => theme.palette.text.primary }} />
               </ListItemIcon>
               <ListItemText primary="Hồ sơ cá nhân" />
             </MenuItem>
             <MenuItem onClick={handleSettingsClick}>
               <ListItemIcon>
-                <SettingsIcon sx={{ color: "#ffffff" }} />
+                <SettingsIcon sx={{ color: (theme) => theme.palette.text.primary }} />
               </ListItemIcon>
               <ListItemText primary="Cài đặt" />
             </MenuItem>
             <MenuItem onClick={handleSecurityClick}>
               <ListItemIcon>
-                <SecurityIcon sx={{ color: "#ffffff" }} />
+                <SecurityIcon sx={{ color: (theme) => theme.palette.text.primary }} />
               </ListItemIcon>
               <ListItemText primary="Bảo mật" />
             </MenuItem>
-            <Divider sx={{ backgroundColor: "rgba(255, 255, 255, 0.2)" }} />
+            <Divider sx={{ backgroundColor: (theme) => theme.palette.divider }} />
             <MenuItem onClick={handleLogout}>
               <ListItemIcon>
-                <LogoutIcon sx={{ color: "#ffffff" }} />
+                <LogoutIcon sx={{ color: (theme) => theme.palette.text.primary }} />
               </ListItemIcon>
               <ListItemText primary="Đăng xuất" />
             </MenuItem>

@@ -4,8 +4,6 @@ import {
   createContext,
   ReactNode,
   useContext,
-  useEffect,
-  useState,
 } from "react";
 
 type ThemeMode = "light" | "dark";
@@ -33,24 +31,12 @@ interface ThemeProviderProps {
 }
 
 export function ThemeModeProvider({ children }: ThemeProviderProps) {
-  const [mode, setMode] = useState<ThemeMode>("light");
-
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("theme-mode") as ThemeMode;
-    if (savedTheme) {
-      setMode(savedTheme);
-    } else {
-      const prefersDark = window.matchMedia(
-        "(prefers-color-scheme: dark)"
-      ).matches;
-      setMode(prefersDark ? "dark" : "light");
-    }
-  }, []);
+  // Always use light mode - no state management needed
+  const mode: ThemeMode = "light";
 
   const toggleTheme = () => {
-    const newMode = mode === "light" ? "dark" : "light";
-    setMode(newMode);
-    localStorage.setItem("theme-mode", newMode);
+    // Theme switching is disabled - always use light mode
+    console.log("Theme switching is disabled. Always using light mode.");
   };
 
   return (
