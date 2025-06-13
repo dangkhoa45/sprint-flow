@@ -1,5 +1,7 @@
 "use client";
+import DashboardIcon from "@mui/icons-material/Dashboard";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import LoginIcon from "@mui/icons-material/Login";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
@@ -24,71 +26,121 @@ type LoginFormProps = {
 export default function LoginForm({ error }: LoginFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (formData: FormData) => {
+    setIsLoading(true);
+    try {
+      await apiLogin(formData);
+    } catch (error) {
+      console.error("Đăng nhập thất bại:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Box
       sx={{
-        width: "100vw",
-        height: "100vh",
-        backgroundColor: (theme) => theme.palette.primary.main,
+        minHeight: "100vh",
+        background: `
+          linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+          url('https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1974&q=80')
+        `,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        p: { xs: 2, sm: 3, md: 4 },
         position: "relative",
-        overflow: "hidden",
       }}
     >
       <Card
         sx={{
-          maxWidth: 900,
-          width: "90%",
-          height: { xs: "auto", md: 520 },
-          borderRadius: "16px",
+          maxWidth: 1000,
+          width: "100%",
+          borderRadius: { xs: "20px", md: "24px" },
           overflow: "hidden",
-          boxShadow: (theme) => theme.shadows[8],
-          border: (theme) => `1px solid ${theme.palette.divider}`,
-          zIndex: 1,
-          display: "flex",
-          backgroundColor: (theme) => theme.palette.background.paper,
+          background: "rgba(255, 255, 255, 0.05)",
+          backdropFilter: "blur(30px)",
+          border: "1px solid rgba(255, 255, 255, 0.1)",
+          boxShadow: "0 12px 40px rgba(0, 0, 0, 0.15)",
+          zIndex: 2,
         }}
       >
-        <Grid
-          container
-          sx={{ height: "100%" }}
-        >
+        <Grid container sx={{ height: "100%" }}>
           <Grid
             size={{ xs: 12, md: 6 }}
             sx={{
-              backgroundColor: (theme) => theme.palette.primary.dark,
-              position: "relative",
+              background: "rgba(102, 126, 234, 0.9)",
+              backdropFilter: "blur(10px)",
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
               alignItems: "center",
-              p: { xs: 4, md: 6 },
+              p: { xs: 3, sm: 4, md: 5, lg: 6 },
               color: "white",
-              overflow: "hidden",
-              minHeight: { xs: 300, md: "auto" },
+              minHeight: { xs: 250, md: "auto" },
+              position: "relative",
+              "&::before": {
+                content: '""',
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: `
+                  radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.05) 0%, transparent 50%)
+                `,
+                zIndex: 0,
+              },
             }}
           >
-            <Box sx={{ textAlign: "center", maxWidth: 350 }}>
-              <Typography
-                variant="h3"
-                sx={{ fontWeight: "bold", mb: 2 }}
+            <Box sx={{ textAlign: "center", maxWidth: 400, zIndex: 1 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  mb: { xs: 2, md: 3 },
+                }}
               >
-                Sprint Flow
+                <DashboardIcon sx={{ fontSize: { xs: 40, md: 48 }, mr: 2 }} />
+                <Typography
+                  variant="h3"
+                  sx={{
+                    fontWeight: "bold",
+                    fontSize: { xs: "1.8rem", md: "2.5rem" },
+                  }}
+                >
+                  Sprint Flow
+                </Typography>
+              </Box>
+              <Typography
+                variant="h5"
+                sx={{
+                  fontWeight: 600,
+                  mb: { xs: 1.5, md: 2 },
+                  opacity: 0.95,
+                  fontSize: { xs: "1.2rem", md: "1.5rem" },
+                }}
+              >
+                Chào mừng trở lại!
               </Typography>
               <Typography
                 variant="body1"
                 sx={{
-                  opacity: 0.9,
-                  fontSize: "1.1rem",
+                  opacity: 0.8,
+                  fontSize: { xs: "1rem", md: "1.1rem" },
                   lineHeight: 1.6,
-                  mb: 4,
+                  mb: { xs: 3, md: 4 },
                 }}
               >
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus nisl
-                risus.
+                Quản lý dự án hiệu quả với Sprint Flow. Đăng nhập để tiếp tục
+                hành trình của bạn.
               </Typography>
             </Box>
           </Grid>
@@ -100,216 +152,304 @@ export default function LoginForm({ error }: LoginFormProps) {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              px: { xs: 3, md: 4, lg: 8, xl: 12 },
-              backgroundColor: (theme) => theme.palette.background.paper,
+              px: { xs: 3, md: 4, lg: 6 },
+              py: { xs: 4, md: 5 },
+              background: "rgba(255, 255, 255, 0.95)",
+              backdropFilter: "blur(10px)",
             }}
           >
-            <Box
-              component="form"
-              action={apiLogin}
-              sx={{ width: "100%" }}
-            >
-              <Box sx={{ mb: 3 }}>
+            <Box sx={{ width: "100%", maxWidth: 400 }}>
+              <Box sx={{ mb: { xs: 3, md: 4 }, textAlign: "center" }}>
                 <Typography
-                  variant="body2"
+                  variant="h4"
                   sx={{
-                    color: "#6b7280",
+                    fontWeight: "bold",
+                    color: "#1f2937",
                     mb: 1,
-                    fontWeight: 500,
                   }}
                 >
-                  Username
+                  Đăng nhập tài khoản
                 </Typography>
-                <TextField
-                  fullWidth
-                  name="username"
-                  placeholder="username"
-                  autoComplete="username"
-                  autoFocus
-                  variant="outlined"
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <PersonOutlineOutlinedIcon sx={{ color: "#9ca3af" }} />
-                      </InputAdornment>
-                    ),
-                  }}
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      borderRadius: "12px",
-                      backgroundColor: "#f1f5f9",
-                      border: "none",
-                      "& fieldset": {
-                        border: "none",
-                      },
-                      "&:hover fieldset": {
-                        border: "none",
-                      },
-                      "&.Mui-focused fieldset": {
-                        border: "2px solid #1e40af",
-                      },
-                    },
-                    "& .MuiInputBase-input": {
-                      py: 1.5,
-                    },
-                  }}
-                />
-              </Box>
-
-              <Box sx={{ mb: 3 }}>
                 <Typography
-                  variant="body2"
+                  variant="body1"
                   sx={{
                     color: "#6b7280",
-                    mb: 1,
-                    fontWeight: 500,
+                    fontSize: "1rem",
                   }}
                 >
-                  Password
+                  Vui lòng nhập thông tin đăng nhập để tiếp tục
                 </Typography>
-                <TextField
-                  fullWidth
-                  name="password"
-                  placeholder="••••••••••••"
-                  type={showPassword ? "text" : "password"}
-                  autoComplete="current-password"
-                  variant="outlined"
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <LockOutlinedIcon sx={{ color: "#9ca3af" }} />
-                      </InputAdornment>
-                    ),
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          onClick={() => setShowPassword(!showPassword)}
-                          edge="end"
-                          sx={{ color: "#9ca3af" }}
-                        >
-                          {showPassword ? (
-                            <VisibilityOffOutlinedIcon />
-                          ) : (
-                            <VisibilityOutlinedIcon />
-                          )}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      borderRadius: "12px",
-                      backgroundColor: "#f1f5f9",
-                      border: "none",
-                      "& fieldset": {
-                        border: "none",
-                      },
-                      "&:hover fieldset": {
-                        border: "none",
-                      },
-                      "&.Mui-focused fieldset": {
-                        border: "2px solid #1e40af",
-                      },
-                    },
-                    "& .MuiInputBase-input": {
-                      py: 1.5,
-                    },
-                  }}
-                />
               </Box>
 
               <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  mb: 3,
-                }}
+                component="form"
+                action={handleSubmit}
+                sx={{ width: "100%" }}
               >
-                <Box sx={{ display: "flex", alignItems: "center" }}>
-                  <Checkbox
-                    name="remember"
-                    value="1"
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                    sx={{
-                      color: "#3b82f6",
-                      p: 0,
-                      mr: 1,
-                      "&.Mui-checked": {
-                        color: "#3b82f6",
-                      },
-                    }}
-                  />
+                <Box sx={{ mb: { xs: 2.5, md: 3 } }}>
                   <Typography
                     variant="body2"
                     sx={{
-                      color: "#6b7280",
-                      fontWeight: 500,
-                      cursor: "pointer",
+                      color: "#374151",
+                      mb: { xs: 1, md: 1.5 },
+                      fontWeight: 600,
                     }}
-                    onClick={() => setRememberMe(!rememberMe)}
                   >
-                    Remember me
+                    Tên đăng nhập
                   </Typography>
+                  <TextField
+                    fullWidth
+                    name="username"
+                    placeholder="Nhập tên đăng nhập của bạn"
+                    autoComplete="username"
+                    autoFocus
+                    variant="outlined"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <PersonOutlineOutlinedIcon
+                            sx={{ color: "#9ca3af" }}
+                          />
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: "16px",
+                        backgroundColor: "rgba(248, 250, 252, 0.8)",
+                        backdropFilter: "blur(10px)",
+                        border: "1px solid rgba(255, 255, 255, 0.3)",
+                        transition: "all 0.3s ease",
+                        "& fieldset": {
+                          border: "none",
+                        },
+                        "&:hover": {
+                          backgroundColor: "rgba(241, 245, 249, 0.9)",
+                          borderColor: "rgba(255, 255, 255, 0.4)",
+                          transform: "translateY(-1px)",
+                          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+                        },
+                        "&.Mui-focused": {
+                          backgroundColor: "rgba(255, 255, 255, 0.9)",
+                          borderColor: "rgba(102, 126, 234, 0.5)",
+                          boxShadow:
+                            "0 0 0 3px rgba(102, 126, 234, 0.15), 0 4px 12px rgba(102, 126, 234, 0.1)",
+                        },
+                      },
+                      "& .MuiInputBase-input": {
+                        py: { xs: 1.2, md: 1.5 },
+                        fontSize: "1rem",
+                      },
+                    }}
+                  />
                 </Box>
-                <Link
-                  href="/forgot-password"
-                  variant="body2"
+
+                <Box sx={{ mb: { xs: 3, md: 4 } }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: "#374151",
+                      mb: { xs: 1, md: 1.5 },
+                      fontWeight: 600,
+                    }}
+                  >
+                    Mật khẩu
+                  </Typography>
+                  <TextField
+                    fullWidth
+                    name="password"
+                    placeholder="Nhập mật khẩu của bạn"
+                    type={showPassword ? "text" : "password"}
+                    autoComplete="current-password"
+                    variant="outlined"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <LockOutlinedIcon sx={{ color: "#9ca3af" }} />
+                        </InputAdornment>
+                      ),
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => setShowPassword(!showPassword)}
+                            edge="end"
+                            sx={{
+                              color: "#9ca3af",
+                              "&:hover": {
+                                backgroundColor: "rgba(102, 126, 234, 0.1)",
+                                color: "#667eea",
+                              },
+                            }}
+                          >
+                            {showPassword ? (
+                              <VisibilityOffOutlinedIcon />
+                            ) : (
+                              <VisibilityOutlinedIcon />
+                            )}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: "16px",
+                        backgroundColor: "rgba(248, 250, 252, 0.8)",
+                        backdropFilter: "blur(10px)",
+                        border: "1px solid rgba(255, 255, 255, 0.3)",
+                        transition: "all 0.3s ease",
+                        "& fieldset": {
+                          border: "none",
+                        },
+                        "&:hover": {
+                          backgroundColor: "rgba(241, 245, 249, 0.9)",
+                          borderColor: "rgba(255, 255, 255, 0.4)",
+                          transform: "translateY(-1px)",
+                          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+                        },
+                        "&.Mui-focused": {
+                          backgroundColor: "rgba(255, 255, 255, 0.9)",
+                          borderColor: "rgba(102, 126, 234, 0.5)",
+                          boxShadow:
+                            "0 0 0 3px rgba(102, 126, 234, 0.15), 0 4px 12px rgba(102, 126, 234, 0.1)",
+                        },
+                      },
+                      "& .MuiInputBase-input": {
+                        py: { xs: 1.2, md: 1.5 },
+                        fontSize: "1rem",
+                      },
+                    }}
+                  />
+                </Box>
+
+                <Box
                   sx={{
-                    color: "#3b82f6",
-                    textDecoration: "none",
-                    fontWeight: 500,
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    mb: { xs: 3, md: 4 },
+                    flexDirection: { xs: "column", sm: "row" },
+                    gap: { xs: 2, sm: 0 },
+                  }}
+                >
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <Checkbox
+                      name="remember"
+                      value="1"
+                      checked={rememberMe}
+                      onChange={(e) => setRememberMe(e.target.checked)}
+                      sx={{
+                        color: "#667eea",
+                        p: 0,
+                        mr: 1.5,
+                        "&.Mui-checked": {
+                          color: "#667eea",
+                        },
+                      }}
+                    />
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: "#374151",
+                        fontWeight: 500,
+                        cursor: "pointer",
+                      }}
+                      onClick={() => setRememberMe(!rememberMe)}
+                    >
+                      Ghi nhớ thông tin đăng nhập
+                    </Typography>
+                  </Box>
+                  <Link
+                    href="/forgot-password"
+                    variant="body2"
+                    sx={{
+                      color: "#667eea",
+                      textDecoration: "none",
+                      fontWeight: 600,
+                      "&:hover": {
+                        textDecoration: "underline",
+                        color: "#5a67d8",
+                      },
+                    }}
+                  >
+                    Quên mật khẩu?
+                  </Link>
+                </Box>
+
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  disabled={isLoading}
+                  startIcon={isLoading ? null : <LoginIcon />}
+                  sx={{
+                    py: { xs: 1.8, md: 2 },
+                    mb: { xs: 2, md: 3 },
+                    borderRadius: "16px",
+                    background: "rgba(102, 126, 234, 0.9)",
+                    backdropFilter: "blur(10px)",
+                    border: "1px solid rgba(255, 255, 255, 0.2)",
+                    fontWeight: 600,
+                    fontSize: { xs: "1rem", md: "1.1rem" },
+                    textTransform: "none",
+                    boxShadow: "0 8px 25px rgba(102, 126, 234, 0.3)",
+                    transition: "all 0.3s ease",
                     "&:hover": {
-                      textDecoration: "underline",
+                      background: "rgba(90, 103, 216, 0.9)",
+                      transform: "translateY(-2px)",
+                      boxShadow: "0 12px 35px rgba(102, 126, 234, 0.4)",
+                    },
+                    "&:active": {
+                      transform: "translateY(0px)",
+                    },
+                    "&:disabled": {
+                      background: "rgba(209, 213, 219, 0.6)",
+                      color: "#9ca3af",
+                      transform: "none",
+                      boxShadow: "none",
                     },
                   }}
                 >
-                  Forgot password?
-                </Link>
-              </Box>
+                  {isLoading ? (
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <Box
+                        sx={{
+                          width: 20,
+                          height: 20,
+                          border: "2px solid rgba(255,255,255,0.3)",
+                          borderTop: "2px solid white",
+                          borderRadius: "50%",
+                          animation: "spin 1s linear infinite",
+                          "@keyframes spin": {
+                            "0%": { transform: "rotate(0deg)" },
+                            "100%": { transform: "rotate(360deg)" },
+                          },
+                        }}
+                      />
+                      Đang đăng nhập...
+                    </Box>
+                  ) : (
+                    "Đăng nhập hệ thống"
+                  )}
+                </Button>
 
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{
-                  py: 1.5,
-                  mb: 3,
-                  borderRadius: "12px",
-                  backgroundColor: "#1e40af",
-                  fontWeight: 600,
-                  fontSize: "1rem",
-                  textTransform: "none",
-                  boxShadow:
-                    "0 4px 6px -1px rgba(59, 130, 246, 0.5), 0 2px 4px -1px rgba(59, 130, 246, 0.06)",
-                  "&:hover": {
-                    backgroundColor: "#2563eb",
-                    boxShadow:
-                      "0 10px 15px -3px rgba(59, 130, 246, 0.5), 0 4px 6px -2px rgba(59, 130, 246, 0.05)",
-                  },
-                }}
-              >
-                Login
-              </Button>
-
-              {error && (
-                <Alert
-                  severity="error"
-                  sx={{
-                    mt: 3,
-                    borderRadius: "12px",
-                    backgroundColor: "#fef2f2",
-                    color: "#dc2626",
-                    border: "1px solid #fecaca",
-                    "& .MuiAlert-icon": {
+                {error && (
+                  <Alert
+                    severity="error"
+                    sx={{
+                      mt: 2,
+                      borderRadius: "12px",
+                      backgroundColor: "#fef2f2",
                       color: "#dc2626",
-                    },
-                  }}
-                >
-                  {error}
-                </Alert>
-              )}
+                      border: "1px solid #fecaca",
+                      "& .MuiAlert-icon": {
+                        color: "#dc2626",
+                      },
+                    }}
+                  >
+                    {error}
+                  </Alert>
+                )}
+              </Box>
             </Box>
           </Grid>
         </Grid>
