@@ -2,6 +2,9 @@
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import BarChartIcon from "@mui/icons-material/BarChart";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import ChatIcon from "@mui/icons-material/Chat";
+import DescriptionIcon from "@mui/icons-material/Description";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import SettingsIcon from "@mui/icons-material/Settings";
@@ -17,7 +20,7 @@ const menuItems = [
     icon: <AccountTreeIcon sx={{ fontSize: 40 }} />,
     path: "/dashboard/projects",
     color: "#00b63e",
-    bgColor: "#e6f8ec",
+    bgColor: "#e8f5e8",
   },
   {
     title: "Quản lý công việc",
@@ -25,7 +28,7 @@ const menuItems = [
     icon: <AssignmentIcon sx={{ fontSize: 40 }} />,
     path: "/dashboard/tasks",
     color: "#0070f4",
-    bgColor: "#e6f1fe",
+    bgColor: "#e3f2fd",
   },
   {
     title: "Theo dõi tiến độ",
@@ -33,7 +36,7 @@ const menuItems = [
     icon: <TimelineIcon sx={{ fontSize: 40 }} />,
     path: "/dashboard/timeline",
     color: "#677484",
-    bgColor: "#f0f1f3",
+    bgColor: "#f5f5f5",
   },
   {
     title: "Báo cáo & Thống kê",
@@ -41,7 +44,7 @@ const menuItems = [
     icon: <BarChartIcon sx={{ fontSize: 40 }} />,
     path: "/dashboard/reports",
     color: "#ff8800",
-    bgColor: "#fff3e6",
+    bgColor: "#fff8e1",
   },
   {
     title: "Quản lý người dùng",
@@ -49,7 +52,7 @@ const menuItems = [
     icon: <ManageAccountsIcon sx={{ fontSize: 40 }} />,
     path: "/dashboard/users",
     color: "#0070f4",
-    bgColor: "#e6f1fe",
+    bgColor: "#e8eaf6",
   },
   {
     title: "Quản lý thông báo",
@@ -57,7 +60,7 @@ const menuItems = [
     icon: <NotificationsIcon sx={{ fontSize: 40 }} />,
     path: "/dashboard/notifications",
     color: "#ed232f",
-    bgColor: "#fde9ea",
+    bgColor: "#ffebee",
   },
   {
     title: "Cài đặt hệ thống",
@@ -65,7 +68,31 @@ const menuItems = [
     icon: <SettingsIcon sx={{ fontSize: 40 }} />,
     path: "/dashboard/settings",
     color: "#ef06bc",
-    bgColor: "#fde6f8",
+    bgColor: "#fce4ec",
+  },
+  {
+    title: "Quản lý tài liệu",
+    description: "Tạo, chỉnh sửa và quản lý tài liệu dự án",
+    icon: <DescriptionIcon sx={{ fontSize: 40 }} />,
+    path: "/dashboard/documents",
+    color: "#2e7d32",
+    bgColor: "#e0f2f1",
+  },
+  {
+    title: "Quản lý lịch làm việc",
+    description: "Lập lịch và theo dõi lịch làm việc của team",
+    icon: <CalendarTodayIcon sx={{ fontSize: 40 }} />,
+    path: "/dashboard/calendar",
+    color: "#7b1fa2",
+    bgColor: "#f3e5f5",
+  },
+  {
+    title: "Phòng chat",
+    description: "Trao đổi thông tin và thảo luận với các thành viên",
+    icon: <ChatIcon sx={{ fontSize: 40 }} />,
+    path: "/dashboard/chat",
+    color: "#1976d2",
+    bgColor: "#e1f5fe",
   },
 ];
 

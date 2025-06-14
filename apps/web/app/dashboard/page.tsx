@@ -12,7 +12,17 @@ export default function DashboardPage() {
         position: "relative",
       }}
     >
-      <Container maxWidth="xl">
+      <Container
+        maxWidth="xl"
+        sx={{
+          height: "calc(100vh - 180px)",
+          width: "100vw",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         <Typography
           variant="h2"
           component="h1"
@@ -37,11 +47,11 @@ export default function DashboardPage() {
             letterSpacing: "0.5px",
           }}
         >
-          Quản lý dự án thông minh • Theo dõi tiến độ hiệu quả • Thành công vượt trội
+          Quản lý dự án thông minh • Theo dõi tiến độ hiệu quả • Thành công vượt
+          trội
         </Typography>
+        <DashboardGrid />
       </Container>
-
-      <DashboardGrid />
     </Box>
   );
 }
