@@ -10,6 +10,15 @@ export type LoginResponse = {
   token: string;
 };
 
+export type LoginApiResponse = {
+  success: true;
+  user: User;
+  accessToken: string;
+} | {
+  success: false;
+  error: string;
+};
+
 export type ErrorResponse = {
   message: string;
   statusCode: number;

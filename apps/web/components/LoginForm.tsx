@@ -16,24 +16,58 @@ import InputAdornment from "@mui/material/InputAdornment";
 import Link from "@mui/material/Link";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import { useRouter } from "next/navigation";
+import { useSnackbar } from "notistack";
 import { useState } from "react";
 import { apiLogin } from "../actions/apiLogin";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 
 type LoginFormProps = {
   error?: string;
 };
 
 export default function LoginForm({ error }: LoginFormProps) {
+  const router = useRouter();
+  const { enqueueSnackbar } = useSnackbar();
+  const { setUser } = useCurrentUser();
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [loginError, setLoginError] = useState(error);
 
   const handleSubmit = async (formData: FormData) => {
     setIsLoading(true);
+    setLoginError(undefined);
+    
     try {
-      await apiLogin(formData);
+      const result = await apiLogin(formData);
+      
+      if (result.success) {
+        // Update user context
+        setUser(result.user);
+        
+        // Show success message
+        enqueueSnackbar("Đăng nhập thành công!", {
+          variant: "success",
+          autoHideDuration: 2000,
+        });
+        
+        // Redirect to dashboard
+        router.push("/dashboard");
+      } else {
+        setLoginError(result.error);
+        enqueueSnackbar("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.", {
+          variant: "error",
+          autoHideDuration: 4000,
+        });
+      }
     } catch (error) {
       console.error("Đăng nhập thất bại:", error);
+      setLoginError("Có lỗi xảy ra khi đăng nhập. Vui lòng thử lại.");
+      enqueueSnackbar("Có lỗi xảy ra khi đăng nhập. Vui lòng thử lại.", {
+        variant: "error",
+        autoHideDuration: 4000,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -432,7 +466,7 @@ export default function LoginForm({ error }: LoginFormProps) {
                   )}
                 </Button>
 
-                {error && (
+                {(error || loginError) && (
                   <Alert
                     severity="error"
                     sx={{
@@ -446,7 +480,7 @@ export default function LoginForm({ error }: LoginFormProps) {
                       },
                     }}
                   >
-                    {error}
+                    {error || loginError}
                   </Alert>
                 )}
               </Box>

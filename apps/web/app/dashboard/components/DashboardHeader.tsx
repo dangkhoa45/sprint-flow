@@ -54,16 +54,8 @@ const DashboardHeader = () => {
       setIsLoggingOut(true);
       setShowLogoutDialog(false);
 
-      // Show logout starting notification
-      enqueueSnackbar("Đang đăng xuất...", {
-        variant: "info",
-        autoHideDuration: 2000,
-      });
-
-      // Call the logout API to clear cookies and redirect
       await apiLogout();
 
-      // Success notification will be shown briefly before redirect
       enqueueSnackbar("Đăng xuất thành công!", {
         variant: "success",
         autoHideDuration: 1000,
@@ -72,13 +64,6 @@ const DashboardHeader = () => {
       console.error("Logout error:", error);
       setIsLoggingOut(false);
 
-      // Show error notification
-      enqueueSnackbar("Có lỗi xảy ra khi đăng xuất. Vui lòng thử lại.", {
-        variant: "error",
-        autoHideDuration: 4000,
-      });
-
-      // Fallback: manually redirect to login if API call fails
       setTimeout(() => {
         router.push("/login");
       }, 2000);
