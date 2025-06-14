@@ -4,18 +4,22 @@ import {
   createContext,
   ReactNode,
   useContext,
+  useEffect,
+  useState,
 } from "react";
 
-type ThemeMode = "light" | "dark";
+type ThemeMode = "light" | "dark" | "system";
 
 interface ThemeContextType {
   mode: ThemeMode;
-  toggleTheme: () => void;
+  resolvedTheme: "light" | "dark";
+  setTheme: (theme: ThemeMode) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType>({
   mode: "light",
-  toggleTheme: () => {},
+  resolvedTheme: "light",
+  setTheme: () => {},
 });
 
 export const useThemeMode = () => {
@@ -31,16 +35,42 @@ interface ThemeProviderProps {
 }
 
 export function ThemeModeProvider({ children }: ThemeProviderProps) {
-  // Always use light mode - no state management needed
-  const mode: ThemeMode = "light";
+  const [mode, setMode] = useState<ThemeMode>("light");
+  const [systemTheme, setSystemTheme] = useState<"light" | "dark">("light");
 
-  const toggleTheme = () => {
-    // Theme switching is disabled - always use light mode
-    console.log("Theme switching is disabled. Always using light mode.");
+  // Listen to system theme changes
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    setSystemTheme(mediaQuery.matches ? "dark" : "light");
+
+    const handleChange = (e: MediaQueryListEvent) => {
+      setSystemTheme(e.matches ? "dark" : "light");
+    };
+
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
+
+  // Load theme from localStorage on mount
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme") as ThemeMode;
+    if (savedTheme && ["light", "dark", "system"].includes(savedTheme)) {
+      setMode(savedTheme);
+    } else {
+      // Default to light theme if no saved theme
+      setMode("light");
+    }
+  }, []);
+
+  const setTheme = (theme: ThemeMode) => {
+    setMode(theme);
+    localStorage.setItem("theme", theme);
   };
 
+  const resolvedTheme = mode === "system" ? systemTheme : mode;
+
   return (
-    <ThemeContext.Provider value={{ mode, toggleTheme }}>
+    <ThemeContext.Provider value={{ mode, resolvedTheme, setTheme }}>
       {children}
     </ThemeContext.Provider>
   );

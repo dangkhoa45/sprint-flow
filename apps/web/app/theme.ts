@@ -1,108 +1,95 @@
 "use client";
-import { Roboto } from "next/font/google";
+import { Inter } from "next/font/google";
 import { createTheme, PaletteMode } from "@mui/material/styles";
 
-const roboto = Roboto({
-  weight: ["300", "400", "500", "700"],
+const inter = Inter({
+  weight: ["300", "400", "500", "600", "700"],
   subsets: ["latin"],
   display: "swap",
 });
 
-// Color system based on design tokens
+// Modern Minimal Color System
 export const colorTokens = {
-  // Primary colors
-  primary: "#0070f4",
-  secondary: "#ef06bc", 
-  success: "#00b63e",
-  info: "#0070f4",
-  warning: "#ff8800",
-  danger: "#ed232f",
+  // Primary colors - Clean and minimal
+  primary: "#1a1a1a",
+  secondary: "#6366f1", 
+  success: "#10b981",
+  info: "#3b82f6",
+  warning: "#f59e0b",
+  danger: "#ef4444",
 
-  // Blue scale
-  blue: {
-    50: "#e6f1fe",
-    100: "#cce2fd",
-    200: "#99c6fb",
-    300: "#66a9f8",
-    400: "#338df6",
-    500: "#0070f4", // primary
-    600: "#005ac3",
-    700: "#004392",
-    800: "#002d62",
-    900: "#001631",
-  },
-
-  // Gray scale
+  // Modern color scales
   gray: {
-    25: "#f7f8f9",
-    50: "#f0f1f3",
-    75: "#e8eaed",
-    100: "#e1e3e6",
-    150: "#d1d5da",
-    200: "#c2c7ce",
-    250: "#b3bac2",
-    300: "#a4acb5",
-    350: "#959ea9",
-    400: "#85909d",
-    500: "#677484", // secondary/default
-    600: "#525d6a",
-    700: "#3e464f",
-    750: "#343a42",
-    800: "#292e35",
-    850: "#1f2328",
-    900: "#15171a",
+    25: "#fafafa",
+    50: "#f5f5f5",
+    75: "#f0f0f0",
+    100: "#e5e5e5",
+    150: "#d4d4d4",
+    200: "#a3a3a3",
+    250: "#737373",
+    300: "#525252",
+    350: "#404040",
+    400: "#262626",
+    500: "#171717",
+    600: "#0a0a0a",
+    700: "#000000",
+    750: "#000000",
+    800: "#000000",
+    850: "#000000",
+    900: "#000000",
   },
 
-  // Green scale
-  green: {
-    50: "#e6f8ec",
-    100: "#ccf0d8",
-    300: "#66d38b",
-    400: "#33c565",
-    500: "#00b63e", // success
-    600: "#009232",
-    700: "#006d25",
-    800: "#004919",
-    900: "#00240c",
+  // Accent colors
+  indigo: {
+    50: "#eef2ff",
+    100: "#e0e7ff",
+    200: "#c7d2fe",
+    300: "#a5b4fc",
+    400: "#818cf8",
+    500: "#6366f1",
+    600: "#4f46e5",
+    700: "#4338ca",
+    800: "#3730a3",
+    900: "#312e81",
   },
 
-  // Orange scale
-  orange: {
-    50: "#fff3e6",
-    100: "#ffe7cc",
-    300: "#ffb866",
-    400: "#ffa033",
-    500: "#ff8800", // warning
-    600: "#cc6d00",
-    700: "#995200",
-    800: "#663600",
-    900: "#331b00",
+  emerald: {
+    50: "#ecfdf5",
+    100: "#d1fae5",
+    200: "#a7f3d0",
+    300: "#6ee7b7",
+    400: "#34d399",
+    500: "#10b981",
+    600: "#059669",
+    700: "#047857",
+    800: "#065f46",
+    900: "#064e3b",
   },
 
-  // Red scale
+  amber: {
+    50: "#fffbeb",
+    100: "#fef3c7",
+    200: "#fde68a",
+    300: "#fcd34d",
+    400: "#fbbf24",
+    500: "#f59e0b",
+    600: "#d97706",
+    700: "#b45309",
+    800: "#92400e",
+    900: "#78350f",
+  },
+
   red: {
-    50: "#fde9ea",
-    100: "#fbd3d5",
-    300: "#f47b82",
-    400: "#f14f59",
-    500: "#ed232f", // danger
-    600: "#be1c26",
-    700: "#8e151c",
-    800: "#5f0e13",
-    900: "#2f0709",
-  },
-
-  // Pink scale
-  pink: {
-    50: "#fde6f8",
-    100: "#fccdf2",
-    300: "#f56ad7",
-    400: "#f238c9",
-    500: "#ef06bc", // secondary
-    600: "#bf0596",
-    700: "#8f0471",
-    800: "#60024b",
-    900: "#300126",
+    50: "#fef2f2",
+    100: "#fee2e2",
+    200: "#fecaca",
+    300: "#fca5a5",
+    400: "#f87171",
+    500: "#ef4444",
+    600: "#dc2626",
+    700: "#b91c1c",
+    800: "#991b1b",
+    900: "#7f1d1d",
   },
 
   // Base colors
@@ -110,20 +97,20 @@ export const colorTokens = {
   black: "#000000",
 };
 
-// Tạo theme động dựa trên mode
+// Modern Minimal Theme Creator
 export const createAppTheme = (mode: PaletteMode) => createTheme({
   palette: {
     mode,
     primary: {
-      main: colorTokens.primary,
-      light: colorTokens.blue[300],
-      dark: colorTokens.blue[700],
-      contrastText: colorTokens.white,
+      main: mode === 'light' ? colorTokens.primary : colorTokens.white,
+      light: mode === 'light' ? colorTokens.gray[400] : colorTokens.gray[100],
+      dark: mode === 'light' ? colorTokens.gray[500] : colorTokens.gray[300],
+      contrastText: mode === 'light' ? colorTokens.white : colorTokens.primary,
     },
     secondary: {
       main: colorTokens.secondary,
-      light: colorTokens.pink[300],
-      dark: colorTokens.pink[700],
+      light: colorTokens.indigo[300],
+      dark: colorTokens.indigo[700],
       contrastText: colorTokens.white,
     },
     error: {
@@ -134,70 +121,73 @@ export const createAppTheme = (mode: PaletteMode) => createTheme({
     },
     warning: {
       main: colorTokens.warning,
-      light: colorTokens.orange[300],
-      dark: colorTokens.orange[700],
+      light: colorTokens.amber[300],
+      dark: colorTokens.amber[700],
       contrastText: colorTokens.white,
     },
     info: {
       main: colorTokens.info,
-      light: colorTokens.blue[300],
-      dark: colorTokens.blue[700],
+      light: colorTokens.indigo[300],
+      dark: colorTokens.indigo[700],
       contrastText: colorTokens.white,
     },
     success: {
       main: colorTokens.success,
-      light: colorTokens.green[300],
-      dark: colorTokens.green[700],
+      light: colorTokens.emerald[300],
+      dark: colorTokens.emerald[700],
       contrastText: colorTokens.white,
     },
     background: mode === 'light' ? {
-      default: colorTokens.gray[25],
+      default: colorTokens.white,
       paper: colorTokens.white,
     } : {
-      default: colorTokens.gray[900],
-      paper: colorTokens.gray[800],
+      default: colorTokens.gray[500],
+      paper: colorTokens.gray[400],
     },
     text: mode === 'light' ? {
-      primary: colorTokens.gray[900],
-      secondary: colorTokens.gray[600],
-      disabled: colorTokens.gray[400],
+      primary: colorTokens.gray[500],
+      secondary: colorTokens.gray[250],
+      disabled: colorTokens.gray[200],
     } : {
       primary: colorTokens.gray[50],
-      secondary: colorTokens.gray[300],
-      disabled: colorTokens.gray[500],
+      secondary: colorTokens.gray[150],
+      disabled: colorTokens.gray[200],
     },
-    divider: mode === 'light' ? colorTokens.gray[200] : colorTokens.gray[700],
+    divider: mode === 'light' ? colorTokens.gray[100] : colorTokens.gray[350],
     action: mode === 'light' ? {
-      active: colorTokens.gray[600],
-      hover: colorTokens.gray[50],
-      selected: colorTokens.gray[100],
-      disabled: colorTokens.gray[400],
-      disabledBackground: colorTokens.gray[100],
+      active: colorTokens.gray[250],
+      hover: colorTokens.gray[25],
+      selected: colorTokens.gray[50],
+      disabled: colorTokens.gray[200],
+      disabledBackground: colorTokens.gray[50],
     } : {
-      active: colorTokens.gray[300],
-      hover: colorTokens.gray[800],
-      selected: colorTokens.gray[750],
-      disabled: colorTokens.gray[500],
-      disabledBackground: colorTokens.gray[800],
+      active: colorTokens.gray[150],
+      hover: colorTokens.gray[400],
+      selected: colorTokens.gray[350],
+      disabled: colorTokens.gray[200],
+      disabledBackground: colorTokens.gray[400],
     },
   },
   typography: {
-    fontFamily: roboto.style.fontFamily,
+    fontFamily: inter.style.fontFamily,
     fontSize: 14,
     h1: {
-      fontSize: "2.5rem",
+      fontSize: "2.25rem",
       fontWeight: 700,
       lineHeight: 1.2,
+      letterSpacing: "-0.025em",
     },
     h2: {
-      fontSize: "2rem",
+      fontSize: "1.875rem",
       fontWeight: 600,
-      lineHeight: 1.3,
+      lineHeight: 1.25,
+      letterSpacing: "-0.025em",
     },
     h3: {
-      fontSize: "1.75rem",
+      fontSize: "1.5rem",
       fontWeight: 600,
-      lineHeight: 1.4,
+      lineHeight: 1.3,
+      letterSpacing: "-0.02em",
     },
     h4: {
       fontSize: "1.5rem",
@@ -296,13 +286,23 @@ export const createAppTheme = (mode: PaletteMode) => createTheme({
           fontWeight: 500,
           padding: "8px 16px",
           boxShadow: "none",
+          fontSize: "0.875rem",
+          transition: "all 0.2s ease-in-out",
           "&:hover": {
-            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+            boxShadow: "none",
+            transform: "translateY(-1px)",
           },
         },
         contained: {
           "&:hover": {
-            boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+          },
+        },
+        outlined: {
+          borderWidth: "1.5px",
+          "&:hover": {
+            borderWidth: "1.5px",
+            backgroundColor: mode === 'light' ? colorTokens.gray[25] : colorTokens.gray[400],
           },
         },
       },
@@ -340,10 +340,10 @@ export const createAppTheme = (mode: PaletteMode) => createTheme({
           "& .MuiOutlinedInput-root": {
             borderRadius: 8,
             "&:hover .MuiOutlinedInput-notchedOutline": {
-              borderColor: mode === 'light' ? colorTokens.primary : colorTokens.blue[300],
+              borderColor: mode === 'light' ? colorTokens.primary : colorTokens.secondary,
             },
             "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-              borderColor: mode === 'light' ? colorTokens.primary : colorTokens.blue[300],
+              borderColor: mode === 'light' ? colorTokens.primary : colorTokens.secondary,
             },
           },
         },
@@ -361,9 +361,10 @@ export const createAppTheme = (mode: PaletteMode) => createTheme({
     MuiAppBar: {
       styleOverrides: {
         root: {
-          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-          backgroundColor: mode === 'light' ? colorTokens.white : colorTokens.gray[800],
-          color: mode === 'light' ? colorTokens.gray[900] : colorTokens.gray[50],
+          boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+          backgroundColor: mode === 'light' ? colorTokens.white : colorTokens.gray[400],
+          color: mode === 'light' ? colorTokens.gray[500] : colorTokens.gray[50],
+          borderBottom: `1px solid ${mode === 'light' ? colorTokens.gray[100] : colorTokens.gray[350]}`,
         },
       },
     },
@@ -372,7 +373,7 @@ export const createAppTheme = (mode: PaletteMode) => createTheme({
         root: {
           borderRadius: 8,
           "&:hover": {
-            backgroundColor: mode === 'light' ? colorTokens.gray[50] : colorTokens.gray[750],
+            backgroundColor: mode === 'light' ? colorTokens.gray[25] : colorTokens.gray[350],
           },
         },
       },
