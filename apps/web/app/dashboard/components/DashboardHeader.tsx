@@ -27,6 +27,7 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import PersonIcon from "@mui/icons-material/Person";
 import SecurityIcon from "@mui/icons-material/Security";
 import SettingsIcon from "@mui/icons-material/Settings";
+import Link from "next/link";
 
 const DashboardHeader = () => {
   const router = useRouter();
@@ -92,16 +93,25 @@ const DashboardHeader = () => {
   return (
     <AppBar
       position="sticky"
-      elevation={1}
       sx={{
         backgroundColor: (theme) => theme.palette.background.paper,
         borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
         boxShadow: (theme) => theme.shadows[1],
+        borderRadius: 0,
       }}
     >
       <Toolbar sx={{ justifyContent: "space-between" }}>
-        {/* Logo section */}
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 2,
+            cursor: "pointer",
+            textDecoration: "none",
+          }}
+          component={Link}
+          href="/dashboard"
+        >
           <DashboardIcon
             sx={{ fontSize: 32, color: (theme) => theme.palette.primary.main }}
           />
@@ -114,11 +124,10 @@ const DashboardHeader = () => {
               letterSpacing: "0.5px",
             }}
           >
-            SprintFlow
+            Sprint Flow
           </Typography>
         </Box>
 
-        {/* Actions section */}
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <IconButton
             sx={{
@@ -256,7 +265,6 @@ const DashboardHeader = () => {
         </Box>
       </Toolbar>
 
-      {/* Logout Confirmation Dialog */}
       <LogoutConfirmDialog
         open={showLogoutDialog}
         onCloseAction={handleLogoutCancel}
