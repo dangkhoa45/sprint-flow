@@ -7,7 +7,7 @@ export async function fetcher<T = unknown>(options: FetchOptions): Promise<T> {
   let url = options.path;
   if (options.params) {
     url += buildQueryString(
-      options.params as Record<string, string | number | boolean> as never,
+      options.params as Record<string, string | number | boolean> as never
     );
   }
 
@@ -19,14 +19,13 @@ export async function fetcher<T = unknown>(options: FetchOptions): Promise<T> {
       responseType: "json",
       data: options.body,
     });
-    console.log("🚀 ~ response:", response)
 
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       const axiosError = error as AxiosError<ErrorResponse>;
       throw new Error(
-        (axiosError.response?.data.message as string) || "An error occurred",
+        (axiosError.response?.data.message as string) || "An error occurred"
       );
     }
     throw new Error("Unknown error occurred");
