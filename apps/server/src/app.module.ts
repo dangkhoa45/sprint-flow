@@ -7,6 +7,7 @@ import { AuthGuard } from './modules/auth/auth.guard';
 import { AuthModule } from './modules/auth/auth.module';
 import { RolesGuard } from './modules/auth/roles.guard';
 import { UsersModule } from './modules/users/users.module';
+import { ProjectsModule } from './modules/projects/projects.module';
 import { JwtModule } from '@nestjs/jwt';
 
 @Module({
@@ -15,6 +16,7 @@ import { JwtModule } from '@nestjs/jwt';
     MongooseModule.forRoot(process.env.MONGO_URI ?? ''),
     AuthModule,
     UsersModule,
+    ProjectsModule,
     JwtModule.register({
       global: true,
       secret: process.env.APP_SECRET,

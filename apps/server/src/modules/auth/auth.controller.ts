@@ -14,12 +14,14 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
+  ApiHeader,
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { Request } from 'express';
 import { CurrentUser } from 'src/decorators/current-user.decor';
 import { Public } from 'src/decorators/public.decor';
+import { ApiUserHeaders } from 'src/decorators/api-user-headers.decorator';
 import { BadRequestResponse } from 'src/shared/base.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { User } from '../users/entities/user.entity';
@@ -44,17 +46,18 @@ export class AuthController {
   @ApiBody({ type: LoginDto })
   @ApiOkResponse({ type: LoginResponse })
   @ApiBadRequestResponse({ type: BadRequestResponse })
+  @ApiUserHeaders()
   signIn(
     @Body() signInDto: LoginDto,
-    @Headers('x-user-agent') ua: string,
-    @Headers('x-forwarded-for') xIP: string,
+    @Headers('x-user-agent') ua: string = 'Swagger-Test-Client',
+    @Headers('x-forwarded-for') xIP: string = '127.0.0.1',
   ) {
-    const [ip] = xIP.split(',');
+    const [ip] = (xIP || '127.0.0.1').split(',');
     return this.authService.signIn(
       signInDto.username,
       signInDto.password,
       ip.trim(),
-      ua,
+      ua || 'Swagger-Test-Client',
     );
   }
 
@@ -70,14 +73,15 @@ export class AuthController {
   })
   @ApiOkResponse({ type: LoginResponse })
   @ApiBadRequestResponse({ type: BadRequestResponse })
+  @ApiUserHeaders()
   async refreshToken(
     @Body('token') token: string,
-    @Headers('x-user-agent') ua: string,
-    @Headers('x-forwarded-for') xIP: string,
+    @Headers('x-user-agent') ua: string = 'Swagger-Test-Client',
+    @Headers('x-forwarded-for') xIP: string = '127.0.0.1',
   ) {
     try {
-      const [ip] = xIP.split(',');
-      return await this.authService.refreshToken(token, ip.trim(), ua);
+      const [ip] = (xIP || '127.0.0.1').split(',');
+      return await this.authService.refreshToken(token, ip.trim(), ua || 'Swagger-Test-Client');
     } catch {
       throw new UnauthorizedException();
     }

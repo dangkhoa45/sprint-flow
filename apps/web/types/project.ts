@@ -1,54 +1,89 @@
+import { BaseObject } from "./shared";
+import { User } from "./user";
+
 export enum ProjectStatus {
-  PLANNING = 'planning',
-  IN_PROGRESS = 'in_progress',
-  ON_HOLD = 'on_hold',
-  COMPLETED = 'completed',
-  CANCELLED = 'cancelled'
+  Planning = "Planning",
+  InProgress = "InProgress",
+  OnHold = "OnHold",
+  Completed = "Completed",
+  Cancelled = "Cancelled",
 }
 
 export enum ProjectPriority {
-  LOW = 'low',
-  MEDIUM = 'medium',
-  HIGH = 'high',
-  URGENT = 'urgent'
+  Low = "Low",
+  Medium = "Medium",
+  High = "High",
+  Critical = "Critical",
 }
 
-export interface ProjectMember {
-  _id: string;
-  username: string;
-  displayName: string;
-  avatar?: string;
-  role: 'owner' | 'manager' | 'member' | 'viewer';
-}
-
-export interface Project {
-  _id: string;
+export interface Project extends BaseObject {
   name: string;
-  description: string;
+  description?: string;
   status: ProjectStatus;
   priority: ProjectPriority;
-  startDate: Date;
-  endDate?: Date;
+  owner: User;
+  members: User[];
+  startDate?: string;
+  endDate?: string;
+  estimatedHours?: number;
+  actualHours: number;
   progress: number;
   budget?: number;
-  owner: ProjectMember;
-  members: ProjectMember[];
-  tasksCount: number;
-  completedTasks: number;
+  actualCost: number;
   tags: string[];
-  createdAt: Date;
-  updatedAt: Date;
+  metadata?: Record<string, unknown>;
+  createdBy?: User;
+  updatedBy?: User;
 }
 
-export interface CreateProjectData {
+export interface CreateProjectDto {
   name: string;
-  description: string;
-  priority: ProjectPriority;
-  startDate: Date;
-  endDate?: Date;
+  description?: string;
+  priority?: ProjectPriority;
+  members?: string[];
+  startDate?: string;
+  endDate?: string;
+  estimatedHours?: number;
   budget?: number;
-  members: string[];
-  tags: string[];
+  tags?: string[];
+  metadata?: Record<string, unknown>;
+}
+
+export interface UpdateProjectDto extends Partial<CreateProjectDto> {
+  status?: ProjectStatus;
+  progress?: number;
+  actualHours?: number;
+  actualCost?: number;
+}
+
+export interface ProjectQueryDto {
+  search?: string;
+  status?: ProjectStatus;
+  priority?: ProjectPriority;
+  owner?: string;
+  member?: string;
+  startDateFrom?: string;
+  startDateTo?: string;
+  endDateFrom?: string;
+  endDateTo?: string;
+  tags?: string[];
+  offset?: number;
+  limit?: number;
+  sortField?: string;
+  sortOrder?: "asc" | "desc";
+}
+
+export interface ProjectStatsDto {
+  total: number;
+  planning: number;
+  inProgress: number;
+  completed: number;
+  onHold: number;
+  cancelled: number;
+  overdue: number;
+  totalBudget: number;
+  totalActualCost: number;
+  averageProgress: number;
 }
 
 export interface ProjectFilters {

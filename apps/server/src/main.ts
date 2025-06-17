@@ -53,15 +53,44 @@ async function bootstrap() {
   app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
   const config = new DocumentBuilder()
-    .setTitle('API Docs')
-    .setDescription('RESTful APIs build with NestJS for Car Store System')
+    .setTitle('SprintFlow API')
+    .setDescription(`
+      RESTful APIs for SprintFlow Project Management System
+      
+      **Testing Headers:**
+      - For authentication endpoints, you can use these headers:
+        - x-user-agent: Browser user agent (auto-filled)
+        - x-forwarded-for: Client IP address (auto-filled)
+      
+      **Authentication:**
+      - Login to get access token
+      - Use Bearer token for protected endpoints
+    `)
     .setVersion('1.0')
     .addBearerAuth()
+    .addServer('http://localhost:8005', 'Development Server')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
 
-  SwaggerModule.setup('api/docs', app, document);
+  SwaggerModule.setup('api/docs', app, document, {
+    customSiteTitle: 'SprintFlow API Documentation',
+    customfavIcon: '/favicon.ico',
+    customCss: `
+      .swagger-ui .topbar { display: none; }
+      .swagger-ui .info .title { color: #1976d2; }
+      .swagger-ui .scheme-container { background: #fafafa; padding: 10px; border-radius: 4px; }
+    `,
+    swaggerOptions: {
+      persistAuthorization: true,
+      displayRequestDuration: true,
+      filter: true,
+      showExtensions: true,
+      showCommonExtensions: true,
+      defaultModelsExpandDepth: 2,
+      defaultModelExpandDepth: 2,
+    },
+  });
 
   await app.listen(8005);
 }
