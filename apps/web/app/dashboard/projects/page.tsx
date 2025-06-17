@@ -44,7 +44,7 @@ export default function ProjectsPage() {
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(event.target.value);
-    setFilters((prev) => ({ ...prev, offset: 0 })); // Reset to first page
+    setFilters((prev) => ({ ...prev, offset: 0 }));
   };
 
   const handleViewModeChange = (
@@ -65,8 +65,7 @@ export default function ProjectsPage() {
   };
 
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
-      {/* Header */}
+    <Container maxWidth="xl">
       <Box sx={{ mb: 4 }}>
         <Box
           sx={{
@@ -104,11 +103,9 @@ export default function ProjectsPage() {
           </Button>
         </Box>
 
-        {/* Stats */}
         <ProjectsStats />
       </Box>
 
-      {/* Controls */}
       <Paper sx={{ p: 3, mb: 3, borderRadius: 3 }}>
         <Box
           sx={{
@@ -118,7 +115,6 @@ export default function ProjectsPage() {
             flexWrap: "wrap",
           }}
         >
-          {/* Search */}
           <TextField
             placeholder="Tìm kiếm dự án..."
             value={search}
@@ -133,7 +129,6 @@ export default function ProjectsPage() {
             }}
           />
 
-          {/* Filter Toggle */}
           <IconButton
             onClick={() => setShowFilters(!showFilters)}
             color={showFilters ? "primary" : "default"}
@@ -145,7 +140,6 @@ export default function ProjectsPage() {
             <FilterListIcon />
           </IconButton>
 
-          {/* View Mode */}
           <ToggleButtonGroup
             value={viewMode}
             exclusive
@@ -167,7 +161,6 @@ export default function ProjectsPage() {
           </ToggleButtonGroup>
         </Box>
 
-        {/* Filters */}
         {showFilters && (
           <Box
             sx={{
@@ -184,7 +177,6 @@ export default function ProjectsPage() {
         )}
       </Paper>
 
-      {/* Projects Display */}
       {viewMode === "grid" ? (
         <ProjectsGrid
           projects={projects}
@@ -211,7 +203,6 @@ export default function ProjectsPage() {
         />
       )}
 
-      {/* Create Project Dialog */}
       <CreateProjectDialog
         open={showCreateDialog}
         onCloseAction={() => setShowCreateDialog(false)}
