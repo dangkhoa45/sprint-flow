@@ -2,6 +2,7 @@
 import { ReactNode } from "react";
 import Box from '@mui/material/Box';
 import DashboardHeader from "./components/DashboardHeader";
+import ErrorBoundary from "../../components/ErrorBoundary";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
@@ -13,9 +14,11 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       }}
     >
       <DashboardHeader />
-      <Box sx={{ position: "relative" }}>
-        {children}
-      </Box>
+      <ErrorBoundary>
+        <Box sx={{ position: "relative" }}>
+          {children}
+        </Box>
+      </ErrorBoundary>
     </Box>
   );
 }
