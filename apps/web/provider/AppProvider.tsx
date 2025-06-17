@@ -13,6 +13,10 @@ import ThemeRegistry from "./ThemeRegistry";
 
 const cache = new LRUCache({ max: 10 });
 const axios = Axios.create({ withCredentials: true });
+
+// Note: Cookies are httpOnly, so we rely on automatic cookie transmission
+// No need for Authorization header interceptor since server reads from cookies
+
 configure({ axios, cache } as never);
 
 type Props = {

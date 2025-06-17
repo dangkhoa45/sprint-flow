@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { ErrorResponse, FetchOptions } from "../types/shared";
 import { buildQueryString } from "./query";
+import axiosInstance from "./axiosConfig";
 
 export async function fetcher<T = unknown>(options: FetchOptions): Promise<T> {
   let url = options.path;
@@ -11,14 +12,14 @@ export async function fetcher<T = unknown>(options: FetchOptions): Promise<T> {
   }
 
   try {
-    const response: AxiosResponse<T> = await axios({
+    const response: AxiosResponse<T> = await axiosInstance({
       url,
       method: options.method || "GET",
       timeout: options.timeout || 10000,
-      withCredentials: true,
       responseType: "json",
       data: options.body,
     });
+    console.log("🚀 ~ response:", response)
 
     return response.data;
   } catch (error) {

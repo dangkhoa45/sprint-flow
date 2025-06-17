@@ -24,6 +24,7 @@ import { CurrentUser } from 'src/decorators/current-user.decor';
 import { Roles } from 'src/decorators/roles.decor';
 import { BadRequestResponse } from 'src/shared/base.dto';
 import { TokenPayload } from '../auth/dto/tokenPayload';
+import { AuthGuard } from '../auth/auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { UserRole } from '../users/entities/user.entity';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -34,6 +35,7 @@ import { ProjectsService } from './projects.service';
 
 @ApiTags('Projects')
 @ApiBearerAuth()
+@UseGuards(AuthGuard)
 @Controller('projects')
 export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}

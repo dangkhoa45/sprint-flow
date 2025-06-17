@@ -8,6 +8,7 @@ import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { IS_PUBLIC_KEY } from 'src/decorators/public.decor';
+import { getAccessTokenFromRequest } from 'src/utils/cookies';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -30,31 +31,21 @@ export class AuthGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest();
-    const token = this.extractTokenFromRequest(request);
+    const token = getAccessTokenFromRequest(request);
 
     if (!token) {
-      throw new UnauthorizedException();
+      console.log('❌ AuthGuard: No token found, request denied');
+      throw new UnauthorizedException('No authentication token provided');
     }
 
     try {
       const payload = await this.jwtService.verifyAsync(token);
       request['user'] = payload;
-    } catch {
-      throw new UnauthorizedException();
-    }
-
-    return true;
-  }
-
-  private extractTokenFromRequest(request: Request): string | undefined {
-    switch (true) {
-      case !!request.session.token:
-        return request.session.token;
-      case !!request.headers.authorization:
-        const [type, token] = request.headers.authorization?.split(' ') ?? [];
-        return type === 'Bearer' ? token : undefined;
-      default:
-        return undefined;
+      console.log('✅ AuthGuard: Token verified successfully for user:', payload.una);
+      return true;
+    } catch (error) {
+      console.log('❌ AuthGuard: Token verification failed:', error.message);
+      throw new UnauthorizedException('Invalid authentication token');
     }
   }
 }

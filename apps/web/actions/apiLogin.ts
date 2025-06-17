@@ -12,7 +12,7 @@ export async function apiLogin(formData: FormData): Promise<LoginApiResponse> {
   const host = (await headers()).get("host");
   const isRemember = formData.get("remember");
 
-  const expires = !isRemember ? undefined : Date.now() + 7 * 24 * 60 * 60 * 1000;
+  const expiresDate = !isRemember ? undefined : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
   try {
     const response = await fetch(`${INTERNAL_API_HOST}/api/auth/login`, {
@@ -35,24 +35,30 @@ export async function apiLogin(formData: FormData): Promise<LoginApiResponse> {
 
     if (response.ok && json.accessToken) {
       const cookieStore = cookies();
+      
+      console.log('🍪 Setting cookies for host:', host);
+      console.log('🔑 Access token:', json.accessToken.substring(0, 20) + '...');
+      
       if (isRemember) {
         (await cookieStore).set(`${host}:re`, `${isRemember}`, {
           httpOnly: true,
-          expires,
+          expires: expiresDate,
         });
       }
       (await cookieStore).set(`${host}:at`, json.accessToken, {
         httpOnly: true,
-        expires,
+        expires: expiresDate,
       });
       (await cookieStore).set(`${host}:rt`, json.refreshToken, {
         httpOnly: true,
-        expires,
+        expires: expiresDate,
       });
       (await cookieStore).set(`${host}:ut`, jsonToBase64(json.profile), {
         httpOnly: true,
-        expires,
+        expires: expiresDate,
       });
+      
+      console.log('✅ Cookies set successfully');
       
       // Return user data instead of redirecting
       return {
