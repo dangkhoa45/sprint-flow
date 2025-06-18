@@ -16,11 +16,13 @@ import InputAdornment from "@mui/material/InputAdornment";
 import Link from "@mui/material/Link";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import { useTheme } from "@mui/material/styles";
 import { useRouter } from "next/navigation";
 import { useSnackbar } from "notistack";
 import { useState } from "react";
 import { apiLogin } from "../actions/apiLogin";
 import { useCurrentUser } from "../hooks/useCurrentUser";
+import { useThemeMode } from "../provider/ThemeContext";
 
 type LoginFormProps = {
   error?: string;
@@ -30,36 +32,43 @@ export default function LoginForm({ error }: LoginFormProps) {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const { setUser } = useCurrentUser();
+  const theme = useTheme();
+  const { resolvedTheme } = useThemeMode();
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [loginError, setLoginError] = useState(error);
 
+  const isDark = resolvedTheme === "light";
+
   const handleSubmit = async (formData: FormData) => {
     setIsLoading(true);
     setLoginError(undefined);
-    
+
     try {
       const result = await apiLogin(formData);
-      
+
       if (result.success) {
         // Update user context
         setUser(result.user);
-        
+
         // Show success message
         enqueueSnackbar("Đăng nhập thành công!", {
           variant: "success",
           autoHideDuration: 2000,
         });
-        
+
         // Redirect to dashboard
         router.push("/dashboard");
       } else {
         setLoginError(result.error);
-        enqueueSnackbar("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.", {
-          variant: "error",
-          autoHideDuration: 4000,
-        });
+        enqueueSnackbar(
+          "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.",
+          {
+            variant: "error",
+            autoHideDuration: 4000,
+          }
+        );
       }
     } catch (error) {
       console.error("Đăng nhập thất bại:", error);
@@ -77,47 +86,57 @@ export default function LoginForm({ error }: LoginFormProps) {
     <Box
       sx={{
         minHeight: "100vh",
-        background: `
-          linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
-          url('https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1974&q=80')
-        `,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
+        backgroundColor: theme.palette.background.default,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         p: { xs: 2, sm: 3, md: 4 },
         position: "relative",
+        // Subtle gradient overlay
+        "&::before": {
+          content: '""',
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: isDark
+            ? "radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.02) 0%, transparent 50%), radial-gradient(circle at 70% 80%, rgba(255, 255, 255, 0.01) 0%, transparent 50%)"
+            : "radial-gradient(circle at 30% 20%, rgba(0, 0, 0, 0.02) 0%, transparent 50%), radial-gradient(circle at 70% 80%, rgba(0, 0, 0, 0.01) 0%, transparent 50%)",
+          zIndex: 1,
+        },
       }}
     >
       <Card
+        elevation={isDark ? 8 : 4}
         sx={{
           maxWidth: 1000,
           width: "100%",
-          borderRadius: { xs: "20px", md: "24px" },
+          borderRadius: { xs: 2, md: 3 },
           overflow: "hidden",
-          background: "rgba(255, 255, 255, 0.05)",
-          backdropFilter: "blur(30px)",
-          border: "1px solid rgba(255, 255, 255, 0.1)",
-          boxShadow: "0 12px 40px rgba(0, 0, 0, 0.15)",
+          backgroundColor: theme.palette.background.paper,
+          border: `1px solid ${theme.palette.divider}`,
+          boxShadow: isDark
+            ? "0 20px 40px rgba(0, 0, 0, 0.6), 0 8px 16px rgba(0, 0, 0, 0.4)"
+            : "0 20px 40px rgba(0, 0, 0, 0.08), 0 8px 16px rgba(0, 0, 0, 0.04)",
           zIndex: 2,
         }}
       >
-        <Grid container sx={{ height: "100%" }}>
+        <Grid container sx={{ minHeight: { xs: "auto", md: 600 } }}>
+          {/* Left Panel - Branding */}
           <Grid
             size={{ xs: 12, md: 6 }}
             sx={{
-              background: "rgba(102, 126, 234, 0.9)",
-              backdropFilter: "blur(10px)",
+              backgroundColor: theme.palette.primary.main,
+              color: theme.palette.primary.contrastText,
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
               alignItems: "center",
-              p: { xs: 3, sm: 4, md: 5, lg: 6 },
-              color: "white",
-              minHeight: { xs: 250, md: "auto" },
+              p: { xs: 4, sm: 5, md: 6 },
+              minHeight: { xs: 280, md: "auto" },
               position: "relative",
+              // Subtle texture overlay
               "&::before": {
                 content: '""',
                 position: "absolute",
@@ -125,81 +144,150 @@ export default function LoginForm({ error }: LoginFormProps) {
                 left: 0,
                 right: 0,
                 bottom: 0,
-                background: `
-                  radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-                  radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.05) 0%, transparent 50%)
-                `,
+                background: isDark
+                  ? "radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.08) 0%, transparent 60%), radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.04) 0%, transparent 60%)"
+                  : "radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 60%), radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.05) 0%, transparent 60%)",
                 zIndex: 0,
               },
             }}
           >
             <Box sx={{ textAlign: "center", maxWidth: 400, zIndex: 1 }}>
+              {/* Logo and Brand */}
               <Box
                 sx={{
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  mb: { xs: 2, md: 3 },
+                  mb: { xs: 3, md: 4 },
+                  animation: "fadeInUp 0.8s ease-out",
+                  "@keyframes fadeInUp": {
+                    "0%": { opacity: 0, transform: "translateY(30px)" },
+                    "100%": { opacity: 1, transform: "translateY(0)" },
+                  },
                 }}
               >
-                <DashboardIcon sx={{ fontSize: { xs: 40, md: 48 }, mr: 2 }} />
-                <Typography
-                  variant="h3"
+                <Box
                   sx={{
-                    fontWeight: "bold",
-                    fontSize: { xs: "1.8rem", md: "2.5rem" },
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    width: { xs: 56, md: 64 },
+                    height: { xs: 56, md: 64 },
+                    borderRadius: 2,
+                    backgroundColor: theme.palette.primary.contrastText,
+                    color: theme.palette.primary.main,
+                    mr: 2.5,
+                    boxShadow: isDark
+                      ? "0 4px 16px rgba(255, 255, 255, 0.1)"
+                      : "0 4px 16px rgba(0, 0, 0, 0.1)",
+                  }}
+                >
+                  <DashboardIcon sx={{ fontSize: { xs: 28, md: 32 } }} />
+                </Box>
+                <Typography
+                  variant="h2"
+                  sx={{
+                    fontWeight: 700,
+                    fontSize: { xs: "1.8rem", md: "2.2rem" },
+                    color: theme.palette.primary.contrastText,
                   }}
                 >
                   Sprint Flow
                 </Typography>
               </Box>
+
               <Typography
-                variant="h5"
+                variant="h4"
                 sx={{
                   fontWeight: 600,
-                  mb: { xs: 1.5, md: 2 },
+                  mb: 2,
+                  fontSize: { xs: "1.3rem", md: "1.6rem" },
+                  color: theme.palette.primary.contrastText,
                   opacity: 0.95,
-                  fontSize: { xs: "1.2rem", md: "1.5rem" },
+                  animation: "fadeInUp 0.8s ease-out 0.2s both",
                 }}
               >
                 Chào mừng trở lại!
               </Typography>
+
               <Typography
                 variant="body1"
                 sx={{
-                  opacity: 0.8,
                   fontSize: { xs: "1rem", md: "1.1rem" },
                   lineHeight: 1.6,
-                  mb: { xs: 3, md: 4 },
+                  mb: 4,
+                  color: theme.palette.primary.contrastText,
+                  opacity: 0.85,
+                  animation: "fadeInUp 0.8s ease-out 0.4s both",
                 }}
               >
-                Quản lý dự án hiệu quả với Sprint Flow. Đăng nhập để tiếp tục
-                hành trình của bạn.
+                Quản lý dự án hiệu quả và theo dõi tiến độ sprint một cách
+                chuyên nghiệp. Đăng nhập để tiếp tục hành trình phát triển.
               </Typography>
+
+              {/* Feature tags */}
+              <Box
+                sx={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: 1.5,
+                  justifyContent: "center",
+                  animation: "fadeInUp 0.8s ease-out 0.6s both",
+                }}
+              >
+                {["Quản lý Sprint", "Theo dõi Task", "Báo cáo tiến độ"].map(
+                  (feature) => (
+                    <Box
+                      key={feature}
+                      sx={{
+                        px: 2,
+                        py: 0.8,
+                        borderRadius: 1.5,
+                        backgroundColor: theme.palette.primary.contrastText,
+                        color: theme.palette.primary.main,
+                        fontSize: "0.8rem",
+                        fontWeight: 500,
+                        opacity: 0.9,
+                        boxShadow: isDark
+                          ? "0 2px 8px rgba(255, 255, 255, 0.1)"
+                          : "0 2px 8px rgba(0, 0, 0, 0.1)",
+                      }}
+                    >
+                      {feature}
+                    </Box>
+                  )
+                )}
+              </Box>
             </Box>
           </Grid>
 
+          {/* Right Panel - Login Form */}
           <Grid
             size={{ xs: 12, md: 6 }}
             sx={{
-              width: "100%",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               px: { xs: 3, md: 4, lg: 6 },
               py: { xs: 4, md: 5 },
-              background: "rgba(255, 255, 255, 0.95)",
-              backdropFilter: "blur(10px)",
+              backgroundColor: theme.palette.background.paper,
             }}
           >
             <Box sx={{ width: "100%", maxWidth: 400 }}>
-              <Box sx={{ mb: { xs: 3, md: 4 }, textAlign: "center" }}>
+              <Box
+                sx={{
+                  mb: { xs: 4, md: 5 },
+                  textAlign: "center",
+                  animation: "fadeInUp 0.8s ease-out 0.8s both",
+                }}
+              >
                 <Typography
-                  variant="h4"
+                  variant="h3"
                   sx={{
-                    fontWeight: "bold",
-                    color: "#1f2937",
+                    fontWeight: 700,
+                    color: theme.palette.text.primary,
                     mb: 1,
+                    fontSize: { xs: "1.5rem", md: "1.8rem" },
                   }}
                 >
                   Đăng nhập tài khoản
@@ -207,26 +295,30 @@ export default function LoginForm({ error }: LoginFormProps) {
                 <Typography
                   variant="body1"
                   sx={{
-                    color: "#6b7280",
+                    color: theme.palette.text.secondary,
                     fontSize: "1rem",
                   }}
                 >
-                  Vui lòng nhập thông tin đăng nhập để tiếp tục
+                  Vui lòng nhập thông tin để tiếp tục
                 </Typography>
               </Box>
 
               <Box
                 component="form"
                 action={handleSubmit}
-                sx={{ width: "100%" }}
+                sx={{
+                  width: "100%",
+                  animation: "fadeInUp 0.8s ease-out 1s both",
+                }}
               >
-                <Box sx={{ mb: { xs: 2.5, md: 3 } }}>
+                <Box sx={{ mb: { xs: 3, md: 3.5 } }}>
                   <Typography
                     variant="body2"
                     sx={{
-                      color: "#374151",
-                      mb: { xs: 1, md: 1.5 },
+                      color: theme.palette.text.primary,
+                      mb: 1.5,
                       fontWeight: 600,
+                      fontSize: "0.9rem",
                     }}
                   >
                     Tên đăng nhập
@@ -242,37 +334,39 @@ export default function LoginForm({ error }: LoginFormProps) {
                       startAdornment: (
                         <InputAdornment position="start">
                           <PersonOutlineOutlinedIcon
-                            sx={{ color: "#9ca3af" }}
+                            sx={{ color: theme.palette.text.secondary }}
                           />
                         </InputAdornment>
                       ),
                     }}
                     sx={{
                       "& .MuiOutlinedInput-root": {
-                        borderRadius: "16px",
-                        backgroundColor: "rgba(248, 250, 252, 0.8)",
-                        backdropFilter: "blur(10px)",
-                        border: "1px solid rgba(255, 255, 255, 0.3)",
-                        transition: "all 0.3s ease",
+                        backgroundColor: theme.palette.action.hover,
+                        border: `1px solid ${theme.palette.divider}`,
+                        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                         "& fieldset": {
                           border: "none",
                         },
                         "&:hover": {
-                          backgroundColor: "rgba(241, 245, 249, 0.9)",
-                          borderColor: "rgba(255, 255, 255, 0.4)",
+                          backgroundColor: theme.palette.action.selected,
+                          borderColor: theme.palette.primary.main,
                           transform: "translateY(-1px)",
-                          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+                          boxShadow: `0 4px 12px ${theme.palette.primary.main}20`,
                         },
                         "&.Mui-focused": {
-                          backgroundColor: "rgba(255, 255, 255, 0.9)",
-                          borderColor: "rgba(102, 126, 234, 0.5)",
-                          boxShadow:
-                            "0 0 0 3px rgba(102, 126, 234, 0.15), 0 4px 12px rgba(102, 126, 234, 0.1)",
+                          backgroundColor: theme.palette.background.paper,
+                          borderColor: theme.palette.primary.main,
+                          boxShadow: `0 0 0 2px ${theme.palette.primary.main}30`,
                         },
                       },
                       "& .MuiInputBase-input": {
-                        py: { xs: 1.2, md: 1.5 },
+                        py: 1.5,
                         fontSize: "1rem",
+                        color: theme.palette.text.primary,
+                        "&::placeholder": {
+                          color: theme.palette.text.secondary,
+                          opacity: 0.7,
+                        },
                       },
                     }}
                   />
@@ -282,9 +376,10 @@ export default function LoginForm({ error }: LoginFormProps) {
                   <Typography
                     variant="body2"
                     sx={{
-                      color: "#374151",
-                      mb: { xs: 1, md: 1.5 },
+                      color: theme.palette.text.primary,
+                      mb: 1.5,
                       fontWeight: 600,
+                      fontSize: "0.9rem",
                     }}
                   >
                     Mật khẩu
@@ -299,7 +394,9 @@ export default function LoginForm({ error }: LoginFormProps) {
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
-                          <LockOutlinedIcon sx={{ color: "#9ca3af" }} />
+                          <LockOutlinedIcon
+                            sx={{ color: theme.palette.text.secondary }}
+                          />
                         </InputAdornment>
                       ),
                       endAdornment: (
@@ -308,10 +405,10 @@ export default function LoginForm({ error }: LoginFormProps) {
                             onClick={() => setShowPassword(!showPassword)}
                             edge="end"
                             sx={{
-                              color: "#9ca3af",
+                              color: theme.palette.text.secondary,
                               "&:hover": {
-                                backgroundColor: "rgba(102, 126, 234, 0.1)",
-                                color: "#667eea",
+                                backgroundColor: theme.palette.action.hover,
+                                color: theme.palette.primary.main,
                               },
                             }}
                           >
@@ -326,30 +423,32 @@ export default function LoginForm({ error }: LoginFormProps) {
                     }}
                     sx={{
                       "& .MuiOutlinedInput-root": {
-                        borderRadius: "16px",
-                        backgroundColor: "rgba(248, 250, 252, 0.8)",
-                        backdropFilter: "blur(10px)",
-                        border: "1px solid rgba(255, 255, 255, 0.3)",
-                        transition: "all 0.3s ease",
+                        backgroundColor: theme.palette.action.hover,
+                        border: `1px solid ${theme.palette.divider}`,
+                        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                         "& fieldset": {
                           border: "none",
                         },
                         "&:hover": {
-                          backgroundColor: "rgba(241, 245, 249, 0.9)",
-                          borderColor: "rgba(255, 255, 255, 0.4)",
+                          backgroundColor: theme.palette.action.selected,
+                          borderColor: theme.palette.primary.main,
                           transform: "translateY(-1px)",
-                          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+                          boxShadow: `0 4px 12px ${theme.palette.primary.main}20`,
                         },
                         "&.Mui-focused": {
-                          backgroundColor: "rgba(255, 255, 255, 0.9)",
-                          borderColor: "rgba(102, 126, 234, 0.5)",
-                          boxShadow:
-                            "0 0 0 3px rgba(102, 126, 234, 0.15), 0 4px 12px rgba(102, 126, 234, 0.1)",
+                          backgroundColor: theme.palette.background.paper,
+                          borderColor: theme.palette.primary.main,
+                          boxShadow: `0 0 0 2px ${theme.palette.primary.main}30`,
                         },
                       },
                       "& .MuiInputBase-input": {
-                        py: { xs: 1.2, md: 1.5 },
+                        py: 1.5,
                         fontSize: "1rem",
+                        color: theme.palette.text.primary,
+                        "&::placeholder": {
+                          color: theme.palette.text.secondary,
+                          opacity: 0.7,
+                        },
                       },
                     }}
                   />
@@ -360,7 +459,7 @@ export default function LoginForm({ error }: LoginFormProps) {
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    mb: { xs: 3, md: 4 },
+                    mb: { xs: 4, md: 5 },
                     flexDirection: { xs: "column", sm: "row" },
                     gap: { xs: 2, sm: 0 },
                   }}
@@ -372,20 +471,24 @@ export default function LoginForm({ error }: LoginFormProps) {
                       checked={rememberMe}
                       onChange={(e) => setRememberMe(e.target.checked)}
                       sx={{
-                        color: "#667eea",
+                        color: theme.palette.primary.main,
                         p: 0,
                         mr: 1.5,
                         "&.Mui-checked": {
-                          color: "#667eea",
+                          color: theme.palette.primary.main,
+                        },
+                        "&:hover": {
+                          backgroundColor: theme.palette.action.hover,
                         },
                       }}
                     />
                     <Typography
                       variant="body2"
                       sx={{
-                        color: "#374151",
+                        color: theme.palette.text.primary,
                         fontWeight: 500,
                         cursor: "pointer",
+                        fontSize: "0.9rem",
                       }}
                       onClick={() => setRememberMe(!rememberMe)}
                     >
@@ -396,12 +499,14 @@ export default function LoginForm({ error }: LoginFormProps) {
                     href="/forgot-password"
                     variant="body2"
                     sx={{
-                      color: "#667eea",
+                      color: theme.palette.primary.main,
                       textDecoration: "none",
                       fontWeight: 600,
+                      fontSize: "0.9rem",
+                      transition: "all 0.2s ease",
                       "&:hover": {
                         textDecoration: "underline",
-                        color: "#5a67d8",
+                        opacity: 0.8,
                       },
                     }}
                   >
@@ -416,41 +521,41 @@ export default function LoginForm({ error }: LoginFormProps) {
                   disabled={isLoading}
                   startIcon={isLoading ? null : <LoginIcon />}
                   sx={{
-                    py: { xs: 1.8, md: 2 },
-                    mb: { xs: 2, md: 3 },
-                    borderRadius: "16px",
-                    background: "rgba(102, 126, 234, 0.9)",
-                    backdropFilter: "blur(10px)",
-                    border: "1px solid rgba(255, 255, 255, 0.2)",
+                    py: 2,
+                    mb: 3,
+                    backgroundColor: theme.palette.primary.main,
+                    color: theme.palette.primary.contrastText,
                     fontWeight: 600,
-                    fontSize: { xs: "1rem", md: "1.1rem" },
+                    fontSize: "1rem",
                     textTransform: "none",
-                    boxShadow: "0 8px 25px rgba(102, 126, 234, 0.3)",
-                    transition: "all 0.3s ease",
+                    boxShadow: `0 8px 20px ${theme.palette.primary.main}40`,
+                    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                     "&:hover": {
-                      background: "rgba(90, 103, 216, 0.9)",
+                      backgroundColor: theme.palette.primary.dark,
                       transform: "translateY(-2px)",
-                      boxShadow: "0 12px 35px rgba(102, 126, 234, 0.4)",
+                      boxShadow: `0 12px 28px ${theme.palette.primary.main}50`,
                     },
                     "&:active": {
                       transform: "translateY(0px)",
                     },
                     "&:disabled": {
-                      background: "rgba(209, 213, 219, 0.6)",
-                      color: "#9ca3af",
+                      backgroundColor: theme.palette.action.disabledBackground,
+                      color: theme.palette.action.disabled,
                       transform: "none",
                       boxShadow: "none",
                     },
                   }}
                 >
                   {isLoading ? (
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <Box
+                      sx={{ display: "flex", alignItems: "center", gap: 1.5 }}
+                    >
                       <Box
                         sx={{
                           width: 20,
                           height: 20,
-                          border: "2px solid rgba(255,255,255,0.3)",
-                          borderTop: "2px solid white",
+                          border: `2px solid ${theme.palette.primary.contrastText}40`,
+                          borderTop: `2px solid ${theme.palette.primary.contrastText}`,
                           borderRadius: "50%",
                           animation: "spin 1s linear infinite",
                           "@keyframes spin": {
@@ -471,12 +576,11 @@ export default function LoginForm({ error }: LoginFormProps) {
                     severity="error"
                     sx={{
                       mt: 2,
-                      borderRadius: "12px",
-                      backgroundColor: "#fef2f2",
-                      color: "#dc2626",
-                      border: "1px solid #fecaca",
+                      backgroundColor: theme.palette.error.main + "15",
+                      color: theme.palette.error.main,
+                      border: `1px solid ${theme.palette.error.main}30`,
                       "& .MuiAlert-icon": {
-                        color: "#dc2626",
+                        color: theme.palette.error.main,
                       },
                     }}
                   >
