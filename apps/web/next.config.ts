@@ -7,6 +7,12 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+
+  distDir: ".next",
+  cleanDistDir: true,
+  poweredByHeader: false,
+  trailingSlash: false,
+  output: "standalone",
 };
 
 export default nextConfig;
