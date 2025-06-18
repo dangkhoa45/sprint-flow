@@ -17,7 +17,7 @@ interface ThemeContextType {
 }
 
 const ThemeContext = createContext<ThemeContextType>({
-  mode: "light",
+  mode: "system",
   resolvedTheme: "light",
   setTheme: () => {},
 });
@@ -35,12 +35,12 @@ interface ThemeProviderProps {
 }
 
 export function ThemeModeProvider({ children }: ThemeProviderProps) {
-  const [mode, setMode] = useState<ThemeMode>("light");
+  const [mode, setMode] = useState<ThemeMode>("system");
   const [systemTheme, setSystemTheme] = useState<"light" | "dark">("light");
 
-  // Listen to system theme changes
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
     setSystemTheme(mediaQuery.matches ? "dark" : "light");
 
     const handleChange = (e: MediaQueryListEvent) => {
@@ -51,14 +51,12 @@ export function ThemeModeProvider({ children }: ThemeProviderProps) {
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
 
-  // Load theme from localStorage on mount
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") as ThemeMode;
     if (savedTheme && ["light", "dark", "system"].includes(savedTheme)) {
       setMode(savedTheme);
     } else {
-      // Default to light theme if no saved theme
-      setMode("light");
+      setMode("system");
     }
   }, []);
 

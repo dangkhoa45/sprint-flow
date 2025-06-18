@@ -1,30 +1,30 @@
 "use client";
-import { useState, ReactNode } from "react";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import Box from "@mui/material/Box";
+import Card from "@mui/material/Card";
+import CardActionArea from "@mui/material/CardActionArea";
+import CardContent from "@mui/material/CardContent";
+import { useTheme } from "@mui/material/styles";
+import Typography from "@mui/material/Typography";
 import { useRouter } from "next/navigation";
-import Card from '@mui/material/Card';
-import CardActionArea from '@mui/material/CardActionArea';
-import CardContent from '@mui/material/CardContent';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
+import { ReactNode, useState } from "react";
+import { useThemeMode } from "../../../provider/ThemeContext";
+
 interface MenuCardProps {
   title: string;
   description: string;
   icon: ReactNode;
   path: string;
   color: string;
-  bgColor: string;
 }
 
-const MenuCard = ({
-  title,
-  description,
-  icon,
-  path,
-  color,
-  bgColor,
-}: MenuCardProps) => {
+const MenuCard = ({ title, description, icon, path, color }: MenuCardProps) => {
   const router = useRouter();
+  const theme = useTheme();
+  const { resolvedTheme } = useThemeMode();
   const [isHovered, setIsHovered] = useState(false);
+
+  const isDark = resolvedTheme === "dark";
 
   const handleClick = () => {
     router.push(path);
@@ -37,23 +37,31 @@ const MenuCard = ({
       onMouseLeave={() => setIsHovered(false)}
       sx={{
         height: "100%",
-        backgroundColor: (theme) => theme.palette.mode === 'light' ? bgColor : theme.palette.grey[800],
-        border: (theme) => `1px solid ${theme.palette.mode === 'light' ? theme.palette.grey[200] : theme.palette.grey[700]}`,
-        borderRadius: 3,
+        backgroundColor: theme.palette.background.paper,
+        border: `1px solid ${theme.palette.divider}`,
+        borderRadius: 2,
         transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
         transform: isHovered ? "translateY(-4px)" : "translateY(0)",
         boxShadow: isHovered
-          ? (theme) => theme.palette.mode === 'light' 
-            ? "0 8px 25px rgba(0, 0, 0, 0.12)" 
-            : "0 8px 25px rgba(0, 0, 0, 0.3)"
-          : (theme) => theme.palette.mode === 'light'
-            ? "0 2px 8px rgba(0, 0, 0, 0.08)"
-            : "0 2px 8px rgba(0, 0, 0, 0.2)",
+          ? isDark
+            ? "0 8px 25px rgba(0, 0, 0, 0.4)"
+            : "0 8px 25px rgba(0, 0, 0, 0.1)"
+          : isDark
+          ? "0 2px 8px rgba(0, 0, 0, 0.3)"
+          : "0 2px 8px rgba(0, 0, 0, 0.05)",
         "&:hover": {
+          borderColor: color,
           "& .card-icon": {
             transform: "scale(1.05)",
+            color: color,
+            backgroundColor: `${color}15`,
           },
           "& .card-title": {
+            color: color,
+          },
+          "& .card-arrow": {
+            transform: "translateX(4px)",
+            opacity: 1,
             color: color,
           },
         },
@@ -63,10 +71,11 @@ const MenuCard = ({
         onClick={handleClick}
         sx={{
           height: "100%",
-          padding: 3,
+          p: 3,
           display: "flex",
           flexDirection: "column",
           alignItems: "flex-start",
+          justifyContent: "flex-start",
           "&:hover .MuiCardActionArea-focusHighlight": {
             opacity: 0,
           },
@@ -87,45 +96,69 @@ const MenuCard = ({
           <Box
             className="card-icon"
             sx={{
-              color: color,
-              marginBottom: 2,
+              color: `${color}CC`,
+              mb: 2,
               transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              width: 64,
-              height: 64,
+              width: 56,
+              height: 56,
               borderRadius: 2,
-              backgroundColor: (theme) => theme.palette.mode === 'light' ? bgColor : theme.palette.grey[700],
-              border: `2px solid ${color}30`,
+              backgroundColor: `${color}10`,
+              border: `1px solid ${color}20`,
             }}
           >
             {icon}
           </Box>
-          <Typography
-            className="card-title"
-            variant="h6"
-            component="h3"
+
+          <Box sx={{ flexGrow: 1, mb: 2 }}>
+            <Typography
+              className="card-title"
+              variant="h6"
+              component="h3"
+              sx={{
+                fontWeight: 600,
+                mb: 1,
+                color: theme.palette.text.primary,
+                transition: "all 0.3s ease-in-out",
+                fontSize: "1.1rem",
+                lineHeight: 1.3,
+              }}
+            >
+              {title}
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                color: theme.palette.text.secondary,
+                lineHeight: 1.5,
+                fontSize: "0.85rem",
+              }}
+            >
+              {description}
+            </Typography>
+          </Box>
+
+          <Box
             sx={{
-              fontWeight: 600,
-              marginBottom: 1,
-              color: (theme) => theme.palette.text.primary,
-              transition: "all 0.3s ease-in-out",
-              letterSpacing: "0.25px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "flex-end",
+              width: "100%",
             }}
           >
-            {title}
-          </Typography>
-          <Typography
-            variant="body2"
-            sx={{
-              color: (theme) => theme.palette.text.secondary,
-              lineHeight: 1.6,
-              fontSize: "0.9rem",
-            }}
-          >
-            {description}
-          </Typography>
+            <ArrowForwardIcon
+              className="card-arrow"
+              sx={{
+                fontSize: 18,
+                color: theme.palette.text.secondary,
+                transition: "all 0.3s ease",
+                transform: "translateX(0)",
+                opacity: 0.7,
+              }}
+            />
+          </Box>
         </CardContent>
       </CardActionArea>
     </Card>

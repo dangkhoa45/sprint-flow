@@ -12,12 +12,15 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
+import { useTheme } from "@mui/material/styles";
 import { useRouter } from "next/navigation";
 import { useSnackbar } from "notistack";
 import { useState } from "react";
 import { apiLogout } from "../../../actions/apiLogout";
 import LogoutConfirmDialog from "../../../components/LogoutConfirmDialog";
+import ThemeToggle from "../../../components/ThemeToggle";
 import { useCurrentUser } from "../../../hooks/useCurrentUser";
+import { useThemeMode } from "../../../provider/ThemeContext";
 
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ChatIcon from "@mui/icons-material/Chat";
@@ -33,9 +36,13 @@ const DashboardHeader = () => {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useCurrentUser();
+  const theme = useTheme();
+  const { resolvedTheme } = useThemeMode();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+
+  const isDark = resolvedTheme === "dark";
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -93,14 +100,22 @@ const DashboardHeader = () => {
   return (
     <AppBar
       position="sticky"
+      elevation={0}
       sx={{
-        backgroundColor: (theme) => theme.palette.background.paper,
-        borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
-        boxShadow: (theme) => theme.shadows[1],
-        borderRadius: 0,
+        backgroundColor: theme.palette.background.paper,
+        borderBottom: `1px solid ${theme.palette.divider}`,
+        boxShadow: isDark
+          ? "0 2px 8px rgba(0, 0, 0, 0.3)"
+          : "0 2px 8px rgba(0, 0, 0, 0.08)",
       }}
     >
-      <Toolbar sx={{ justifyContent: "space-between" }}>
+      <Toolbar
+        sx={{
+          justifyContent: "space-between",
+          py: 1,
+          px: { xs: 2, md: 3 },
+        }}
+      >
         <Box
           sx={{
             display: "flex",
@@ -108,20 +123,36 @@ const DashboardHeader = () => {
             gap: 2,
             cursor: "pointer",
             textDecoration: "none",
+            transition: "all 0.2s ease",
+            "&:hover": {
+              opacity: 0.8,
+            },
           }}
           component={Link}
           href="/dashboard"
         >
-          <DashboardIcon
-            sx={{ fontSize: 32, color: (theme) => theme.palette.primary.main }}
-          />
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: 40,
+              height: 40,
+              borderRadius: 2,
+              backgroundColor: theme.palette.primary.main,
+              color: "white",
+            }}
+          >
+            <DashboardIcon sx={{ fontSize: 24 }} />
+          </Box>
           <Typography
-            variant="h5"
+            variant="h6"
             component="div"
             sx={{
               fontWeight: 700,
-              color: (theme) => theme.palette.primary.main,
-              letterSpacing: "0.5px",
+              color: theme.palette.text.primary,
+              letterSpacing: "0.25px",
+              fontSize: { xs: "1.1rem", md: "1.25rem" },
             }}
           >
             Sprint Flow
@@ -129,33 +160,57 @@ const DashboardHeader = () => {
         </Box>
 
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <ThemeToggle />
+
           <IconButton
+            size="medium"
             sx={{
-              color: (theme) => theme.palette.text.primary,
+              color: theme.palette.text.secondary,
               "&:hover": {
-                backgroundColor: (theme) => theme.palette.action.hover,
-                transform: "scale(1.05)",
+                backgroundColor: theme.palette.action.hover,
+                color: "#00acc1",
               },
-              transition: "all 0.2s ease-in-out",
+              transition: "all 0.2s ease",
             }}
           >
-            <Badge badgeContent={3} color="error">
-              <ChatIcon />
+            <Badge
+              badgeContent={3}
+              color="error"
+              sx={{
+                "& .MuiBadge-badge": {
+                  fontSize: "0.75rem",
+                  minWidth: 18,
+                  height: 18,
+                },
+              }}
+            >
+              <ChatIcon fontSize="small" />
             </Badge>
           </IconButton>
 
           <IconButton
+            size="medium"
             sx={{
-              color: (theme) => theme.palette.text.primary,
+              color: theme.palette.text.secondary,
               "&:hover": {
-                backgroundColor: (theme) => theme.palette.action.hover,
-                transform: "scale(1.05)",
+                backgroundColor: theme.palette.action.hover,
+                color: "#e91e63",
               },
-              transition: "all 0.2s ease-in-out",
+              transition: "all 0.2s ease",
             }}
           >
-            <Badge badgeContent={5} color="error">
-              <NotificationsIcon />
+            <Badge
+              badgeContent={5}
+              color="error"
+              sx={{
+                "& .MuiBadge-badge": {
+                  fontSize: "0.75rem",
+                  minWidth: 18,
+                  height: 18,
+                },
+              }}
+            >
+              <NotificationsIcon fontSize="small" />
             </Badge>
           </IconButton>
 
@@ -163,26 +218,27 @@ const DashboardHeader = () => {
             onClick={handleMenuClick}
             sx={{
               ml: 1,
+              p: 0.5,
               "&:hover": {
-                backgroundColor: (theme) => theme.palette.action.hover,
-                transform: "scale(1.05)",
+                backgroundColor: theme.palette.action.hover,
               },
-              transition: "all 0.2s ease-in-out",
+              transition: "all 0.2s ease",
             }}
           >
             <Avatar
               sx={{
-                width: 40,
-                height: 40,
-                backgroundColor: (theme) => theme.palette.primary.main,
-                border: (theme) => `2px solid ${theme.palette.primary.light}`,
-                fontSize: "1rem",
+                width: 36,
+                height: 36,
+                backgroundColor: theme.palette.primary.main,
+                color: "white",
+                fontSize: "0.9rem",
                 fontWeight: 600,
+                border: `2px solid ${theme.palette.primary.light}`,
               }}
               src={user?.avatar}
             >
               {user?.displayName?.charAt(0)?.toUpperCase() || (
-                <AccountCircleIcon />
+                <AccountCircleIcon fontSize="small" />
               )}
             </Avatar>
           </IconButton>
@@ -196,46 +252,63 @@ const DashboardHeader = () => {
             PaperProps={{
               sx: {
                 mt: 1,
-                minWidth: 220,
-                backgroundColor: (theme) => theme.palette.background.paper,
-                border: (theme) => `1px solid ${theme.palette.divider}`,
+                minWidth: 200,
+                backgroundColor: theme.palette.background.paper,
+                border: `1px solid ${theme.palette.divider}`,
                 borderRadius: 2,
-                boxShadow: (theme) => theme.shadows[8],
+                boxShadow: isDark
+                  ? "0 8px 24px rgba(0, 0, 0, 0.4)"
+                  : "0 8px 24px rgba(0, 0, 0, 0.12)",
                 "& .MuiMenuItem-root": {
-                  color: (theme) => theme.palette.text.primary,
+                  color: theme.palette.text.primary,
+                  py: 1.5,
+                  px: 2,
+                  fontSize: "0.9rem",
                   "&:hover": {
-                    backgroundColor: (theme) => theme.palette.action.hover,
+                    backgroundColor: theme.palette.action.hover,
                   },
                 },
               },
             }}
           >
             <MenuItem onClick={handleProfileClick}>
-              <ListItemIcon>
+              <ListItemIcon sx={{ minWidth: 36 }}>
                 <PersonIcon
-                  sx={{ color: (theme) => theme.palette.text.primary }}
+                  sx={{
+                    color: "#1976d2",
+                    fontSize: 20,
+                  }}
                 />
               </ListItemIcon>
               <ListItemText primary="Hồ sơ cá nhân" />
             </MenuItem>
             <MenuItem onClick={handleSettingsClick}>
-              <ListItemIcon>
+              <ListItemIcon sx={{ minWidth: 36 }}>
                 <SettingsIcon
-                  sx={{ color: (theme) => theme.palette.text.primary }}
+                  sx={{
+                    color: "#616161",
+                    fontSize: 20,
+                  }}
                 />
               </ListItemIcon>
               <ListItemText primary="Cài đặt" />
             </MenuItem>
             <MenuItem onClick={handleSecurityClick}>
-              <ListItemIcon>
+              <ListItemIcon sx={{ minWidth: 36 }}>
                 <SecurityIcon
-                  sx={{ color: (theme) => theme.palette.text.primary }}
+                  sx={{
+                    color: "#2e7d32",
+                    fontSize: 20,
+                  }}
                 />
               </ListItemIcon>
               <ListItemText primary="Bảo mật" />
             </MenuItem>
             <Divider
-              sx={{ backgroundColor: (theme) => theme.palette.divider }}
+              sx={{
+                backgroundColor: theme.palette.divider,
+                my: 0.5,
+              }}
             />
             <MenuItem
               onClick={handleLogoutClick}
@@ -243,17 +316,24 @@ const DashboardHeader = () => {
               sx={{
                 opacity: isLoggingOut ? 0.6 : 1,
                 pointerEvents: isLoggingOut ? "none" : "auto",
+                color: theme.palette.error.main,
+                "&:hover": {
+                  backgroundColor: `${theme.palette.error.main}08`,
+                },
               }}
             >
-              <ListItemIcon>
+              <ListItemIcon sx={{ minWidth: 36 }}>
                 {isLoggingOut ? (
                   <CircularProgress
                     size={20}
-                    sx={{ color: (theme) => theme.palette.text.primary }}
+                    sx={{ color: theme.palette.error.main }}
                   />
                 ) : (
                   <LogoutIcon
-                    sx={{ color: (theme) => theme.palette.text.primary }}
+                    sx={{
+                      color: theme.palette.error.main,
+                      fontSize: 20,
+                    }}
                   />
                 )}
               </ListItemIcon>
