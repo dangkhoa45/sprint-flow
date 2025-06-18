@@ -8,6 +8,8 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import Typography from "@mui/material/Typography";
+import { useTheme } from "@mui/material/styles";
+import { useThemeMode } from "../provider/ThemeContext";
 
 interface LogoutConfirmDialogProps {
   open: boolean;
@@ -22,6 +24,10 @@ export default function LogoutConfirmDialog({
   onConfirmAction,
   loading = false,
 }: LogoutConfirmDialogProps) {
+  const theme = useTheme();
+  const { resolvedTheme } = useThemeMode();
+  const isDark = resolvedTheme === "dark";
+
   return (
     <Dialog
       open={open}
@@ -31,10 +37,12 @@ export default function LogoutConfirmDialog({
       PaperProps={{
         sx: {
           borderRadius: 3,
-          background:
-            "linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.8) 100%)",
+          backgroundColor: theme.palette.background.paper,
           backdropFilter: "blur(20px)",
-          border: "1px solid rgba(255, 255, 255, 0.2)",
+          border: `1px solid ${theme.palette.divider}`,
+          boxShadow: isDark
+            ? "0 8px 32px rgba(0, 0, 0, 0.6)"
+            : "0 8px 32px rgba(0, 0, 0, 0.12)",
         },
       }}
     >
@@ -44,11 +52,16 @@ export default function LogoutConfirmDialog({
           alignItems: "center",
           gap: 2,
           pb: 2,
-          color: "#f57c00",
+          color: theme.palette.warning.main,
         }}
       >
-        <WarningIcon sx={{ fontSize: 28 }} />
-        <Typography variant="h5" component="div" fontWeight="bold">
+        <WarningIcon sx={{ fontSize: 28, color: theme.palette.warning.main }} />
+        <Typography 
+          variant="h5" 
+          component="div" 
+          fontWeight="bold"
+          sx={{ color: theme.palette.text.primary }}
+        >
           Xác nhận đăng xuất
         </Typography>
       </DialogTitle>
@@ -65,7 +78,7 @@ export default function LogoutConfirmDialog({
           <LogoutIcon
             sx={{
               fontSize: 64,
-              color: "#f57c00",
+              color: isDark ? "#ffffff" : "#000000",
               mb: 2,
               opacity: 0.8,
             }}
@@ -73,11 +86,19 @@ export default function LogoutConfirmDialog({
           <Typography
             variant="h6"
             align="center"
-            sx={{ mb: 1, fontWeight: 600 }}
+            sx={{ 
+              mb: 1, 
+              fontWeight: 600,
+              color: theme.palette.text.primary,
+            }}
           >
             Bạn có chắc chắn muốn đăng xuất?
           </Typography>
-          <Typography variant="body2" align="center" color="text.secondary">
+          <Typography 
+            variant="body2" 
+            align="center" 
+            sx={{ color: theme.palette.text.secondary }}
+          >
             Bạn sẽ cần đăng nhập lại để tiếp tục sử dụng hệ thống.
           </Typography>
         </Box>
@@ -89,11 +110,11 @@ export default function LogoutConfirmDialog({
           variant="outlined"
           sx={{
             flex: 1,
-            borderColor: "#bdbdbd",
-            color: "#757575",
+            borderColor: theme.palette.divider,
+            color: theme.palette.text.secondary,
             "&:hover": {
-              borderColor: "#9e9e9e",
-              backgroundColor: "#f5f5f5",
+              borderColor: theme.palette.text.secondary,
+              backgroundColor: theme.palette.action.hover,
             },
           }}
           disabled={loading}
@@ -106,10 +127,16 @@ export default function LogoutConfirmDialog({
           startIcon={<LogoutIcon />}
           sx={{
             flex: 1,
-            backgroundColor: "#f57c00",
+            backgroundColor: isDark ? "#ffffff" : "#000000",
+            color: isDark ? "#000000" : "#ffffff",
             "&:hover": {
-              backgroundColor: "#ef6c00",
+              backgroundColor: isDark ? "#f5f5f5" : "#333333",
+              transform: "translateY(-1px)",
+              boxShadow: isDark
+                ? "0 4px 12px rgba(0, 0, 0, 0.15)"
+                : "0 4px 12px rgba(255, 255, 255, 0.2)",
             },
+            transition: "all 0.3s ease",
           }}
           disabled={loading}
         >
