@@ -102,11 +102,30 @@ const DashboardHeader = () => {
       position="sticky"
       elevation={0}
       sx={{
-        backgroundColor: theme.palette.background.paper,
+        background: isDark
+          ? `linear-gradient(135deg, ${theme.palette.background.paper} 0%, rgba(255, 255, 255, 0.02) 100%)`
+          : `linear-gradient(135deg, ${theme.palette.background.paper} 0%, rgba(99, 102, 241, 0.02) 100%)`,
+        backdropFilter: "blur(10px)",
         borderBottom: `1px solid ${theme.palette.divider}`,
         boxShadow: isDark
-          ? "0 2px 8px rgba(0, 0, 0, 0.3)"
-          : "0 2px 8px rgba(0, 0, 0, 0.08)",
+          ? "0 4px 20px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2)"
+          : "0 4px 20px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04)",
+        "&::before": {
+          content: '""',
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: isDark
+            ? "linear-gradient(90deg, transparent 0%, rgba(99, 102, 241, 0.03) 50%, transparent 100%)"
+            : "linear-gradient(90deg, transparent 0%, rgba(99, 102, 241, 0.015) 50%, transparent 100%)",
+          zIndex: 0,
+        },
+        "& .MuiToolbar-root": {
+          position: "relative",
+          zIndex: 1,
+        },
       }}
     >
       <Toolbar
@@ -139,8 +158,21 @@ const DashboardHeader = () => {
               width: 40,
               height: 40,
               borderRadius: 2,
-              backgroundColor: theme.palette.primary.main,
-              color: "white",
+              backgroundColor: isDark ? "#ffffff" : "#000000",
+              color: isDark ? "#000000" : "#ffffff",
+              boxShadow: isDark
+                ? "0 2px 8px rgba(255, 255, 255, 0.1)"
+                : "0 2px 8px rgba(0, 0, 0, 0.15)",
+              border: isDark 
+                ? "1px solid rgba(255, 255, 255, 0.2)" 
+                : "1px solid rgba(0, 0, 0, 0.1)",
+              transition: "all 0.3s ease",
+              "&:hover": {
+                transform: "translateY(-1px)",
+                boxShadow: isDark
+                  ? "0 4px 12px rgba(255, 255, 255, 0.2)"
+                  : "0 4px 12px rgba(0, 0, 0, 0.2)",
+              },
             }}
           >
             <DashboardIcon sx={{ fontSize: 24 }} />
@@ -153,6 +185,13 @@ const DashboardHeader = () => {
               color: theme.palette.text.primary,
               letterSpacing: "0.25px",
               fontSize: { xs: "1.1rem", md: "1.25rem" },
+              background: isDark
+                ? `linear-gradient(135deg, ${theme.palette.text.primary} 0%, rgba(255, 255, 255, 0.8) 100%)`
+                : `linear-gradient(135deg, ${theme.palette.text.primary} 0%, ${theme.palette.primary.main} 100%)`,
+              backgroundClip: "text",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              textShadow: isDark ? "none" : "0 1px 2px rgba(0, 0, 0, 0.1)",
             }}
           >
             Sprint Flow
@@ -166,11 +205,16 @@ const DashboardHeader = () => {
             size="medium"
             sx={{
               color: theme.palette.text.secondary,
+              border: `1px solid ${theme.palette.divider}`,
+              borderRadius: 2,
               "&:hover": {
-                backgroundColor: theme.palette.action.hover,
+                backgroundColor: "#00acc120",
+                borderColor: "#00acc1",
                 color: "#00acc1",
+                transform: "translateY(-1px)",
+                boxShadow: "0 4px 12px rgba(0, 172, 193, 0.2)",
               },
-              transition: "all 0.2s ease",
+              transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
             }}
           >
             <Badge
@@ -181,6 +225,8 @@ const DashboardHeader = () => {
                   fontSize: "0.75rem",
                   minWidth: 18,
                   height: 18,
+                  background: "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
+                  boxShadow: "0 2px 8px rgba(239, 68, 68, 0.3)",
                 },
               }}
             >
@@ -192,11 +238,16 @@ const DashboardHeader = () => {
             size="medium"
             sx={{
               color: theme.palette.text.secondary,
+              border: `1px solid ${theme.palette.divider}`,
+              borderRadius: 2,
               "&:hover": {
-                backgroundColor: theme.palette.action.hover,
+                backgroundColor: "#e91e6320",
+                borderColor: "#e91e63",
                 color: "#e91e63",
+                transform: "translateY(-1px)",
+                boxShadow: "0 4px 12px rgba(233, 30, 99, 0.2)",
               },
-              transition: "all 0.2s ease",
+              transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
             }}
           >
             <Badge
@@ -207,6 +258,8 @@ const DashboardHeader = () => {
                   fontSize: "0.75rem",
                   minWidth: 18,
                   height: 18,
+                  background: "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
+                  boxShadow: "0 2px 8px rgba(239, 68, 68, 0.3)",
                 },
               }}
             >
@@ -219,21 +272,34 @@ const DashboardHeader = () => {
             sx={{
               ml: 1,
               p: 0.5,
+              border: `1px solid ${theme.palette.divider}`,
+              borderRadius: 2,
               "&:hover": {
                 backgroundColor: theme.palette.action.hover,
+                borderColor: isDark ? "#ffffff" : "#000000",
+                transform: "translateY(-1px)",
+                boxShadow: isDark
+                  ? "0 4px 12px rgba(255, 255, 255, 0.2)"
+                  : "0 4px 12px rgba(0, 0, 0, 0.2)",
               },
-              transition: "all 0.2s ease",
+              transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
             }}
           >
             <Avatar
               sx={{
                 width: 36,
                 height: 36,
-                backgroundColor: theme.palette.primary.main,
-                color: "white",
+                backgroundColor: isDark ? "#ffffff" : "#000000",
+                color: isDark ? "#000000" : "#ffffff",
                 fontSize: "0.9rem",
                 fontWeight: 600,
-                border: `2px solid ${theme.palette.primary.light}`,
+                border: isDark 
+                  ? "2px solid rgba(255, 255, 255, 0.15)" 
+                  : "2px solid rgba(0, 0, 0, 0.1)",
+                boxShadow: isDark
+                  ? "0 2px 8px rgba(255, 255, 255, 0.1)"
+                  : "0 2px 8px rgba(0, 0, 0, 0.15)",
+                transition: "all 0.3s ease",
               }}
               src={user?.avatar}
             >
