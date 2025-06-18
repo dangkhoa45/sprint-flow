@@ -22,6 +22,8 @@ import {
   ProjectPriority,
   ProjectStatus,
 } from "../../../../types/project";
+import { useTheme } from "@mui/material/styles";
+import { useThemeMode } from "../../../../provider/ThemeContext";
 
 interface ProjectsGridProps {
   projects: Project[];
@@ -103,6 +105,9 @@ const ProjectCard = ({
   project: Project;
   onUpdateAction: () => void;
 }) => {
+  const theme = useTheme();
+  const { resolvedTheme } = useThemeMode();
+  const isDark = resolvedTheme === "dark";
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -128,16 +133,35 @@ const ProjectCard = ({
       sx={{
         height: "100%",
         borderRadius: 3,
-        border: (theme) => `1px solid ${theme.palette.divider}`,
-        transition: "all 0.3s ease",
+        border: `1px solid ${theme.palette.divider}`,
+        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+        background: isDark
+          ? `linear-gradient(135deg, ${theme.palette.background.paper} 0%, rgba(255, 255, 255, 0.02) 100%)`
+          : `linear-gradient(135deg, ${theme.palette.background.paper} 0%, rgba(0, 0, 0, 0.02) 100%)`,
         "&:hover": {
-          transform: "translateY(-4px)",
-          boxShadow: (theme) => theme.shadows[12],
+          transform: "translateY(-6px)",
+          boxShadow: isDark
+            ? "0 12px 32px rgba(0, 0, 0, 0.4)"
+            : "0 12px 32px rgba(0, 0, 0, 0.15)",
+          borderColor: getStatusColor(project.status) + "40",
         },
         ...(isOverdue && {
           borderColor: "#f44336",
           borderWidth: 2,
+          "&::before": {
+            content: '""',
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "linear-gradient(45deg, transparent 0%, #f4433610 100%)",
+            borderRadius: 3,
+            pointerEvents: "none",
+          },
         }),
+        position: "relative",
+        overflow: "hidden",
       }}
     >
       <CardContent
@@ -149,24 +173,27 @@ const ProjectCard = ({
             display: "flex",
             justifyContent: "space-between",
             alignItems: "flex-start",
-            mb: 2,
+            mb: 3,
           }}
         >
           <Box sx={{ flex: 1, mr: 1 }}>
             <Typography
               variant="h6"
               sx={{
-                fontWeight: 600,
-                mb: 1,
+                fontWeight: 700,
+                mb: 1.5,
                 display: "-webkit-box",
                 WebkitLineClamp: 2,
                 WebkitBoxOrient: "vertical",
                 overflow: "hidden",
+                color: theme.palette.text.primary,
+                fontSize: "1.1rem",
+                lineHeight: 1.3,
               }}
             >
               {project.name}
             </Typography>
-            <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+            <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 1 }}>
               <Chip
                 label={getStatusLabel(project.status)}
                 size="small"
@@ -174,6 +201,9 @@ const ProjectCard = ({
                   backgroundColor: `${getStatusColor(project.status)}15`,
                   color: getStatusColor(project.status),
                   fontWeight: 600,
+                  fontSize: "0.75rem",
+                  height: 24,
+                  border: `1px solid ${getStatusColor(project.status)}30`,
                 }}
               />
               <Chip
@@ -183,12 +213,27 @@ const ProjectCard = ({
                   backgroundColor: `${getPriorityColor(project.priority)}15`,
                   color: getPriorityColor(project.priority),
                   fontWeight: 600,
+                  fontSize: "0.75rem",
+                  height: 24,
+                  border: `1px solid ${getPriorityColor(project.priority)}30`,
                 }}
               />
             </Box>
           </Box>
-          <IconButton size="small" onClick={handleMenuClick}>
-            <MoreVertIcon />
+          <IconButton 
+            size="small" 
+            onClick={handleMenuClick}
+            sx={{
+              color: theme.palette.text.secondary,
+              backgroundColor: theme.palette.action.hover,
+              "&:hover": {
+                backgroundColor: theme.palette.action.selected,
+                color: theme.palette.text.primary,
+              },
+              transition: "all 0.2s ease",
+            }}
+          >
+            <MoreVertIcon fontSize="small" />
           </IconButton>
         </Box>
 
@@ -196,13 +241,15 @@ const ProjectCard = ({
         {project.description && (
           <Typography
             variant="body2"
-            color="text.secondary"
             sx={{
-              mb: 2,
+              mb: 3,
               display: "-webkit-box",
               WebkitLineClamp: 2,
               WebkitBoxOrient: "vertical",
               overflow: "hidden",
+              color: theme.palette.text.secondary,
+              lineHeight: 1.5,
+              fontSize: "0.9rem",
             }}
           >
             {project.description}
@@ -210,7 +257,7 @@ const ProjectCard = ({
         )}
 
         {/* Progress */}
-        <Box sx={{ mb: 2 }}>
+        <Box sx={{ mb: 3 }}>
           <Box
             sx={{
               display: "flex",
@@ -219,10 +266,26 @@ const ProjectCard = ({
               mb: 1,
             }}
           >
-            <Typography variant="body2" color="text.secondary">
+            <Typography 
+              variant="body2" 
+              sx={{ 
+                color: theme.palette.text.secondary,
+                fontWeight: 600,
+                fontSize: "0.8rem",
+                textTransform: "uppercase",
+                letterSpacing: "0.5px",
+              }}
+            >
               Tiến độ
             </Typography>
-            <Typography variant="body2" fontWeight={600}>
+            <Typography 
+              variant="body2" 
+              sx={{ 
+                fontWeight: 700,
+                color: theme.palette.text.primary,
+                fontSize: "0.9rem",
+              }}
+            >
               {project.progress}%
             </Typography>
           </Box>
@@ -230,22 +293,34 @@ const ProjectCard = ({
             variant="determinate"
             value={project.progress}
             sx={{
-              height: 6,
-              borderRadius: 3,
-              backgroundColor: (theme) => theme.palette.grey[200],
+              height: 8,
+              borderRadius: 4,
+              backgroundColor: theme.palette.grey[200],
               "& .MuiLinearProgress-bar": {
-                borderRadius: 3,
-                backgroundColor: getStatusColor(project.status),
+                borderRadius: 4,
+                background: `linear-gradient(90deg, ${getStatusColor(project.status)} 0%, ${getStatusColor(project.status)}CC 100%)`,
               },
             }}
           />
         </Box>
 
         {/* Dates */}
-        <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-            <CalendarTodayIcon sx={{ fontSize: 16, color: "text.secondary" }} />
-            <Typography variant="caption" color="text.secondary">
+        <Box sx={{ mb: 3 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <CalendarTodayIcon 
+              sx={{ 
+                fontSize: 16, 
+                color: theme.palette.text.secondary 
+              }} 
+            />
+            <Typography 
+              variant="caption" 
+              sx={{ 
+                color: theme.palette.text.secondary,
+                fontSize: "0.8rem",
+                fontWeight: 500,
+              }}
+            >
               {formatDate(project.startDate)} - {formatDate(project.endDate)}
             </Typography>
           </Box>
@@ -255,19 +330,51 @@ const ProjectCard = ({
         <Box
           sx={{
             mt: "auto",
+            pt: 2,
+            borderTop: `1px solid ${theme.palette.divider}`,
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
           }}
         >
           {/* Owner */}
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <Avatar sx={{ width: 24, height: 24 }} src={project.owner.avatar}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+            <Avatar 
+              sx={{ 
+                width: 32, 
+                height: 32,
+                backgroundColor: getStatusColor(project.status) + "20",
+                color: getStatusColor(project.status),
+                fontWeight: 600,
+                fontSize: "0.8rem",
+              }} 
+              src={project.owner.avatar}
+            >
               {project.owner.displayName?.charAt(0)}
             </Avatar>
-            <Typography variant="caption" color="text.secondary">
-              {project.owner.displayName}
-            </Typography>
+            <Box>
+              <Typography 
+                variant="caption" 
+                sx={{ 
+                  color: theme.palette.text.primary,
+                  fontWeight: 600,
+                  fontSize: "0.8rem",
+                  display: "block",
+                  lineHeight: 1.2,
+                }}
+              >
+                {project.owner.displayName}
+              </Typography>
+              <Typography 
+                variant="caption" 
+                sx={{ 
+                  color: theme.palette.text.secondary,
+                  fontSize: "0.7rem",
+                }}
+              >
+                Quản lý
+              </Typography>
+            </Box>
           </Box>
 
           {/* Members */}
@@ -275,7 +382,17 @@ const ProjectCard = ({
             <AvatarGroup
               max={3}
               sx={{
-                "& .MuiAvatar-root": { width: 24, height: 24, fontSize: 12 },
+                "& .MuiAvatar-root": { 
+                  width: 28, 
+                  height: 28, 
+                  fontSize: "0.75rem",
+                  border: `2px solid ${theme.palette.background.paper}`,
+                  "&:hover": {
+                    transform: "scale(1.1)",
+                    zIndex: 10,
+                  },
+                  transition: "all 0.2s ease",
+                },
               }}
             >
               {project.members.map((member) => (

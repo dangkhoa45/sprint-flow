@@ -28,7 +28,6 @@ export interface Project extends BaseObject {
   estimatedHours?: number;
   actualHours: number;
   progress: number;
-  budget?: number;
   actualCost: number;
   tags: string[];
   metadata?: Record<string, unknown>;
@@ -44,7 +43,6 @@ export interface CreateProjectDto {
   startDate?: string;
   endDate?: string;
   estimatedHours?: number;
-  budget?: number;
   tags?: string[];
   metadata?: Record<string, unknown>;
 }

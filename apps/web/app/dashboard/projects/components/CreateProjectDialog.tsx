@@ -18,6 +18,8 @@ import { useState } from "react";
 import { projectsApi } from "../../../../api/projects";
 import { useToast } from "../../../../hooks/useToast";
 import { CreateProjectDto, ProjectPriority } from "../../../../types/project";
+import { useTheme } from "@mui/material/styles";
+import { useThemeMode } from "../../../../provider/ThemeContext";
 
 interface CreateProjectDialogProps {
   open: boolean;
@@ -34,6 +36,9 @@ const priorityOptions = [
 
 function CreateProjectDialog({ open, onCloseAction, onSuccessAction }: CreateProjectDialogProps) {
   const { addToast } = useToast();
+  const theme = useTheme();
+  const { resolvedTheme } = useThemeMode();
+  const isDark = resolvedTheme === "dark";
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<CreateProjectDto>({
     name: "",
@@ -41,7 +46,6 @@ function CreateProjectDialog({ open, onCloseAction, onSuccessAction }: CreatePro
     priority: ProjectPriority.Medium,
     startDate: undefined,
     endDate: undefined,
-    budget: undefined,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -49,20 +53,33 @@ function CreateProjectDialog({ open, onCloseAction, onSuccessAction }: CreatePro
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | { target: { value: unknown } }
   ) => {
     const value = event.target.value;
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: "" }));
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
     }
   };
 
-  const handleDateChange = (field: "startDate" | "endDate") => (date: Date | null) => {
-    // Sử dụng local date để tránh timezone issues
-    const dateString = date ? 
-      `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}` : 
-      undefined;
-    setFormData(prev => ({ ...prev, [field]: dateString }));
+  const handleDateChange = (field: "startDate" | "endDate") => (value: Date | null) => {
+    const dateString = value?.toISOString().split('T')[0];
+    setFormData((prev) => ({
+      ...prev,
+      [field]: dateString,
+    }));
+
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: "" }));
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
     }
   };
 
@@ -79,10 +96,6 @@ function CreateProjectDialog({ open, onCloseAction, onSuccessAction }: CreatePro
 
     if (formData.startDate && formData.endDate && formData.startDate >= formData.endDate) {
       newErrors.endDate = "Ngày kết thúc phải sau ngày bắt đầu";
-    }
-
-    if (formData.budget !== undefined && formData.budget < 0) {
-      newErrors.budget = "Ngân sách không được âm";
     }
 
     setErrors(newErrors);
@@ -113,7 +126,6 @@ function CreateProjectDialog({ open, onCloseAction, onSuccessAction }: CreatePro
       priority: ProjectPriority.Medium,
       startDate: undefined,
       endDate: undefined,
-      budget: undefined,
     });
     setErrors({});
   };
@@ -126,28 +138,68 @@ function CreateProjectDialog({ open, onCloseAction, onSuccessAction }: CreatePro
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-      <DialogTitle>
-        <Typography variant="h6" component="div" sx={{ fontWeight: 600 }}>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth="md"
+      fullWidth
+      PaperProps={{
+        sx: {
+          borderRadius: 3,
+          backgroundColor: theme.palette.background.paper,
+          border: `1px solid ${theme.palette.divider}`,
+          boxShadow: isDark
+            ? "0 8px 32px rgba(0, 0, 0, 0.6)"
+            : "0 8px 32px rgba(0, 0, 0, 0.12)",
+        },
+      }}
+    >
+      <DialogTitle
+        sx={{
+          borderBottom: `1px solid ${theme.palette.divider}`,
+          px: 4,
+          py: 3,
+        }}
+      >
+        <Typography
+          variant="h5"
+          sx={{
+            fontWeight: 700,
+            color: theme.palette.text.primary,
+          }}
+        >
           Tạo dự án mới
+        </Typography>
+        <Typography
+          variant="body2"
+          sx={{
+            color: theme.palette.text.secondary,
+            mt: 0.5,
+          }}
+        >
+          Điền thông tin chi tiết để tạo dự án mới
         </Typography>
       </DialogTitle>
 
-      <DialogContent>
-        <Grid container spacing={3} sx={{ mt: 1 }}>
-          {/* Project Name */}
+      <DialogContent sx={{ px: 4, py: 3 }}>
+        <Grid container spacing={3}>
           <Grid size={{ xs: 12 }}>
             <TextField
               fullWidth
-              label="Tên dự án *"
+              label="Tên dự án"
               value={formData.name}
               onChange={handleInputChange("name")}
               error={Boolean(errors.name)}
               helperText={errors.name}
+              variant="outlined"
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: 2,
+                },
+              }}
             />
           </Grid>
 
-          {/* Description */}
           <Grid size={{ xs: 12 }}>
             <TextField
               fullWidth
@@ -158,19 +210,27 @@ function CreateProjectDialog({ open, onCloseAction, onSuccessAction }: CreatePro
               onChange={handleInputChange("description")}
               error={Boolean(errors.description)}
               helperText={errors.description}
+              variant="outlined"
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: 2,
+                },
+              }}
             />
           </Grid>
 
-          {/* Priority */}
           <Grid size={{ xs: 12, sm: 6 }}>
-            <FormControl fullWidth>
+            <FormControl fullWidth error={Boolean(errors.priority)}>
               <InputLabel>Độ ưu tiên</InputLabel>
               <Select
                 value={formData.priority}
                 label="Độ ưu tiên"
-                onChange={handleInputChange("priority")}
+                onChange={(e) => handleInputChange("priority")(e)}
+                sx={{
+                  borderRadius: 2,
+                }}
               >
-                {priorityOptions.map(option => (
+                {priorityOptions.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
                     {option.label}
                   </MenuItem>
@@ -179,23 +239,6 @@ function CreateProjectDialog({ open, onCloseAction, onSuccessAction }: CreatePro
             </FormControl>
           </Grid>
 
-          {/* Budget */}
-          <Grid size={{ xs: 12, sm: 6 }}>
-            <TextField
-              fullWidth
-              label="Ngân sách (VND)"
-              type="number"
-              value={formData.budget || ""}
-              onChange={handleInputChange("budget")}
-              error={Boolean(errors.budget)}
-              helperText={errors.budget}
-              InputProps={{
-                inputProps: { min: 0 },
-              }}
-            />
-          </Grid>
-
-          {/* Dates */}
           <Grid size={{ xs: 12, sm: 6 }}>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
               <DatePicker
@@ -207,6 +250,11 @@ function CreateProjectDialog({ open, onCloseAction, onSuccessAction }: CreatePro
                     fullWidth: true,
                     error: Boolean(errors.startDate),
                     helperText: errors.startDate,
+                    sx: {
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: 2,
+                      },
+                    },
                   },
                 }}
               />
@@ -224,6 +272,11 @@ function CreateProjectDialog({ open, onCloseAction, onSuccessAction }: CreatePro
                     fullWidth: true,
                     error: Boolean(errors.endDate),
                     helperText: errors.endDate,
+                    sx: {
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: 2,
+                      },
+                    },
                   },
                 }}
               />
@@ -232,21 +285,45 @@ function CreateProjectDialog({ open, onCloseAction, onSuccessAction }: CreatePro
         </Grid>
       </DialogContent>
 
-      <DialogActions sx={{ px: 3, pb: 3 }}>
+      <DialogActions
+        sx={{
+          borderTop: `1px solid ${theme.palette.divider}`,
+          px: 4,
+          py: 3,
+          gap: 2,
+        }}
+      >
         <Button
           onClick={handleClose}
           disabled={loading}
-          sx={{ textTransform: "none" }}
+          variant="outlined"
+          sx={{
+            borderRadius: 2,
+            px: 3,
+            color: theme.palette.text.secondary,
+            borderColor: theme.palette.divider,
+            "&:hover": {
+              borderColor: theme.palette.text.secondary,
+              backgroundColor: theme.palette.action.hover,
+            },
+          }}
         >
           Hủy
         </Button>
         <Button
           onClick={handleSubmit}
-          variant="contained"
           disabled={loading}
+          variant="contained"
           sx={{
-            textTransform: "none",
-            minWidth: 120,
+            borderRadius: 2,
+            px: 3,
+            backgroundColor: isDark ? "#ffffff" : "#000000",
+            color: isDark ? "#000000" : "#ffffff",
+            "&:hover": {
+              backgroundColor: isDark ? "#f5f5f5" : "#333333",
+              transform: "translateY(-1px)",
+            },
+            transition: "all 0.3s ease",
           }}
         >
           {loading ? "Đang tạo..." : "Tạo dự án"}

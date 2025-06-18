@@ -22,8 +22,14 @@ import ProjectsFilters from "./components/ProjectsFilters";
 import ProjectsGrid from "./components/ProjectsGrid";
 import ProjectsList from "./components/ProjectsList";
 import ProjectsStats from "./components/ProjectsStats";
+import { useTheme } from "@mui/material/styles";
+import { useThemeMode } from "../../../provider/ThemeContext";
+import Fade from "@mui/material/Fade";
 
 export default function ProjectsPage() {
+  const theme = useTheme();
+  const { resolvedTheme } = useThemeMode();
+  const isDark = resolvedTheme === "dark";
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [search, setSearch] = useState("");
   const [showCreateDialog, setShowCreateDialog] = useState(false);
@@ -65,101 +71,176 @@ export default function ProjectsPage() {
   };
 
   return (
-    <Container maxWidth="xl">
-      <Box sx={{ mb: 4 }}>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 3,
-          }}
-        >
-          <Box>
-            <Typography
-              variant="h4"
-              component="h1"
-              sx={{ fontWeight: 700, mb: 1 }}
+    <Fade in timeout={300}>
+      <Container maxWidth="xl">
+        {/* Header Section */}
+        <Box sx={{ mb: 4 }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 4,
+              flexDirection: { xs: "column", md: "row" },
+              gap: { xs: 2, md: 0 },
+            }}
+          >
+            <Box sx={{ textAlign: { xs: "center", md: "left" } }}>
+              <Typography
+                variant="h3"
+                component="h1"
+                sx={{
+                  fontWeight: 800,
+                  mb: 1,
+                  fontSize: { xs: "1.75rem", md: "2.5rem" },
+                  background: isDark
+                    ? "linear-gradient(135deg, #ffffff 0%, rgba(255, 255, 255, 0.8) 100%)"
+                    : "linear-gradient(135deg, #000000 0%, #333333 100%)",
+                  backgroundClip: "text",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
+                Quản lý dự án
+              </Typography>
+              <Typography
+                variant="h6"
+                sx={{
+                  color: theme.palette.text.secondary,
+                  fontWeight: 400,
+                  fontSize: { xs: "1rem", md: "1.25rem" },
+                }}
+              >
+                Tạo, theo dõi và quản lý các dự án một cách hiệu quả
+              </Typography>
+            </Box>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => setShowCreateDialog(true)}
+              sx={{
+                borderRadius: 3,
+                px: 4,
+                py: 1.5,
+                textTransform: "none",
+                fontWeight: 600,
+                fontSize: "1rem",
+                backgroundColor: isDark ? "#ffffff" : "#000000",
+                color: isDark ? "#000000" : "#ffffff",
+                boxShadow: isDark
+                  ? "0 4px 12px rgba(255, 255, 255, 0.2)"
+                  : "0 4px 12px rgba(0, 0, 0, 0.2)",
+                "&:hover": {
+                  backgroundColor: isDark ? "#f5f5f5" : "#333333",
+                  transform: "translateY(-2px)",
+                  boxShadow: isDark
+                    ? "0 6px 20px rgba(255, 255, 255, 0.3)"
+                    : "0 6px 20px rgba(0, 0, 0, 0.3)",
+                },
+                transition: "all 0.3s ease",
+              }}
             >
-              Quản lý dự án
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              Tạo, theo dõi và quản lý các dự án của bạn
-            </Typography>
+              Tạo dự án mới
+            </Button>
           </Box>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => setShowCreateDialog(true)}
-            sx={{
-              borderRadius: 3,
-              px: 3,
-              py: 1.5,
-              textTransform: "none",
-              fontWeight: 600,
-            }}
-          >
-            Tạo dự án mới
-          </Button>
+
+          <ProjectsStats />
         </Box>
 
-        <ProjectsStats />
-      </Box>
-
-      <Paper sx={{ p: 3, mb: 3, borderRadius: 3 }}>
-        <Box
-          sx={{
-            display: "flex",
-            gap: 2,
-            alignItems: "center",
-            flexWrap: "wrap",
+        {/* Search & Filter Section */}
+        <Paper 
+          sx={{ 
+            p: 3, 
+            mb: 3, 
+            borderRadius: 3,
+            backgroundColor: theme.palette.background.paper,
+            border: `1px solid ${theme.palette.divider}`,
+            boxShadow: isDark
+              ? "0 4px 20px rgba(0, 0, 0, 0.3)"
+              : "0 4px 20px rgba(0, 0, 0, 0.08)",
           }}
         >
-          <TextField
-            placeholder="Tìm kiếm dự án..."
-            value={search}
-            onChange={handleSearchChange}
-            sx={{ minWidth: 300, flex: 1 }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon color="action" />
-                </InputAdornment>
-              ),
-            }}
-          />
-
-          <IconButton
-            onClick={() => setShowFilters(!showFilters)}
-            color={showFilters ? "primary" : "default"}
+          <Box
             sx={{
-              borderRadius: 2,
-              border: (theme) => `1px solid ${theme.palette.divider}`,
+              display: "flex",
+              gap: 2,
+              alignItems: "center",
+              flexWrap: "wrap",
             }}
           >
-            <FilterListIcon />
-          </IconButton>
+            <TextField
+              placeholder="Tìm kiếm dự án..."
+              value={search}
+              onChange={handleSearchChange}
+              sx={{ 
+                minWidth: 300, 
+                flex: 1,
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: 3,
+                  backgroundColor: theme.palette.action.hover,
+                  "&:hover": {
+                    backgroundColor: theme.palette.action.selected,
+                  },
+                  "&.Mui-focused": {
+                    backgroundColor: "transparent",
+                  },
+                },
+              }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ color: theme.palette.text.secondary }} />
+                  </InputAdornment>
+                ),
+              }}
+            />
 
-          <ToggleButtonGroup
-            value={viewMode}
-            exclusive
-            onChange={handleViewModeChange}
-            size="small"
-            sx={{
-              "& .MuiToggleButton-root": {
-                borderRadius: 2,
-                px: 2,
-              },
-            }}
-          >
-            <ToggleButton value="grid">
-              <ViewModuleIcon />
-            </ToggleButton>
-            <ToggleButton value="list">
-              <ViewListIcon />
-            </ToggleButton>
-          </ToggleButtonGroup>
-        </Box>
+            <IconButton
+              onClick={() => setShowFilters(!showFilters)}
+              color={showFilters ? "primary" : "default"}
+              sx={{
+                borderRadius: 3,
+                border: `1px solid ${theme.palette.divider}`,
+                width: 48,
+                height: 48,
+                backgroundColor: showFilters ? theme.palette.primary.main + "15" : "transparent",
+                "&:hover": {
+                  backgroundColor: theme.palette.action.hover,
+                },
+              }}
+            >
+              <FilterListIcon />
+            </IconButton>
+
+            <ToggleButtonGroup
+              value={viewMode}
+              exclusive
+              onChange={handleViewModeChange}
+              size="small"
+              sx={{
+                "& .MuiToggleButton-root": {
+                  borderRadius: 3,
+                  px: 2,
+                  py: 1,
+                  border: `1px solid ${theme.palette.divider}`,
+                  "&.Mui-selected": {
+                    backgroundColor: isDark ? "#ffffff" : "#000000",
+                    color: isDark ? "#000000" : "#ffffff",
+                    "&:hover": {
+                      backgroundColor: isDark ? "#f5f5f5" : "#333333",
+                    },
+                  },
+                },
+              }}
+            >
+              <ToggleButton value="grid">
+                <ViewModuleIcon />
+              </ToggleButton>
+              <ToggleButton value="list">
+                <ViewListIcon />
+              </ToggleButton>
+            </ToggleButtonGroup>
+          </Box>
 
         {showFilters && (
           <Box
@@ -211,6 +292,7 @@ export default function ProjectsPage() {
           setShowCreateDialog(false);
         }}
       />
-    </Container>
+      </Container>
+    </Fade>
   );
 }
