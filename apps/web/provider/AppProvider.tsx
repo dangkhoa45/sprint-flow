@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import Axios from "axios";
 import { configure } from "axios-hooks";
 import { LRUCache } from "lru-cache";
@@ -13,9 +15,6 @@ import ThemeRegistry from "./ThemeRegistry";
 
 const cache = new LRUCache({ max: 10 });
 const axios = Axios.create({ withCredentials: true });
-
-// Note: Cookies are httpOnly, so we rely on automatic cookie transmission
-// No need for Authorization header interceptor since server reads from cookies
 
 configure({ axios, cache } as never);
 
@@ -35,11 +34,13 @@ function AppProvider({ children, currentUser }: Props) {
     <AppContext.Provider value={{ user, setUser }}>
       <ThemeModeProvider>
         <ThemeRegistry>
-          <SnackbarProvider
-            anchorOrigin={{ horizontal: "center", vertical: "top" }}
-          >
-            <SWRProvider>{children}</SWRProvider>
-          </SnackbarProvider>
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <SnackbarProvider
+              anchorOrigin={{ horizontal: "center", vertical: "top" }}
+            >
+              <SWRProvider>{children}</SWRProvider>
+            </SnackbarProvider>
+          </LocalizationProvider>
         </ThemeRegistry>
       </ThemeModeProvider>
     </AppContext.Provider>
