@@ -21,6 +21,7 @@ import {
   ProjectStatus,
 } from "@/types/project";
 import { formatDateVN } from "@/utils/time";
+import { useToast } from "@/hooks/useToast";
 
 interface ProjectGridProps {
   projects: Project[];
@@ -34,6 +35,7 @@ const ProjectGrid = ({ projects, isLoading, error, searchQuery, onEditProject }:
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const { warning } = useToast();
 
   const handleMenuClick = (
     event: React.MouseEvent<HTMLElement>,
@@ -318,13 +320,17 @@ const ProjectGrid = ({ projects, isLoading, error, searchQuery, onEditProject }:
         <MenuItem onClick={handleMenuClose}>Xem chi tiết</MenuItem>
         <MenuItem
           onClick={() => {
-            if (selectedProject && onEditProject) onEditProject(selectedProject);
+            if (selectedProject?.status === ProjectStatus.Completed) {
+              warning("Không thể chỉnh sửa dự án đã hoàn thành");
+            } else if (selectedProject && onEditProject) {
+              onEditProject(selectedProject);
+            }
             handleMenuClose();
           }}
+          disabled={selectedProject?.status === ProjectStatus.Completed}
         >
           Chỉnh sửa
         </MenuItem>
-        <MenuItem onClick={handleMenuClose}>Sao chép</MenuItem>
         <MenuItem onClick={handleMenuClose} sx={{ color: "error.main" }}>
           Xóa
         </MenuItem>

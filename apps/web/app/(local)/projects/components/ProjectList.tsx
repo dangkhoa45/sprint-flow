@@ -7,6 +7,9 @@ import {
 } from "@/types/project";
 import { useProjectTableConfig } from "./ProjectTableConfig";
 import ReusableDataGrid from "@/components/ReusableDataGrid";
+import { projectsApi } from "@/api/projects";
+import { useToast } from "@/hooks/useToast";
+import { useProjects } from "@/hooks/useProjects";
 
 interface ProjectListProps {
   projects: Project[];
@@ -18,6 +21,8 @@ interface ProjectListProps {
 
 const ProjectList = ({ projects, isLoading, error, searchQuery, onEditProject }: ProjectListProps) => {
   const theme = useTheme();
+  const { mutate } = useProjects();
+  const { success, error: toastError } = useToast();
 
   const handleView = (id: string) => {
     console.log("Xem chi tiết dự án:", id);
@@ -25,11 +30,21 @@ const ProjectList = ({ projects, isLoading, error, searchQuery, onEditProject }:
 
   const handleEdit = (id: string) => {
     const project = projects.find((p) => p._id === id);
+    if (project && project.status === ProjectStatus.Completed) {
+      alert("Không thể chỉnh sửa dự án đã hoàn thành");
+      return;
+    }
     if (project && onEditProject) onEditProject(project);
   };
 
-  const handleDelete = (id: string) => {
-    console.log("Xóa dự án:", id);
+  const handleDelete = async (id: string) => {
+    try {
+      await projectsApi.deleteProject(id);
+      success("Xóa dự án thành công!");
+      mutate();
+    } catch (err: any) {
+      toastError(err.message || "Xóa dự án thất bại");
+    }
   };
 
   const { columns, mapProjectsToRows } = useProjectTableConfig({

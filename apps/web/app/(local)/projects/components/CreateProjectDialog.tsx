@@ -1,5 +1,6 @@
 "use client";
-import { ProjectPriority, Project } from "@/types/project";
+import { projectsApi } from "@/api/projects";
+import { CreateProjectDto, Project, ProjectPriority, ProjectStatus, UpdateProjectDto } from "@/types/project";
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
 import Box from "@mui/material/Box";
@@ -14,16 +15,17 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
+import Slider from "@mui/material/Slider";
 import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { vi } from "date-fns/locale";
-import { useState, useEffect } from "react";
-import { projectsApi } from "@/api/projects";
-import { CreateProjectDto } from "@/types/project";
+import { useEffect, useState } from "react";
+import { useToast } from "@/hooks/useToast";
 
-interface ProjectDialogProps {
+interface ProjectFormDialogProps {
   open: boolean;
   onClose: () => void;
   mutate?: () => void;
@@ -32,7 +34,7 @@ interface ProjectDialogProps {
   project?: Project;
 }
 
-const ProjectDialog = ({ open, onClose, mutate, mutateStats, mode, project }: ProjectDialogProps) => {
+const ProjectFormDialog = ({ open, onClose, mutate, mutateStats, mode, project }: ProjectFormDialogProps) => {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -42,6 +44,8 @@ const ProjectDialog = ({ open, onClose, mutate, mutateStats, mode, project }: Pr
     estimatedHours: "",
     members: [] as string[],
     tags: [] as string[],
+    status: ProjectStatus.Planning as ProjectStatus,
+    progress: 0,
   });
 
   const [newTag, setNewTag] = useState("");
@@ -55,6 +59,8 @@ const ProjectDialog = ({ open, onClose, mutate, mutateStats, mode, project }: Pr
     { id: "user4", name: "Phạm Văn D" },
   ];
 
+  const { success, error: toastError } = useToast();
+
   useEffect(() => {
     if (mode === 'edit' && project) {
       setFormData({
@@ -66,6 +72,8 @@ const ProjectDialog = ({ open, onClose, mutate, mutateStats, mode, project }: Pr
         estimatedHours: project.estimatedHours ? String(project.estimatedHours) : "",
         members: project.members?.map((m: any) => m._id || m) || [],
         tags: project.tags || [],
+        status: project.status || ProjectStatus.Planning,
+        progress: typeof project.progress === 'number' ? project.progress : 0,
       });
     } else if (mode === 'create') {
       setFormData({
@@ -77,6 +85,8 @@ const ProjectDialog = ({ open, onClose, mutate, mutateStats, mode, project }: Pr
         estimatedHours: "",
         members: [],
         tags: [],
+        status: ProjectStatus.Planning,
+        progress: 0,
       });
     }
   }, [mode, project, open]);
@@ -132,30 +142,57 @@ const ProjectDialog = ({ open, onClose, mutate, mutateStats, mode, project }: Pr
     }));
   };
 
+  const handleSliderChange = (event: Event, value: number | number[]) => {
+    setFormData((prev) => ({ ...prev, progress: value as number }));
+  };
+
+  const handleProgressInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    let value = Number(event.target.value);
+    if (isNaN(value)) value = 0;
+    if (value < 0) value = 0;
+    if (value > 100) value = 100;
+    setFormData((prev) => ({ ...prev, progress: value }));
+  };
+
   const handleSubmit = async () => {
     setLoading(true);
     setError(null);
     try {
-      const payload: CreateProjectDto = {
-        name: formData.name.trim(),
-        description: formData.description.trim() || undefined,
-        priority: formData.priority,
-        members: formData.members.length > 0 ? formData.members : undefined,
-        startDate: formData.startDate ? formData.startDate.toISOString() : undefined,
-        endDate: formData.endDate ? formData.endDate.toISOString() : undefined,
-        estimatedHours: formData.estimatedHours ? Number(formData.estimatedHours) : undefined,
-        tags: formData.tags.length > 0 ? formData.tags : undefined,
-      };
       if (mode === 'edit' && project?._id) {
+        const payload: UpdateProjectDto = {
+          name: formData.name.trim(),
+          description: formData.description.trim() || undefined,
+          priority: formData.priority,
+          members: formData.members.length > 0 ? formData.members : undefined,
+          startDate: formData.startDate ? formData.startDate.toISOString() : undefined,
+          endDate: formData.endDate ? formData.endDate.toISOString() : undefined,
+          estimatedHours: formData.estimatedHours ? Number(formData.estimatedHours) : undefined,
+          tags: formData.tags.length > 0 ? formData.tags : undefined,
+          status: formData.status,
+          progress: formData.progress,
+        };
         await projectsApi.updateProject(project._id, payload);
+        success("Cập nhật dự án thành công!");
       } else {
+        const payload: CreateProjectDto = {
+          name: formData.name.trim(),
+          description: formData.description.trim() || undefined,
+          priority: formData.priority,
+          members: formData.members.length > 0 ? formData.members : undefined,
+          startDate: formData.startDate ? formData.startDate.toISOString() : undefined,
+          endDate: formData.endDate ? formData.endDate.toISOString() : undefined,
+          estimatedHours: formData.estimatedHours ? Number(formData.estimatedHours) : undefined,
+          tags: formData.tags.length > 0 ? formData.tags : undefined,
+        };
         await projectsApi.createProject(payload);
+        success("Tạo dự án thành công!");
       }
       if (mutate) mutate();
       if (mutateStats) mutateStats();
       handleClose();
     } catch (err: any) {
       setError(err.message || (mode === 'edit' ? "Cập nhật dự án thất bại" : "Tạo dự án thất bại"));
+      toastError(err.message || (mode === 'edit' ? "Cập nhật dự án thất bại" : "Tạo dự án thất bại"));
     } finally {
       setLoading(false);
     }
@@ -171,6 +208,8 @@ const ProjectDialog = ({ open, onClose, mutate, mutateStats, mode, project }: Pr
       estimatedHours: "",
       members: [],
       tags: [],
+      status: ProjectStatus.Planning,
+      progress: 0,
     });
     setNewTag("");
     onClose();
@@ -207,7 +246,67 @@ const ProjectDialog = ({ open, onClose, mutate, mutateStats, mode, project }: Pr
 
       <DialogContent>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 3, pt: 1 }}>
-         
+          {/* Chỉ hiển thị trường trạng thái khi chỉnh sửa */}
+          {mode === 'edit' && (
+            <FormControl sx={{ flex: 1 }}>
+              <InputLabel>Trạng thái</InputLabel>
+              <Select
+                value={formData.status}
+                onChange={handleSelectChange("status")}
+                label="Trạng thái"
+              >
+                {Object.values(ProjectStatus).map((status) => (
+                  <MenuItem key={status} value={status}>
+                    {(() => {
+                      switch (status) {
+                        case ProjectStatus.Planning:
+                          return "Lập kế hoạch";
+                        case ProjectStatus.InProgress:
+                          return "Đang thực hiện";
+                        case ProjectStatus.OnHold:
+                          return "Tạm dừng";
+                        case ProjectStatus.Completed:
+                          return "Hoàn thành";
+                        case ProjectStatus.Cancelled:
+                          return "Đã hủy";
+                        default:
+                          return status;
+                      }
+                    })()}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          )}
+
+          {/* Thêm input chỉnh tiến độ khi edit */}
+          {mode === 'edit' && (
+            <Box>
+              <Typography gutterBottom fontWeight={500}>
+                Tiến độ (%)
+              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Slider
+                  value={formData.progress}
+                  onChange={handleSliderChange}
+                  min={0}
+                  max={100}
+                  step={1}
+                  sx={{ flex: 1 }}
+                  aria-labelledby="progress-slider"
+                />
+                <TextField
+                  value={formData.progress}
+                  onChange={handleProgressInputChange}
+                  type="number"
+                  inputProps={{ min: 0, max: 100, style: { width: 60 } }}
+                  size="small"
+                />
+                <Typography>%</Typography>
+              </Box>
+            </Box>
+          )}
+          
           <TextField
             label="Tên dự án"
             value={formData.name}
@@ -352,6 +451,8 @@ const ProjectDialog = ({ open, onClose, mutate, mutateStats, mode, project }: Pr
               </Box>
             )}
           </Box>
+
+          
         </Box>
       </DialogContent>
 
@@ -381,4 +482,4 @@ const ProjectDialog = ({ open, onClose, mutate, mutateStats, mode, project }: Pr
   );
 };
 
-export default ProjectDialog;
+export default ProjectFormDialog;
