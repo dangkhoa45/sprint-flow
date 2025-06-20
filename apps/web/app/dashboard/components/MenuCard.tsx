@@ -40,21 +40,18 @@ const MenuCard = ({ title, description, icon, path, color }: MenuCardProps) => {
         backgroundColor: theme.palette.background.paper,
         border: `1px solid ${theme.palette.divider}`,
         borderRadius: 2,
-        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-        transform: isHovered ? "translateY(-4px)" : "translateY(0)",
+        transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+        transform: isHovered ? "translateY(-2px)" : "translateY(0)",
         boxShadow: isHovered
           ? isDark
-            ? "0 8px 25px rgba(0, 0, 0, 0.4)"
-            : "0 8px 25px rgba(0, 0, 0, 0.1)"
-          : isDark
-          ? "0 2px 8px rgba(0, 0, 0, 0.3)"
-          : "0 2px 8px rgba(0, 0, 0, 0.05)",
+            ? "0 4px 20px rgba(0, 0, 0, 0.3)"
+            : "0 4px 20px rgba(0, 0, 0, 0.08)"
+          : "none",
         "&:hover": {
-          borderColor: color,
+          borderColor: `${color}40`,
           "& .card-icon": {
-            transform: "scale(1.05)",
-            color: color,
             backgroundColor: `${color}15`,
+            color: color,
           },
           "& .card-title": {
             color: color,
@@ -71,7 +68,7 @@ const MenuCard = ({ title, description, icon, path, color }: MenuCardProps) => {
         onClick={handleClick}
         sx={{
           height: "100%",
-          p: 3,
+          p: 2.5,
           display: "flex",
           flexDirection: "column",
           alignItems: "flex-start",
@@ -96,33 +93,32 @@ const MenuCard = ({ title, description, icon, path, color }: MenuCardProps) => {
           <Box
             className="card-icon"
             sx={{
-              color: `${color}CC`,
+              color: `${color}80`,
               mb: 2,
-              transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+              transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              width: 56,
-              height: 56,
-              borderRadius: 2,
-              backgroundColor: `${color}10`,
-              border: `1px solid ${color}20`,
+              width: 48,
+              height: 48,
+              borderRadius: 1.5,
+              backgroundColor: `${color}08`,
             }}
           >
             {icon}
           </Box>
 
-          <Box sx={{ flexGrow: 1, mb: 2 }}>
+          <Box sx={{ flexGrow: 1, mb: 1.5 }}>
             <Typography
               className="card-title"
               variant="h6"
               component="h3"
               sx={{
                 fontWeight: 600,
-                mb: 1,
+                mb: 0.5,
                 color: theme.palette.text.primary,
-                transition: "all 0.3s ease-in-out",
-                fontSize: "1.1rem",
+                transition: "all 0.2s ease-in-out",
+                fontSize: "1rem",
                 lineHeight: 1.3,
               }}
             >
@@ -132,8 +128,8 @@ const MenuCard = ({ title, description, icon, path, color }: MenuCardProps) => {
               variant="body2"
               sx={{
                 color: theme.palette.text.secondary,
-                lineHeight: 1.5,
-                fontSize: "0.85rem",
+                lineHeight: 1.4,
+                fontSize: "0.8rem",
               }}
             >
               {description}
@@ -151,11 +147,11 @@ const MenuCard = ({ title, description, icon, path, color }: MenuCardProps) => {
             <ArrowForwardIcon
               className="card-arrow"
               sx={{
-                fontSize: 18,
+                fontSize: 16,
                 color: theme.palette.text.secondary,
-                transition: "all 0.3s ease",
+                transition: "all 0.2s ease",
                 transform: "translateX(0)",
-                opacity: 0.7,
+                opacity: 0.5,
               }}
             />
           </Box>
