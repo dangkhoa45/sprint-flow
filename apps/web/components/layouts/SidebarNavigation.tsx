@@ -9,11 +9,10 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import { useTheme } from "@mui/material/styles";
+import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import IconButton from "@mui/material/IconButton";
-import Tooltip from "@mui/material/Tooltip";
 
 // Icons
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
@@ -31,9 +30,6 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import PersonIcon from "@mui/icons-material/Person";
 import SettingsIcon from "@mui/icons-material/Settings";
 import TimelineIcon from "@mui/icons-material/Timeline";
-import TaskIcon from "@mui/icons-material/Task";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 const DRAWER_WIDTH = 280;
 const COLLAPSED_DRAWER_WIDTH = 88;
@@ -43,7 +39,7 @@ interface NavigationItem {
   label: string;
   icon: React.ReactNode;
   path?: string;
-  children?: NavigationItem[];  
+  children?: NavigationItem[];
 }
 
 const navigationItems: NavigationItem[] = [
@@ -199,7 +195,9 @@ const SidebarNavigation = ({
     }
 
     // Check if the current path is the exact path or a sub-route
-    return pathname === path || (path !== "/" && pathname.startsWith(path + "/"));
+    return (
+      pathname === path || (path !== "/" && pathname.startsWith(path + "/"))
+    );
   };
 
   const renderNavigationItem = (item: NavigationItem, depth = 0) => {
@@ -210,7 +208,12 @@ const SidebarNavigation = ({
     return (
       <Box key={item.id}>
         <ListItem disablePadding sx={{ display: "block" }}>
-          <Tooltip title={isCollapsed ? item.label : ""} placement="right" arrow disableHoverListener={!isCollapsed}>
+          <Tooltip
+            title={isCollapsed ? item.label : ""}
+            placement="right"
+            arrow
+            disableHoverListener={!isCollapsed}
+          >
             <ListItemButton
               onClick={() => handleItemClick(item)}
               sx={{
@@ -289,7 +292,7 @@ const SidebarNavigation = ({
           p: 2,
           display: "flex",
           alignItems: "center",
-          justifyContent: isCollapsed ? 'center' : 'space-between',
+          justifyContent: isCollapsed ? "center" : "space-between",
           gap: 2,
           borderBottom: `1px solid ${theme.palette.divider}`,
           height: 65,
@@ -297,7 +300,14 @@ const SidebarNavigation = ({
         }}
       >
         {!isCollapsed && (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, overflow: 'hidden' }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 2,
+              overflow: "hidden",
+            }}
+          >
             <Box
               sx={{
                 minWidth: 36,
@@ -314,27 +324,31 @@ const SidebarNavigation = ({
             </Box>
             <Typography
               variant="h6"
-              sx={{ fontWeight: 700, color: theme.palette.text.primary, whiteSpace: 'nowrap' }}
+              sx={{
+                fontWeight: 700,
+                color: theme.palette.text.primary,
+                whiteSpace: "nowrap",
+              }}
             >
               Sprint Flow
             </Typography>
           </Box>
         )}
         {isCollapsed && (
-             <Box
-             sx={{
-               width: 36,
-               height: 36,
-               borderRadius: 2,
-               backgroundColor: theme.palette.primary.main,
-               color: "white",
-               display: "flex",
-               alignItems: "center",
-               justifyContent: "center",
-             }}
-           >
-             <DashboardIcon sx={{ fontSize: 20 }} />
-           </Box>
+          <Box
+            sx={{
+              width: 36,
+              height: 36,
+              borderRadius: 2,
+              backgroundColor: theme.palette.primary.main,
+              color: "white",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <DashboardIcon sx={{ fontSize: 20 }} />
+          </Box>
         )}
       </Box>
 
@@ -369,21 +383,13 @@ const SidebarNavigation = ({
             backgroundColor: theme.palette.background.default,
           }}
         >
-          <IconButton
-            onClick={onToggleCollapse}
-            sx={{ display: { xs: "none", lg: "block" }, margin: "auto", width: '100%' }}
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ display: "block", textAlign: "center", mt: 1 }}
           >
-            {isCollapsed ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-          </IconButton>
-          {!isCollapsed && (
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              sx={{ display: "block", textAlign: "center", mt: 1 }}
-            >
-              SprintFlow v1.0.0
-            </Typography>
-          )}
+            Sprint Flow v1.0.0
+          </Typography>
         </Box>
       </Box>
     </Box>
@@ -416,4 +422,4 @@ const SidebarNavigation = ({
 };
 
 export default SidebarNavigation;
-export { DRAWER_WIDTH, COLLAPSED_DRAWER_WIDTH };
+export { COLLAPSED_DRAWER_WIDTH, DRAWER_WIDTH };
