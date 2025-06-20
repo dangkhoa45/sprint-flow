@@ -1,14 +1,14 @@
 "use client";
+import { useProjectStats } from "@/hooks/useProjects";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import CancelIcon from "@mui/icons-material/Cancel";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import PauseCircleIcon from "@mui/icons-material/PauseCircle";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import AssignmentIcon from "@mui/icons-material/Assignment";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import PauseCircleIcon from "@mui/icons-material/PauseCircle";
-import CancelIcon from "@mui/icons-material/Cancel";
-import { useProjectStats } from "@/hooks/useProjects";
 
 const ProjectStats = () => {
   const theme = useTheme();
@@ -80,7 +80,8 @@ const ProjectStats = () => {
               sx={{
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "space-between",
+                justifyContent: "flex-start",
+                gap: 3,
                 mb: 1.5,
               }}
             >
@@ -97,26 +98,28 @@ const ProjectStats = () => {
               >
                 <IconComponent sx={{ fontSize: 20, color: stat.color }} />
               </Box>
+              <Box>
+                <Typography
+                  variant="h4"
+                  sx={{
+                    fontWeight: 700,
+                    color: theme.palette.text.primary,
+                    mb: 0.5,
+                  }}
+                >
+                  {stat.value}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: theme.palette.text.secondary,
+                    fontSize: "0.875rem",
+                  }}
+                >
+                  {stat.label}
+                </Typography>
+              </Box>
             </Box>
-            <Typography
-              variant="h4"
-              sx={{
-                fontWeight: 700,
-                color: theme.palette.text.primary,
-                mb: 0.5,
-              }}
-            >
-              {stat.value}
-            </Typography>
-            <Typography
-              variant="body2"
-              sx={{
-                color: theme.palette.text.secondary,
-                fontSize: "0.875rem",
-              }}
-            >
-              {stat.label}
-            </Typography>
           </Card>
         );
       })}

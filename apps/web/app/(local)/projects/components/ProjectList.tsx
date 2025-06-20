@@ -19,6 +19,7 @@ interface ProjectListProps {
   onEditProject?: (project: Project) => void;
 }
 
+// ProjectList component to display projects in a table
 const ProjectList = ({ projects, isLoading, error, searchQuery, onEditProject }: ProjectListProps) => {
   const theme = useTheme();
   const { mutate } = useProjects();

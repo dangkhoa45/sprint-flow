@@ -152,7 +152,7 @@ export default function ProjectsPage() {
             isLoading={isLoading}
             error={error}
             searchQuery={searchQuery}
-            onEditProject={(project) => {
+            onEditProject={(project: Project) => {
               setSelectedProject(project);
               setShowEditDialog(true);
             }}
@@ -163,7 +163,7 @@ export default function ProjectsPage() {
             isLoading={isLoading}
             error={error}
             searchQuery={searchQuery}
-            onEditProject={(project) => {
+            onEditProject={(project: Project) => {
               setSelectedProject(project);
               setShowEditDialog(true);
             }}
