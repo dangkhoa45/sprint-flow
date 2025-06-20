@@ -44,30 +44,30 @@ interface NavigationItem {
 const navigationItems: NavigationItem[] = [
   {
     id: "dashboard",
-    label: "Dashboard",
+    label: "Bảng điều khiển",
     icon: <DashboardIcon />,
     path: "/dashboard",
   },
   {
     id: "projects",
-    label: "Projects",
+    label: "Dự án",
     icon: <AccountTreeIcon />,
     children: [
       {
         id: "all-projects",
-        label: "All Projects",
+        label: "Tất cả dự án",
         icon: <FolderIcon />,
         path: "/dashboard/projects",
       },
       {
         id: "my-projects",
-        label: "My Projects",
+        label: "Dự án của tôi",
         icon: <PersonIcon />,
         path: "/dashboard/projects/my",
       },
       {
         id: "archived",
-        label: "Archived",
+        label: "Đã lưu trữ",
         icon: <FolderIcon />,
         path: "/dashboard/projects/archived",
       },
@@ -75,39 +75,39 @@ const navigationItems: NavigationItem[] = [
   },
   {
     id: "tasks",
-    label: "Tasks",
+    label: "Công việc",
     icon: <AssignmentIcon />,
     path: "/dashboard/tasks",
     badge: 5,
   },
   {
     id: "calendar",
-    label: "Calendar",
+    label: "Lịch",
     icon: <CalendarTodayIcon />,
     path: "/dashboard/calendar",
   },
   {
     id: "documents",
-    label: "Documents",
+    label: "Tài liệu",
     icon: <DescriptionIcon />,
     path: "/dashboard/documents",
   },
   {
     id: "timeline",
-    label: "Timeline",
+    label: "Dòng thời gian",
     icon: <TimelineIcon />,
     path: "/dashboard/timeline",
   },
   {
     id: "chat",
-    label: "Chat",
+    label: "Trò chuyện",
     icon: <ChatIcon />,
     path: "/dashboard/chat",
     badge: 3,
   },
   {
     id: "reports",
-    label: "Reports",
+    label: "Báo cáo",
     icon: <BarChartIcon />,
     path: "/dashboard/reports",
   },
@@ -116,19 +116,19 @@ const navigationItems: NavigationItem[] = [
 const adminItems: NavigationItem[] = [
   {
     id: "users",
-    label: "User Management",
+    label: "Quản lý người dùng",
     icon: <ManageAccountsIcon />,
     path: "/dashboard/users",
   },
   {
     id: "notifications",
-    label: "Notifications",
+    label: "Thông báo",
     icon: <NotificationsIcon />,
     path: "/dashboard/notifications",
   },
   {
     id: "settings",
-    label: "Settings",
+    label: "Cài đặt",
     icon: <SettingsIcon />,
     path: "/dashboard/settings",
   },
@@ -310,7 +310,7 @@ const SidebarNavigation = ({
               letterSpacing: "0.5px",
             }}
           >
-            Administration
+            Quản trị
           </Typography>
         </Box>
 
@@ -341,7 +341,7 @@ const SidebarNavigation = ({
       open={open}
       onClose={onClose}
       ModalProps={{
-        keepMounted: true, // Better open performance on mobile.
+        keepMounted: true,
       }}
       sx={{
         width: DRAWER_WIDTH,

@@ -26,7 +26,7 @@ export default function DashboardNotFound() {
         onClick={handleGoDashboard}
         sx={{ minWidth: 120 }}
       >
-        Dashboard
+        Bảng điều khiển
       </Button>
       <Button
         variant="outlined"

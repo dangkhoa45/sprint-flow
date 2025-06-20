@@ -1,19 +1,19 @@
 "use client";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import AddIcon from "@mui/icons-material/Add";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import GroupIcon from "@mui/icons-material/Group";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import NorthEastIcon from "@mui/icons-material/NorthEast";
-import AddIcon from "@mui/icons-material/Add";
-import Box from "@mui/material/Box";
-import Card from "@mui/material/Card";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import Avatar from "@mui/material/Avatar";
 import AvatarGroup from "@mui/material/AvatarGroup";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Card from "@mui/material/Card";
 import LinearProgress from "@mui/material/LinearProgress";
 import { useTheme } from "@mui/material/styles";
+import Typography from "@mui/material/Typography";
 import { useCurrentUser } from "../../../hooks/useCurrentUser";
 
 const DashboardOverview = () => {
@@ -22,7 +22,7 @@ const DashboardOverview = () => {
 
   const stats = [
     {
-      label: "Active Projects",
+      label: "Dự án đang hoạt động",
       value: "12",
       change: "+2",
       trend: "up",
@@ -30,7 +30,7 @@ const DashboardOverview = () => {
       color: "#6366f1",
     },
     {
-      label: "Tasks Due Today",
+      label: "Công việc hết hạn hôm nay",
       value: "8",
       change: "-3",
       trend: "down",
@@ -38,7 +38,7 @@ const DashboardOverview = () => {
       color: "#f59e0b",
     },
     {
-      label: "Completed This Week",
+      label: "Hoàn thành tuần này",
       value: "24",
       change: "+12",
       trend: "up",
@@ -46,7 +46,7 @@ const DashboardOverview = () => {
       color: "#10b981",
     },
     {
-      label: "Team Members",
+      label: "Thành viên nhóm",
       value: "16",
       change: "+1",
       trend: "up",
@@ -57,10 +57,10 @@ const DashboardOverview = () => {
 
   const recentProjects = [
     {
-      name: "E-commerce Platform",
+      name: "Nền tảng Thương mại điện tử",
       progress: 85,
-      dueDate: "Dec 25",
-      status: "On Track",
+      dueDate: "25 Th12",
+      status: "Đúng tiến độ",
       team: [
         { name: "Alice", avatar: "/avatars/alice.jpg" },
         { name: "Bob", avatar: "/avatars/bob.jpg" },
@@ -68,20 +68,20 @@ const DashboardOverview = () => {
       ],
     },
     {
-      name: "Mobile App Redesign",
+      name: "Thiết kế lại Ứng dụng di động",
       progress: 60,
-      dueDate: "Jan 15",
-      status: "At Risk",
+      dueDate: "15 Th01",
+      status: "Có rủi ro",
       team: [
         { name: "David", avatar: "/avatars/david.jpg" },
         { name: "Eve", avatar: "/avatars/eve.jpg" },
       ],
     },
     {
-      name: "API Integration",
+      name: "Tích hợp API",
       progress: 95,
-      dueDate: "Dec 20",
-      status: "Ahead",
+      dueDate: "20 Th12",
+      status: "Vượt tiến độ",
       team: [
         { name: "Frank", avatar: "/avatars/frank.jpg" },
         { name: "Grace", avatar: "/avatars/grace.jpg" },
@@ -92,11 +92,11 @@ const DashboardOverview = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "On Track":
+      case "Đúng tiến độ":
         return "#10b981";
-      case "At Risk":
+      case "Có rủi ro":
         return "#f59e0b";
-      case "Ahead":
+      case "Vượt tiến độ":
         return "#6366f1";
       default:
         return "#64748b";
@@ -105,7 +105,6 @@ const DashboardOverview = () => {
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-      {/* Welcome Section */}
       <Card
         sx={{
           p: 3,
@@ -114,13 +113,19 @@ const DashboardOverview = () => {
           borderRadius: 2,
         }}
       >
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           <Box>
             <Typography variant="h5" sx={{ fontWeight: 600, mb: 0.5 }}>
-              Welcome back, {user?.displayName?.split(" ")[0] || "User"}! 👋
+              Chào mừng trở lại, {user?.displayName?.split(" ")[0] || "Bạn"}! 👋
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Here's what's happening with your projects today
+              Đây là những gì đang diễn ra với dự án của bạn hôm nay
             </Typography>
           </Box>
           <Button
@@ -133,12 +138,11 @@ const DashboardOverview = () => {
               px: 2.5,
             }}
           >
-            New Project
+            Dự án mới
           </Button>
         </Box>
       </Card>
 
-      {/* Stats Grid */}
       <Box
         sx={{
           display: "grid",
@@ -163,7 +167,14 @@ const DashboardOverview = () => {
                 },
               }}
             >
-              <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  mb: 2,
+                }}
+              >
                 <Box
                   sx={{
                     width: 40,
@@ -190,7 +201,8 @@ const DashboardOverview = () => {
                   <NorthEastIcon
                     sx={{
                       fontSize: 12,
-                      transform: stat.trend === "down" ? "rotate(90deg)" : "none",
+                      transform:
+                        stat.trend === "down" ? "rotate(90deg)" : "none",
                     }}
                   />
                   {stat.change}
@@ -199,7 +211,11 @@ const DashboardOverview = () => {
               <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5 }}>
                 {stat.value}
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ fontSize: "0.875rem" }}>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ fontSize: "0.875rem" }}
+              >
                 {stat.label}
               </Typography>
             </Card>
@@ -207,7 +223,6 @@ const DashboardOverview = () => {
         })}
       </Box>
 
-      {/* Recent Projects */}
       <Card
         sx={{
           p: 3,
@@ -215,19 +230,26 @@ const DashboardOverview = () => {
           borderRadius: 2,
         }}
       >
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 3,
+          }}
+        >
           <Typography variant="h6" sx={{ fontWeight: 600 }}>
-            Recent Projects
+            Dự án gần đây
           </Typography>
           <Button
             variant="text"
             size="small"
             sx={{ textTransform: "none", fontWeight: 500 }}
           >
-            View All
+            Xem tất cả
           </Button>
         </Box>
-        
+
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           {recentProjects.map((project, index) => (
             <Box
@@ -243,12 +265,29 @@ const DashboardOverview = () => {
                 },
               }}
             >
-              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 2 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "flex-start",
+                  mb: 2,
+                }}
+              >
                 <Box sx={{ flex: 1 }}>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 0.5 }}>
+                  <Typography
+                    variant="subtitle1"
+                    sx={{ fontWeight: 600, mb: 0.5 }}
+                  >
                     {project.name}
                   </Typography>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 2,
+                      mb: 1,
+                    }}
+                  >
                     <Box
                       sx={{
                         px: 1,
@@ -262,12 +301,28 @@ const DashboardOverview = () => {
                     >
                       {project.status}
                     </Box>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, color: "text.secondary" }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 0.5,
+                        color: "text.secondary",
+                      }}
+                    >
                       <CalendarTodayIcon sx={{ fontSize: 12 }} />
-                      <Typography variant="caption">Due {project.dueDate}</Typography>
+                      <Typography variant="caption">
+                        Due {project.dueDate}
+                      </Typography>
                     </Box>
                   </Box>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1,
+                      mb: 1,
+                    }}
+                  >
                     <LinearProgress
                       variant="determinate"
                       value={project.progress}

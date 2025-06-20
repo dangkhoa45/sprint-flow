@@ -10,10 +10,10 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import { useTheme } from "@mui/material/styles";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { useTheme } from "@mui/material/styles";
 import { useRouter } from "next/navigation";
 import { useSnackbar } from "notistack";
 import { useState } from "react";
@@ -25,14 +25,12 @@ import { useThemeMode } from "../../../provider/ThemeContext";
 
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ChatIcon from "@mui/icons-material/Chat";
-import DashboardIcon from "@mui/icons-material/Dashboard";
 import LogoutIcon from "@mui/icons-material/Logout";
+import MenuIcon from "@mui/icons-material/Menu";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import PersonIcon from "@mui/icons-material/Person";
 import SecurityIcon from "@mui/icons-material/Security";
 import SettingsIcon from "@mui/icons-material/Settings";
-import MenuIcon from "@mui/icons-material/Menu";
-import Link from "next/link";
 
 interface DashboardHeaderProps {
   onMenuClick?: () => void;
@@ -115,8 +113,9 @@ const DashboardHeader = ({ onMenuClick }: DashboardHeaderProps) => {
         zIndex: theme.zIndex.drawer + 1,
       }}
     >
-      <Toolbar sx={{ justifyContent: "space-between", py: 1, px: { xs: 2, md: 3 } }}>
-        {/* Left side - Menu button and title */}
+      <Toolbar
+        sx={{ justifyContent: "space-between", py: 1, px: { xs: 2, md: 3 } }}
+      >
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           {isMobile && onMenuClick && (
             <IconButton
@@ -132,7 +131,7 @@ const DashboardHeader = ({ onMenuClick }: DashboardHeaderProps) => {
               <MenuIcon />
             </IconButton>
           )}
-          
+
           <Typography
             variant="h6"
             component="div"
@@ -142,11 +141,10 @@ const DashboardHeader = ({ onMenuClick }: DashboardHeaderProps) => {
               display: { xs: isMobile ? "none" : "block", sm: "block" },
             }}
           >
-            Welcome, {user?.displayName?.split(" ")[0] || "User"}
+            Chào mừng, {user?.displayName?.split(" ")[0] || "Bạn"}
           </Typography>
         </Box>
 
-        {/* Right side - Actions and Profile */}
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <ThemeToggle />
 
@@ -295,12 +293,19 @@ const DashboardHeader = ({ onMenuClick }: DashboardHeaderProps) => {
             >
               <ListItemIcon sx={{ minWidth: 36 }}>
                 {isLoggingOut ? (
-                  <CircularProgress size={20} sx={{ color: theme.palette.error.main }} />
+                  <CircularProgress
+                    size={20}
+                    sx={{ color: theme.palette.error.main }}
+                  />
                 ) : (
-                  <LogoutIcon sx={{ color: theme.palette.error.main, fontSize: 20 }} />
+                  <LogoutIcon
+                    sx={{ color: theme.palette.error.main, fontSize: 20 }}
+                  />
                 )}
               </ListItemIcon>
-              <ListItemText primary={isLoggingOut ? "Đang đăng xuất..." : "Đăng xuất"} />
+              <ListItemText
+                primary={isLoggingOut ? "Đang đăng xuất..." : "Đăng xuất"}
+              />
             </MenuItem>
           </Menu>
         </Box>
