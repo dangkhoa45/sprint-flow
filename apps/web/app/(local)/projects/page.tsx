@@ -18,12 +18,15 @@ import ProjectFilters from "./components/ProjectFilters";
 import ProjectGrid from "./components/ProjectGrid";
 import ProjectList from "./components/ProjectList";
 import ProjectStats from "./components/ProjectStats";
+import { useProjects } from "@/hooks/useProjects";
 
 export default function ProjectsPage() {
   const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+
+  const { projects, isLoading, error } = useProjects();
 
   const handleViewModeChange = (
     event: React.MouseEvent<HTMLElement>,
@@ -33,6 +36,12 @@ export default function ProjectsPage() {
       setViewMode(newViewMode);
     }
   };
+
+  const filteredProjects = projects.filter(
+    (project) =>
+      project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      project.description?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
@@ -134,9 +143,19 @@ export default function ProjectsPage() {
 
       <Box sx={{ flex: 1 }}>
         {viewMode === "grid" ? (
-          <ProjectGrid searchQuery={searchQuery} />
+          <ProjectGrid
+            projects={filteredProjects}
+            isLoading={isLoading}
+            error={error}
+            searchQuery={searchQuery}
+          />
         ) : (
-          <ProjectList searchQuery={searchQuery} />
+          <ProjectList
+            projects={filteredProjects}
+            isLoading={isLoading}
+            error={error}
+            searchQuery={searchQuery}
+          />
         )}
       </Box>
 

@@ -8,52 +8,48 @@ import AssignmentIcon from "@mui/icons-material/Assignment";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import PauseCircleIcon from "@mui/icons-material/PauseCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
+import { useProjectStats } from "@/hooks/useProjects";
 
 const ProjectStats = () => {
   const theme = useTheme();
+  const { stats, isLoading, error } = useProjectStats();
 
-  const stats = [
+  // Map dữ liệu API vào UI
+  const statCards = [
     {
       label: "Tổng số dự án",
-      value: "24",
-      change: "+3",
-      trend: "up",
+      value: stats?.total ?? 0,
       icon: AssignmentIcon,
       color: "#6366f1",
     },
     {
       label: "Đang thực hiện",
-      value: "12",
-      change: "+2",
-      trend: "up",
+      value: stats?.inProgress ?? 0,
       icon: TrendingUpIcon,
       color: "#10b981",
     },
     {
       label: "Đã hoàn thành",
-      value: "8",
-      change: "+1",
-      trend: "up",
+      value: stats?.completed ?? 0,
       icon: CheckCircleIcon,
       color: "#3b82f6",
     },
     {
       label: "Tạm dừng",
-      value: "3",
-      change: "0",
-      trend: "neutral",
+      value: stats?.onHold ?? 0,
       icon: PauseCircleIcon,
       color: "#f59e0b",
     },
     {
       label: "Đã hủy",
-      value: "1",
-      change: "0",
-      trend: "neutral",
+      value: stats?.cancelled ?? 0,
       icon: CancelIcon,
       color: "#ef4444",
     },
   ];
+
+  if (isLoading) return <div>Đang tải thống kê...</div>;
+  if (error) return <div>Lỗi tải thống kê dự án!</div>;
 
   return (
     <Box
@@ -63,7 +59,7 @@ const ProjectStats = () => {
         gap: 2,
       }}
     >
-      {stats.map((stat, index) => {
+      {statCards.map((stat, index) => {
         const IconComponent = stat.icon;
         return (
           <Card
@@ -101,20 +97,6 @@ const ProjectStats = () => {
               >
                 <IconComponent sx={{ fontSize: 20, color: stat.color }} />
               </Box>
-              {stat.change !== "0" && (
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 0.5,
-                    color: stat.trend === "up" ? "#10b981" : "#ef4444",
-                    fontSize: "0.75rem",
-                    fontWeight: 500,
-                  }}
-                >
-                  {stat.change}
-                </Box>
-              )}
             </Box>
             <Typography
               variant="h4"
