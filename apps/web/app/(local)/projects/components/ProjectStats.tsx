@@ -65,7 +65,7 @@ const ProjectStats = () => {
           <Card
             key={index}
             sx={{
-              p: 2.5,
+              p: 2,
               border: `1px solid ${theme.palette.divider}`,
               borderRadius: 2,
               transition: "all 0.2s ease-in-out",
@@ -81,14 +81,13 @@ const ProjectStats = () => {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "flex-start",
-                gap: 3,
-                mb: 1.5,
+                gap: 2,
               }}
             >
               <Box
                 sx={{
-                  width: 40,
-                  height: 40,
+                  width: 36,
+                  height: 36,
                   borderRadius: 2,
                   backgroundColor: `${stat.color}15`,
                   display: "flex",
@@ -96,15 +95,14 @@ const ProjectStats = () => {
                   justifyContent: "center",
                 }}
               >
-                <IconComponent sx={{ fontSize: 20, color: stat.color }} />
+                <IconComponent sx={{ fontSize: 18, color: stat.color }} />
               </Box>
               <Box>
                 <Typography
-                  variant="h4"
+                  variant="h5"
                   sx={{
                     fontWeight: 700,
                     color: theme.palette.text.primary,
-                    mb: 0.5,
                   }}
                 >
                   {stat.value}

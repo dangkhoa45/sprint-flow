@@ -123,8 +123,8 @@ const ProjectGrid = ({ projects, isLoading, error, searchQuery, onEditProject }:
       <Box
         sx={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(350px, 1fr))",
-          gap: 3,
+          gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
+          gap: 2,
         }}
       >
         {projects.map((project) => (
@@ -143,23 +143,23 @@ const ProjectGrid = ({ projects, isLoading, error, searchQuery, onEditProject }:
               },
             }}
           >
-            <CardContent sx={{ p: 3 }}>
+            <CardContent sx={{ p: 2.5 }}>
               <Box
                 sx={{
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "start",
-                  mb: 2,
+                  mb: 1.5,
                 }}
               >
                 <Box sx={{ flex: 1 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5 }}>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 0.5 }}>
                     {project.name}
                   </Typography>
                   <Typography
                     variant="body2"
                     color="text.secondary"
-                    sx={{ mb: 1.5 }}
+                    sx={{ mb: 1, height: 40, overflow: "hidden" }}
                   >
                     {project.description}
                   </Typography>
@@ -173,7 +173,7 @@ const ProjectGrid = ({ projects, isLoading, error, searchQuery, onEditProject }:
                 </IconButton>
               </Box>
 
-              <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
+              <Box sx={{ display: "flex", gap: 1, mb: 1.5 }}>
                 <Chip
                   label={getStatusText(project.status)}
                   size="small"
@@ -194,7 +194,7 @@ const ProjectGrid = ({ projects, isLoading, error, searchQuery, onEditProject }:
                 />
               </Box>
 
-              <Box sx={{ mb: 2 }}>
+              <Box sx={{ mb: 1.5 }}>
                 <Box
                   sx={{
                     display: "flex",
@@ -225,7 +225,7 @@ const ProjectGrid = ({ projects, isLoading, error, searchQuery, onEditProject }:
                 />
               </Box>
 
-              <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
+              <Box sx={{ display: "flex", gap: 2, mb: 1.5 }}>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                   <CalendarTodayIcon
                     sx={{ fontSize: 14, color: "text.secondary" }}
