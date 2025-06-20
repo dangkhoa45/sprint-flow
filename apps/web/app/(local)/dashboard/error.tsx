@@ -7,7 +7,7 @@ import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import ErrorPage from "../../components/ErrorPage";
+import ErrorPage from "@/components/ErrorPage";
 interface DashboardErrorProps {
   error: Error & { digest?: string };
   reset: () => void;

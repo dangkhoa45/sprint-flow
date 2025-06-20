@@ -1,6 +1,6 @@
 'use client';
 
-import ErrorPage from '../../components/ErrorPage';
+import ErrorPage from "@/components/ErrorPage";
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
@@ -26,7 +26,7 @@ export default function DashboardNotFound() {
         onClick={handleGoDashboard}
         sx={{ minWidth: 120 }}
       >
-        Dashboard
+        Bảng điều khiển
       </Button>
       <Button
         variant="outlined"

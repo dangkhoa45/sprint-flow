@@ -10,8 +10,6 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import SettingsIcon from "@mui/icons-material/Settings";
 import TimelineIcon from "@mui/icons-material/Timeline";
 import Box from "@mui/material/Box";
-import Container from "@mui/material/Container";
-import Grid from "@mui/material/Grid";
 import { useTheme } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import MenuCard from "./MenuCard";
@@ -20,72 +18,72 @@ const menuItems = [
   {
     title: "Quản lý dự án",
     description: "Tạo và quản lý dự án",
-    icon: <AccountTreeIcon sx={{ fontSize: 32 }} />,
+    icon: <AccountTreeIcon sx={{ fontSize: 24 }} />,
     path: "/dashboard/projects",
-    color: "#1976d2",
+    color: "#6366f1",
   },
   {
     title: "Quản lý công việc",
     description: "Tạo, phân công và theo dõi tiến độ công việc",
-    icon: <AssignmentIcon sx={{ fontSize: 32 }} />,
+    icon: <AssignmentIcon sx={{ fontSize: 24 }} />,
     path: "/dashboard/tasks",
-    color: "#2e7d32",
+    color: "#10b981",
   },
   {
     title: "Quản lý lịch làm việc",
     description: "Lập lịch và theo dõi lịch làm việc của team",
-    icon: <CalendarTodayIcon sx={{ fontSize: 32 }} />,
+    icon: <CalendarTodayIcon sx={{ fontSize: 24 }} />,
     path: "/dashboard/calendar",
-    color: "#ed6c02",
+    color: "#f59e0b",
   },
   {
     title: "Quản lý tài liệu",
     description: "Tạo, chỉnh sửa và quản lý tài liệu dự án",
-    icon: <DescriptionIcon sx={{ fontSize: 32 }} />,
+    icon: <DescriptionIcon sx={{ fontSize: 24 }} />,
     path: "/dashboard/documents",
-    color: "#9c27b0",
+    color: "#8b5cf6",
   },
   {
     title: "Theo dõi tiến độ",
     description: "Theo dõi tiến độ dự án theo thời gian thực",
-    icon: <TimelineIcon sx={{ fontSize: 32 }} />,
+    icon: <TimelineIcon sx={{ fontSize: 24 }} />,
     path: "/dashboard/timeline",
-    color: "#0288d1",
+    color: "#3b82f6",
   },
   {
     title: "Phòng chat",
     description: "Trao đổi thông tin và thảo luận với các thành viên",
-    icon: <ChatIcon sx={{ fontSize: 32 }} />,
+    icon: <ChatIcon sx={{ fontSize: 24 }} />,
     path: "/dashboard/chat",
-    color: "#00acc1",
+    color: "#06b6d4",
   },
   {
     title: "Báo cáo & Thống kê",
     description: "Xem báo cáo hiệu suất và thống kê dự án",
-    icon: <BarChartIcon sx={{ fontSize: 32 }} />,
+    icon: <BarChartIcon sx={{ fontSize: 24 }} />,
     path: "/dashboard/reports",
-    color: "#f57c00",
+    color: "#f97316",
   },
   {
     title: "Quản lý người dùng",
     description: "Thêm, sửa, xóa và quản lý thông tin người dùng",
-    icon: <ManageAccountsIcon sx={{ fontSize: 32 }} />,
+    icon: <ManageAccountsIcon sx={{ fontSize: 24 }} />,
     path: "/dashboard/users",
-    color: "#5e35b1",
+    color: "#84cc16",
   },
   {
     title: "Quản lý thông báo",
     description: "Cài đặt và quản lý thông báo hệ thống",
-    icon: <NotificationsIcon sx={{ fontSize: 32 }} />,
+    icon: <NotificationsIcon sx={{ fontSize: 24 }} />,
     path: "/dashboard/notifications",
-    color: "#e91e63",
+    color: "#ef4444",
   },
   {
     title: "Cài đặt hệ thống",
     description: "Cấu hình và tùy chỉnh hệ thống",
-    icon: <SettingsIcon sx={{ fontSize: 32 }} />,
+    icon: <SettingsIcon sx={{ fontSize: 24 }} />,
     path: "/dashboard/settings",
-    color: "#616161",
+    color: "#64748b",
   },
 ];
 
@@ -93,38 +91,40 @@ const DashboardGrid = () => {
   const theme = useTheme();
 
   return (
-    <Container maxWidth="xl" sx={{ py: { xs: 3, md: 4 } }}>
-      <Box sx={{ mb: { xs: 3, md: 4 } }}>
+    <Box>
+      <Box sx={{ mb: 3 }}>
         <Typography
-          variant="h4"
+          variant="h5"
           sx={{
-            fontWeight: 700,
+            fontWeight: 600,
             color: theme.palette.text.primary,
-            mb: 1,
-            fontSize: { xs: "1.5rem", md: "2rem" },
+            mb: 0.5,
           }}
         >
-          Dashboard
+          Quick Actions
         </Typography>
         <Typography
-          variant="body1"
+          variant="body2"
           sx={{
             color: theme.palette.text.secondary,
-            fontSize: { xs: "0.9rem", md: "1rem" },
           }}
         >
-          Quản lý và theo dõi các hoạt động dự án của bạn
+          Access your most used features and tools
         </Typography>
       </Box>
 
-      <Grid container spacing={{ xs: 2, md: 3 }}>
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+          gap: 2.5,
+        }}
+      >
         {menuItems.map((item, index) => (
-          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3, xl: 2 }} key={index}>
-            <MenuCard {...item} />
-          </Grid>
+          <MenuCard key={index} {...item} />
         ))}
-      </Grid>
-    </Container>
+      </Box>
+    </Box>
   );
 };
 
