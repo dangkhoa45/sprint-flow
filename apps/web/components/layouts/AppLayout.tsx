@@ -1,27 +1,44 @@
-"use client";
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
-import DashboardHeader from "./components/DashboardHeader";
-import SidebarNavigation, {
+import DashboardHeader from "@/components/layouts/Header";
+import SidebarNavigation, { 
   DRAWER_WIDTH,
   COLLAPSED_DRAWER_WIDTH,
-} from "./components/SidebarNavigation";
-import ErrorBoundary from "../../components/ErrorBoundary";
+} from "@/components/layouts/SidebarNavigation";
+import ErrorBoundary from "../ErrorBoundary";
 
-export default function DashboardLayout({ children }: { children: ReactNode }) {
+interface AppLayoutProps {
+  children: ReactNode;
+}
+
+const SIDEBAR_COLLAPSE_KEY = "sprintflow_sidebar_collapsed";
+
+export default function AppLayout({ children }: AppLayoutProps) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("lg"));
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isSidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  // Đọc trạng thái sidebar từ localStorage khi mount
+  useEffect(() => {
+    const stored = localStorage.getItem(SIDEBAR_COLLAPSE_KEY);
+    if (stored === "true") setSidebarCollapsed(true);
+    if (stored === "false") setSidebarCollapsed(false);
+  }, []);
+
+  // Lưu trạng thái sidebar vào localStorage khi thay đổi
+  useEffect(() => {
+    localStorage.setItem(SIDEBAR_COLLAPSE_KEY, String(isSidebarCollapsed));
+  }, [isSidebarCollapsed]);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
   const handleSidebarToggle = () => {
-    setSidebarCollapsed(!isSidebarCollapsed);
+    setSidebarCollapsed((prev) => !prev);
   };
 
   const currentDrawerWidth = isSidebarCollapsed
@@ -30,7 +47,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
   return (
     <>
-      <DashboardHeader 
+      <DashboardHeader
         onMenuClick={handleDrawerToggle}
         onToggleSidebarCollapse={handleSidebarToggle}
         isSidebarCollapsed={isSidebarCollapsed}
@@ -78,4 +95,4 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       </Box>
     </>
   );
-}
+} 

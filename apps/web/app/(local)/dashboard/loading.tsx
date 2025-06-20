@@ -1,6 +1,6 @@
 'use client';
 
-import LoadingComponent from '../../components/LoadingComponent';
+import LoadingComponent from '@/components/LoadingComponent';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Skeleton from '@mui/material/Skeleton';

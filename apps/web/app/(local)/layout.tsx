@@ -1,27 +1,43 @@
 "use client";
+import { ReactNode, useEffect, useState } from "react";
 import Box from "@mui/material/Box";
-import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { ReactNode, useState } from "react";
-import ErrorBoundary from "../../components/ErrorBoundary";
-import DashboardHeader from "../dashboard/components/DashboardHeader";
-import SidebarNavigation, {
-    DRAWER_WIDTH,
-    COLLAPSED_DRAWER_WIDTH,
-} from "../dashboard/components/SidebarNavigation";
+import { useTheme } from "@mui/material/styles";
 
-export default function ProjectsLayout({ children }: { children: ReactNode }) {
+import ErrorBoundary from "../../components/ErrorBoundary";
+import SidebarNavigation, { COLLAPSED_DRAWER_WIDTH, DRAWER_WIDTH } from "@/components/layouts/SidebarNavigation";
+import DashboardHeader from "@/components/layouts/Header";
+
+interface AppLayoutProps {
+  children: ReactNode;
+}
+
+const SIDEBAR_COLLAPSE_KEY = "sprintflow_sidebar_collapsed";
+
+export default function AppLayout({ children }: AppLayoutProps) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("lg"));
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isSidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  // Đọc trạng thái sidebar từ localStorage khi mount
+  useEffect(() => {
+    const stored = localStorage.getItem(SIDEBAR_COLLAPSE_KEY);
+    if (stored === "true") setSidebarCollapsed(true);
+    if (stored === "false") setSidebarCollapsed(false);
+  }, []);
+
+  // Lưu trạng thái sidebar vào localStorage khi thay đổi
+  useEffect(() => {
+    localStorage.setItem(SIDEBAR_COLLAPSE_KEY, String(isSidebarCollapsed));
+  }, [isSidebarCollapsed]);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
   const handleSidebarToggle = () => {
-    setSidebarCollapsed(!isSidebarCollapsed);
+    setSidebarCollapsed((prev) => !prev);
   };
 
   const currentDrawerWidth = isSidebarCollapsed
@@ -30,7 +46,7 @@ export default function ProjectsLayout({ children }: { children: ReactNode }) {
 
   return (
     <>
-      <DashboardHeader 
+      <DashboardHeader
         onMenuClick={handleDrawerToggle}
         onToggleSidebarCollapse={handleSidebarToggle}
         isSidebarCollapsed={isSidebarCollapsed}

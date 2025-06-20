@@ -43,8 +43,7 @@ interface NavigationItem {
   label: string;
   icon: React.ReactNode;
   path?: string;
-  children?: NavigationItem[];
-  badge?: number;
+  children?: NavigationItem[];  
 }
 
 const navigationItems: NavigationItem[] = [
@@ -84,7 +83,6 @@ const navigationItems: NavigationItem[] = [
     label: "Công việc",
     icon: <AssignmentIcon />,
     path: "/dashboard/tasks",
-    badge: 5,
   },
   {
     id: "calendar",
@@ -109,7 +107,6 @@ const navigationItems: NavigationItem[] = [
     label: "Trò chuyện",
     icon: <ChatIcon />,
     path: "/dashboard/chat",
-    badge: 3,
   },
   {
     id: "reports",
@@ -263,25 +260,6 @@ const SidebarNavigation = ({
                     textOverflow: "ellipsis",
                   }}
                 />
-              )}
-              {!isCollapsed && item.badge && (
-                <Box
-                  sx={{
-                    minWidth: 20,
-                    height: 20,
-                    borderRadius: "10px",
-                    backgroundColor: theme.palette.error.main,
-                    color: "white",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "0.75rem",
-                    fontWeight: 500,
-                    mr: hasChildren ? 1 : 0,
-                  }}
-                >
-                  {item.badge}
-                </Box>
               )}
               {!isCollapsed && hasChildren && (
                 <Box sx={{ ml: 1 }}>

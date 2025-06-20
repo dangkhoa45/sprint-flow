@@ -8,7 +8,7 @@ import { useTheme } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import { useRouter } from "next/navigation";
 import { ReactNode, useState } from "react";
-import { useThemeMode } from "../../../provider/ThemeContext";
+import { useThemeMode } from "@/provider/ThemeContext";
 
 interface MenuCardProps {
   title: string;

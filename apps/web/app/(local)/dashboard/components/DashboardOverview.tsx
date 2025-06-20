@@ -14,7 +14,7 @@ import Card from "@mui/material/Card";
 import LinearProgress from "@mui/material/LinearProgress";
 import { useTheme } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
-import { useCurrentUser } from "../../../hooks/useCurrentUser";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 const DashboardOverview = () => {
   const theme = useTheme();

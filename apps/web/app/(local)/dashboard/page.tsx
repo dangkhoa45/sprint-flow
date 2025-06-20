@@ -1,6 +1,5 @@
 "use client";
 import Box from "@mui/material/Box";
-import DashboardGrid from "./components/DashboardGrid";
 import DashboardOverview from "./components/DashboardOverview";
 
 export default function DashboardPage() {

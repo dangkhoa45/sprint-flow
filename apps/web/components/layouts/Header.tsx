@@ -17,11 +17,11 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { useRouter } from "next/navigation";
 import { useSnackbar } from "notistack";
 import { useState } from "react";
-import { apiLogout } from "../../../actions/apiLogout";
-import LogoutConfirmDialog from "../../../components/LogoutConfirmDialog";
-import ThemeToggle from "../../../components/ThemeToggle";
-import { useCurrentUser } from "../../../hooks/useCurrentUser";
-import { useThemeMode } from "../../../provider/ThemeContext";
+import { apiLogout } from "@/actions/apiLogout";
+import LogoutConfirmDialog from "@/components/LogoutConfirmDialog";
+import ThemeToggle from "@/components/ThemeToggle";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useThemeMode } from "@/provider/ThemeContext";
 
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ChatIcon from "@mui/icons-material/Chat";
