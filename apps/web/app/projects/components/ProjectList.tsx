@@ -4,9 +4,9 @@ import {
   Project,
   ProjectPriority,
   ProjectStatus,
-} from "../../../../types/project";
+} from "../../../types/project";
 import { useProjectTableConfig } from "./ProjectTableConfig";
-import ReusableDataGrid from "../../components/ReusableDataGrid";
+import ReusableDataGrid from "../../dashboard/components/ReusableDataGrid";
 
 interface ProjectListProps {
   searchQuery: string;

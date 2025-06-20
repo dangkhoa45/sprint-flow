@@ -14,13 +14,13 @@ import {
   GridColDef,
   GridRowsProp,
 } from "@mui/x-data-grid";
-import { Project } from "../../../../types/project";
+import { Project } from "../../../types/project";
 import {
   getStatusColor,
   getStatusText,
   getPriorityColor,
   getPriorityText,
-} from "../../../../utils/projectHelpers";
+} from "../../../utils/projectHelpers";
 
 interface ProjectTableConfigProps {
   theme: Theme;

@@ -12,6 +12,8 @@ import { useTheme } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
 
 // Icons
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
@@ -29,8 +31,12 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import PersonIcon from "@mui/icons-material/Person";
 import SettingsIcon from "@mui/icons-material/Settings";
 import TimelineIcon from "@mui/icons-material/Timeline";
+import TaskIcon from "@mui/icons-material/Task";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 const DRAWER_WIDTH = 280;
+const COLLAPSED_DRAWER_WIDTH = 88;
 
 interface NavigationItem {
   id: string;
@@ -57,19 +63,19 @@ const navigationItems: NavigationItem[] = [
         id: "all-projects",
         label: "Tất cả dự án",
         icon: <FolderIcon />,
-        path: "/dashboard/projects",
+        path: "/projects",
       },
       {
         id: "my-projects",
         label: "Dự án của tôi",
         icon: <PersonIcon />,
-        path: "/dashboard/projects/my",
+        path: "/projects/my",
       },
       {
         id: "archived",
         label: "Đã lưu trữ",
         icon: <FolderIcon />,
-        path: "/dashboard/projects/archived",
+        path: "/projects/archived",
       },
     ],
   },
@@ -138,17 +144,39 @@ interface SidebarNavigationProps {
   open: boolean;
   onClose: () => void;
   variant?: "permanent" | "persistent" | "temporary";
+  isCollapsed: boolean;
+  onToggleCollapse: () => void;
 }
 
 const SidebarNavigation = ({
   open,
   onClose,
   variant = "permanent",
+  isCollapsed,
+  onToggleCollapse,
 }: SidebarNavigationProps) => {
   const theme = useTheme();
   const router = useRouter();
   const pathname = usePathname();
-  const [expandedItems, setExpandedItems] = useState<string[]>([]);
+  const [expandedItems, setExpandedItems] = useState<string[]>(() => {
+    const findParentIds = (
+      items: NavigationItem[],
+      currentPath: string
+    ): string[] => {
+      const ids: string[] = [];
+      for (const item of items) {
+        if (
+          item.children?.some(
+            (child) => child.path && currentPath.startsWith(child.path)
+          )
+        ) {
+          ids.push(item.id);
+        }
+      }
+      return ids;
+    };
+    return findParentIds(navigationItems, pathname);
+  });
 
   const handleItemClick = (item: NavigationItem) => {
     if (item.children) {
@@ -168,7 +196,13 @@ const SidebarNavigation = ({
 
   const isItemActive = (path?: string) => {
     if (!path) return false;
-    return pathname === path || pathname.startsWith(path + "/");
+
+    if (path.startsWith("/projects")) {
+      return pathname === path;
+    }
+
+    // Check if the current path is the exact path or a sub-route
+    return pathname === path || (path !== "/" && pathname.startsWith(path + "/"));
   };
 
   const renderNavigationItem = (item: NavigationItem, depth = 0) => {
@@ -179,74 +213,83 @@ const SidebarNavigation = ({
     return (
       <Box key={item.id}>
         <ListItem disablePadding sx={{ display: "block" }}>
-          <ListItemButton
-            onClick={() => handleItemClick(item)}
-            sx={{
-              minHeight: 48,
-              pl: depth * 2 + 2,
-              pr: 2,
-              py: 1,
-              mx: 1,
-              borderRadius: 1.5,
-              mb: 0.5,
-              backgroundColor: isActive
-                ? `${theme.palette.primary.main}12`
-                : "transparent",
-              color: isActive
-                ? theme.palette.primary.main
-                : theme.palette.text.primary,
-              "&:hover": {
-                backgroundColor: isActive
-                  ? `${theme.palette.primary.main}20`
-                  : theme.palette.action.hover,
-              },
-              transition: "all 0.2s ease-in-out",
-            }}
-          >
-            <ListItemIcon
+          <Tooltip title={isCollapsed ? item.label : ""} placement="right" arrow disableHoverListener={!isCollapsed}>
+            <ListItemButton
+              onClick={() => handleItemClick(item)}
               sx={{
-                minWidth: 0,
-                mr: 2,
-                justifyContent: "center",
+                minHeight: 48,
+                justifyContent: isCollapsed ? "center" : "flex-start",
+                pl: depth * 2 + (isCollapsed ? 0 : 2),
+                pr: isCollapsed ? 0 : 2,
+                py: 1,
+                mx: 1,
+                borderRadius: 1.5,
+                mb: 0.5,
+                backgroundColor: isActive
+                  ? `${theme.palette.primary.main}12`
+                  : "transparent",
                 color: isActive
                   ? theme.palette.primary.main
-                  : theme.palette.text.secondary,
+                  : theme.palette.text.primary,
+                "&:hover": {
+                  backgroundColor: isActive
+                    ? `${theme.palette.primary.main}20`
+                    : theme.palette.action.hover,
+                },
+                transition: "all 0.2s ease-in-out",
               }}
             >
-              {item.icon}
-            </ListItemIcon>
-            <ListItemText
-              primary={item.label}
-              primaryTypographyProps={{
-                fontSize: "0.875rem",
-                fontWeight: isActive ? 600 : 400,
-              }}
-            />
-            {item.badge && (
-              <Box
+              <ListItemIcon
                 sx={{
-                  minWidth: 20,
-                  height: 20,
-                  borderRadius: "10px",
-                  backgroundColor: theme.palette.error.main,
-                  color: "white",
-                  display: "flex",
-                  alignItems: "center",
+                  minWidth: 0,
+                  mr: isCollapsed ? 0 : 2,
                   justifyContent: "center",
-                  fontSize: "0.75rem",
-                  fontWeight: 500,
-                  mr: hasChildren ? 1 : 0,
+                  color: isActive
+                    ? theme.palette.primary.main
+                    : theme.palette.text.secondary,
+                  display: "flex",
                 }}
               >
-                {item.badge}
-              </Box>
-            )}
-            {hasChildren && (
-              <Box sx={{ ml: 1 }}>
-                {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-              </Box>
-            )}
-          </ListItemButton>
+                {item.icon}
+              </ListItemIcon>
+              {!isCollapsed && (
+                <ListItemText
+                  primary={item.label}
+                  primaryTypographyProps={{
+                    fontSize: "0.875rem",
+                    fontWeight: isActive ? 600 : 400,
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                />
+              )}
+              {!isCollapsed && item.badge && (
+                <Box
+                  sx={{
+                    minWidth: 20,
+                    height: 20,
+                    borderRadius: "10px",
+                    backgroundColor: theme.palette.error.main,
+                    color: "white",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "0.75rem",
+                    fontWeight: 500,
+                    mr: hasChildren ? 1 : 0,
+                  }}
+                >
+                  {item.badge}
+                </Box>
+              )}
+              {!isCollapsed && hasChildren && (
+                <Box sx={{ ml: 1 }}>
+                  {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                </Box>
+              )}
+            </ListItemButton>
+          </Tooltip>
         </ListItem>
         {hasChildren && (
           <Collapse in={isExpanded} timeout="auto" unmountOnExit>
@@ -265,34 +308,56 @@ const SidebarNavigation = ({
     <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
       <Box
         sx={{
-          p: 3,
+          p: 2,
           display: "flex",
           alignItems: "center",
+          justifyContent: isCollapsed ? 'center' : 'space-between',
           gap: 2,
           borderBottom: `1px solid ${theme.palette.divider}`,
           height: 65,
+          transition: "padding 0.3s, justify-content 0.3s",
         }}
       >
-        <Box
-          sx={{
-            width: 36,
-            height: 36,
-            borderRadius: 2,
-            backgroundColor: theme.palette.primary.main,
-            color: "white",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <DashboardIcon sx={{ fontSize: 20 }} />
-        </Box>
-        <Typography
-          variant="h6"
-          sx={{ fontWeight: 700, color: theme.palette.text.primary }}
-        >
-          Sprint Flow
-        </Typography>
+        {!isCollapsed && (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, overflow: 'hidden' }}>
+            <Box
+              sx={{
+                minWidth: 36,
+                height: 36,
+                borderRadius: 2,
+                backgroundColor: theme.palette.primary.main,
+                color: "white",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <DashboardIcon sx={{ fontSize: 20 }} />
+            </Box>
+            <Typography
+              variant="h6"
+              sx={{ fontWeight: 700, color: theme.palette.text.primary, whiteSpace: 'nowrap' }}
+            >
+              Sprint Flow
+            </Typography>
+          </Box>
+        )}
+        {isCollapsed && (
+             <Box
+             sx={{
+               width: 36,
+               height: 36,
+               borderRadius: 2,
+               backgroundColor: theme.palette.primary.main,
+               color: "white",
+               display: "flex",
+               alignItems: "center",
+               justifyContent: "center",
+             }}
+           >
+             <DashboardIcon sx={{ fontSize: 20 }} />
+           </Box>
+        )}
       </Box>
 
       <Box sx={{ flexGrow: 1, overflow: "auto", py: 2 }}>
@@ -308,6 +373,7 @@ const SidebarNavigation = ({
               fontWeight: 600,
               color: theme.palette.text.secondary,
               letterSpacing: "0.5px",
+              display: isCollapsed ? "none" : "block",
             }}
           >
             Quản trị
@@ -317,20 +383,30 @@ const SidebarNavigation = ({
         <List>{adminItems.map((item) => renderNavigationItem(item))}</List>
       </Box>
 
-      <Box
-        sx={{
-          p: 2,
-          borderTop: `1px solid ${theme.palette.divider}`,
-          backgroundColor: theme.palette.background.default,
-        }}
-      >
-        <Typography
-          variant="caption"
-          color="text.secondary"
-          sx={{ display: "block", textAlign: "center" }}
+      <Box sx={{ flexShrink: 0 }}>
+        <Box
+          sx={{
+            p: 2,
+            borderTop: `1px solid ${theme.palette.divider}`,
+            backgroundColor: theme.palette.background.default,
+          }}
         >
-          SprintFlow v1.0.0
-        </Typography>
+          <IconButton
+            onClick={onToggleCollapse}
+            sx={{ display: { xs: "none", lg: "block" }, margin: "auto", width: '100%' }}
+          >
+            {isCollapsed ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+          </IconButton>
+          {!isCollapsed && (
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ display: "block", textAlign: "center", mt: 1 }}
+            >
+              SprintFlow v1.0.0
+            </Typography>
+          )}
+        </Box>
       </Box>
     </Box>
   );
@@ -344,13 +420,15 @@ const SidebarNavigation = ({
         keepMounted: true,
       }}
       sx={{
-        width: DRAWER_WIDTH,
+        width: isCollapsed ? COLLAPSED_DRAWER_WIDTH : DRAWER_WIDTH,
         flexShrink: 0,
         "& .MuiDrawer-paper": {
-          width: DRAWER_WIDTH,
+          width: isCollapsed ? COLLAPSED_DRAWER_WIDTH : DRAWER_WIDTH,
           boxSizing: "border-box",
           backgroundColor: theme.palette.background.paper,
           borderRight: `1px solid ${theme.palette.divider}`,
+          overflowX: "hidden",
+          transition: "width 0.3s",
         },
       }}
     >
@@ -360,4 +438,4 @@ const SidebarNavigation = ({
 };
 
 export default SidebarNavigation;
-export { DRAWER_WIDTH };
+export { DRAWER_WIDTH, COLLAPSED_DRAWER_WIDTH };

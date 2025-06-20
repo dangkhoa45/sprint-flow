@@ -1,16 +1,16 @@
 "use client";
-import { ReactNode, useState } from "react";
 import Box from "@mui/material/Box";
-import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
-import DashboardHeader from "./components/DashboardHeader";
-import SidebarNavigation, {
-  DRAWER_WIDTH,
-  COLLAPSED_DRAWER_WIDTH,
-} from "./components/SidebarNavigation";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { ReactNode, useState } from "react";
 import ErrorBoundary from "../../components/ErrorBoundary";
+import DashboardHeader from "../dashboard/components/DashboardHeader";
+import SidebarNavigation, {
+    DRAWER_WIDTH,
+    COLLAPSED_DRAWER_WIDTH,
+} from "../dashboard/components/SidebarNavigation";
 
-export default function DashboardLayout({ children }: { children: ReactNode }) {
+export default function ProjectsLayout({ children }: { children: ReactNode }) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("lg"));
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -78,4 +78,4 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       </Box>
     </>
   );
-}
+} 

@@ -19,7 +19,7 @@ import {
   Project,
   ProjectPriority,
   ProjectStatus,
-} from "../../../../types/project";
+} from "../../../types/project";
 
 interface ProjectGridProps {
   searchQuery: string;

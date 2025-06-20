@@ -18,7 +18,7 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { useState } from "react";
-import { ProjectPriority } from "../../../../types/project";
+import { ProjectPriority } from "../../../types/project";
 
 interface CreateProjectDialogProps {
   open: boolean;

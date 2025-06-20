@@ -31,12 +31,15 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import PersonIcon from "@mui/icons-material/Person";
 import SecurityIcon from "@mui/icons-material/Security";
 import SettingsIcon from "@mui/icons-material/Settings";
+import DashboardIcon from "@mui/icons-material/Dashboard";
 
 interface DashboardHeaderProps {
   onMenuClick?: () => void;
+  onToggleSidebarCollapse?: () => void;
+  isSidebarCollapsed?: boolean;
 }
 
-const DashboardHeader = ({ onMenuClick }: DashboardHeaderProps) => {
+const DashboardHeader = ({ onMenuClick, onToggleSidebarCollapse, isSidebarCollapsed }: DashboardHeaderProps) => {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useCurrentUser();
@@ -132,17 +135,39 @@ const DashboardHeader = ({ onMenuClick }: DashboardHeaderProps) => {
             </IconButton>
           )}
 
-          <Typography
-            variant="h6"
-            component="div"
-            sx={{
-              fontWeight: 600,
-              color: theme.palette.text.primary,
-              display: { xs: isMobile ? "none" : "block", sm: "block" },
-            }}
-          >
-            Chào mừng, {user?.displayName?.split(" ")[0] || "Bạn"}
-          </Typography>
+          {/* Sidebar Collapse Toggle Icon (only on desktop) */}
+          {!isMobile && onToggleSidebarCollapse && (
+            <IconButton
+              edge="start"
+              onClick={onToggleSidebarCollapse}
+              sx={{
+                mx: 1,
+                color: theme.palette.text.primary,
+                "&:hover": {
+                  backgroundColor: theme.palette.action.hover,
+                },
+              }}
+            >
+              <MenuIcon />
+            </IconButton>
+          )}
+
+          {/* Logo và tên ứng dụng */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, ml: -0.8 }}>
+            <DashboardIcon sx={{ fontSize: 28, color: theme.palette.primary.main }} />
+            <Typography
+              variant="h6"
+              component="div"
+              sx={{
+                fontWeight: 700,
+                color: theme.palette.text.primary,
+                letterSpacing: 1,
+                userSelect: 'none',
+              }}
+            >
+              Sprint Flow
+            </Typography>
+          </Box>
         </Box>
 
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>

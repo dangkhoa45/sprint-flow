@@ -7,7 +7,7 @@ import MenuItem from "@mui/material/MenuItem";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { useState } from "react";
-import { ProjectPriority, ProjectStatus } from "../../../../types/project";
+import { ProjectPriority, ProjectStatus } from "../../../types/project";
 
 const ProjectFilters = () => {
   const [statusFilter, setStatusFilter] = useState<ProjectStatus[]>([]);
