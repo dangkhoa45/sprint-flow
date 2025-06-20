@@ -11,6 +11,11 @@ export async function fetcher<T = unknown>(options: FetchOptions): Promise<T> {
     );
   }
 
+  // Log URL, method, params
+  if (typeof window !== 'undefined') {
+    console.log('[API CALL]', options.method || 'GET', url, options.params || '');
+  }
+
   try {
     const response: AxiosResponse<T> = await axiosInstance({
       url,

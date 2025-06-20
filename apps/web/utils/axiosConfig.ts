@@ -21,16 +21,6 @@ axiosInstance.interceptors.request.use(
       if (accessToken) {
         config.headers.Authorization = `Bearer ${accessToken}`;
         console.log("🔑 Added Authorization header to request");
-      } else {
-        console.log("❌ No access token found in cookies for host:", host);
-
-        return Promise.reject({
-          code: "NO_ACCESS_TOKEN",
-          message: "Access token không tồn tại hoặc đã hết hạn",
-          host: host,
-          availableCookies: Object.keys(cookies),
-          config: config,
-        });
       }
     }
 
