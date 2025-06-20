@@ -113,9 +113,9 @@ const DashboardHeader = ({ onMenuClick, onToggleSidebarCollapse, isSidebarCollap
       }}
     >
       <Toolbar
-        sx={{ justifyContent: "space-between", py: 1, px: { xs: 2, md: 3 } }}
+        sx={{ justifyContent: "space-between", py: 0.5, px: { xs: 1, md: 2 }, minHeight: 48 }}
       >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.2 }}>
           {isMobile && onMenuClick && (
             <IconButton
               edge="start"
@@ -137,28 +137,29 @@ const DashboardHeader = ({ onMenuClick, onToggleSidebarCollapse, isSidebarCollap
               edge="start"
               onClick={onToggleSidebarCollapse}
               sx={{
-                mx: 1,
+                mx: 0.02,
                 color: theme.palette.text.primary,
                 "&:hover": {
                   backgroundColor: theme.palette.action.hover,
                 },
               }}
             >
-              <MenuIcon />
+              <MenuIcon fontSize="small"/>
             </IconButton>
           )}
 
           {/* Logo và tên ứng dụng */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, ml: -0.8 }}>
-            <DashboardIcon sx={{ fontSize: 28, color: theme.palette.primary.main }} />
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.7, ml: -0.5 }}>
+            <DashboardIcon sx={{ fontSize: 20, color: theme.palette.primary.main }} />
             <Typography
               variant="h6"
               component="div"
               sx={{
                 fontWeight: 700,
                 color: theme.palette.text.primary,
-                letterSpacing: 1,
+                letterSpacing: 0.5,
                 userSelect: 'none',
+                fontSize: '1.1rem',
               }}
             >
               Sprint Flow
@@ -166,15 +167,16 @@ const DashboardHeader = ({ onMenuClick, onToggleSidebarCollapse, isSidebarCollap
           </Box>
         </Box>
 
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 0.7 }}>
           <ThemeToggle />
 
-          <IconButton
-            size="medium"
+          {/* <IconButton
+            size="small"
             sx={{
               color: theme.palette.text.secondary,
               border: `1px solid ${theme.palette.divider}`,
-              borderRadius: 2,
+              borderRadius: 1.2,
+              p: 0.7,
               "&:hover": {
                 backgroundColor: "#00acc120",
                 borderColor: "#00acc1",
@@ -188,9 +190,11 @@ const DashboardHeader = ({ onMenuClick, onToggleSidebarCollapse, isSidebarCollap
               color="error"
               sx={{
                 "& .MuiBadge-badge": {
-                  fontSize: "0.7rem",
-                  minWidth: 16,
-                  height: 16,
+                  fontSize: "0.65rem",
+                  minWidth: 14,
+                  height: 14,
+                  top: 4,
+                  right: 4,
                 },
               }}
             >
@@ -225,7 +229,7 @@ const DashboardHeader = ({ onMenuClick, onToggleSidebarCollapse, isSidebarCollap
             >
               <NotificationsIcon fontSize="small" />
             </Badge>
-          </IconButton>
+          </IconButton> */}
 
           <IconButton
             onClick={handleMenuClick}

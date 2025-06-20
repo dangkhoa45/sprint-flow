@@ -31,8 +31,8 @@ import PersonIcon from "@mui/icons-material/Person";
 import SettingsIcon from "@mui/icons-material/Settings";
 import TimelineIcon from "@mui/icons-material/Timeline";
 
-const DRAWER_WIDTH = 280;
-const COLLAPSED_DRAWER_WIDTH = 88;
+const DRAWER_WIDTH = 220;
+const COLLAPSED_DRAWER_WIDTH = 60;
 
 interface NavigationItem {
   id: string;
@@ -46,30 +46,30 @@ const navigationItems: NavigationItem[] = [
   {
     id: "dashboard",
     label: "Bảng điều khiển",
-    icon: <DashboardIcon />,
+    icon: <DashboardIcon fontSize="small" />,
     path: "/dashboard",
   },
   {
     id: "projects",
     label: "Dự án",
-    icon: <AccountTreeIcon />,
+    icon: <AccountTreeIcon fontSize="small" />,
     children: [
       {
         id: "all-projects",
         label: "Tất cả dự án",
-        icon: <FolderIcon />,
+        icon: <FolderIcon fontSize="small" />,
         path: "/projects",
       },
       {
         id: "my-projects",
         label: "Dự án của tôi",
-        icon: <PersonIcon />,
+        icon: <PersonIcon fontSize="small" />,
         path: "/projects/my",
       },
       {
         id: "archived",
         label: "Đã lưu trữ",
-        icon: <FolderIcon />,
+        icon: <FolderIcon fontSize="small" />,
         path: "/projects/archived",
       },
     ],
@@ -77,37 +77,37 @@ const navigationItems: NavigationItem[] = [
   {
     id: "tasks",
     label: "Công việc",
-    icon: <AssignmentIcon />,
+    icon: <AssignmentIcon fontSize="small" />,
     path: "/dashboard/tasks",
   },
   {
     id: "calendar",
     label: "Lịch",
-    icon: <CalendarTodayIcon />,
+    icon: <CalendarTodayIcon fontSize="small" />,
     path: "/dashboard/calendar",
   },
   {
     id: "documents",
     label: "Tài liệu",
-    icon: <DescriptionIcon />,
+    icon: <DescriptionIcon fontSize="small" />,
     path: "/dashboard/documents",
   },
   {
     id: "timeline",
     label: "Dòng thời gian",
-    icon: <TimelineIcon />,
+    icon: <TimelineIcon fontSize="small" />,
     path: "/dashboard/timeline",
   },
   {
     id: "chat",
     label: "Trò chuyện",
-    icon: <ChatIcon />,
+    icon: <ChatIcon fontSize="small" />,
     path: "/dashboard/chat",
   },
   {
     id: "reports",
     label: "Báo cáo",
-    icon: <BarChartIcon />,
+    icon: <BarChartIcon fontSize="small" />,
     path: "/dashboard/reports",
   },
 ];
@@ -116,19 +116,19 @@ const adminItems: NavigationItem[] = [
   {
     id: "users",
     label: "Quản lý người dùng",
-    icon: <ManageAccountsIcon />,
+    icon: <ManageAccountsIcon fontSize="small" />,
     path: "/dashboard/users",
   },
   {
     id: "notifications",
     label: "Thông báo",
-    icon: <NotificationsIcon />,
+    icon: <NotificationsIcon fontSize="small" />,
     path: "/dashboard/notifications",
   },
   {
     id: "settings",
     label: "Cài đặt",
-    icon: <SettingsIcon />,
+    icon: <SettingsIcon fontSize="small" />,
     path: "/dashboard/settings",
   },
 ];
@@ -217,14 +217,14 @@ const SidebarNavigation = ({
             <ListItemButton
               onClick={() => handleItemClick(item)}
               sx={{
-                minHeight: 48,
+                minHeight: 38,
                 justifyContent: isCollapsed ? "center" : "flex-start",
-                pl: depth * 2 + (isCollapsed ? 0 : 2),
-                pr: isCollapsed ? 0 : 2,
-                py: 1,
-                mx: 1,
-                borderRadius: 1.5,
-                mb: 0.5,
+                pl: depth * 1.5 + (isCollapsed ? 0 : 1.5),
+                pr: isCollapsed ? 0 : 1.5,
+                py: 0.5,
+                mx: 0.5,
+                borderRadius: 1,
+                mb: 0.25,
                 backgroundColor: isActive
                   ? `${theme.palette.primary.main}12`
                   : "transparent",
@@ -241,13 +241,14 @@ const SidebarNavigation = ({
             >
               <ListItemIcon
                 sx={{
-                  minWidth: 0,
-                  mr: isCollapsed ? 0 : 2,
+                  minWidth: 28,
+                  mr: isCollapsed ? 0 : 1.2,
                   justifyContent: "center",
                   color: isActive
                     ? theme.palette.primary.main
                     : theme.palette.text.secondary,
                   display: "flex",
+                  fontSize: 18,
                 }}
               >
                 {item.icon}
@@ -256,7 +257,7 @@ const SidebarNavigation = ({
                 <ListItemText
                   primary={item.label}
                   primaryTypographyProps={{
-                    fontSize: "0.875rem",
+                    fontSize: "0.8rem",
                     fontWeight: isActive ? 600 : 400,
                     whiteSpace: "nowrap",
                     overflow: "hidden",
@@ -265,8 +266,8 @@ const SidebarNavigation = ({
                 />
               )}
               {!isCollapsed && hasChildren && (
-                <Box sx={{ ml: 1 }}>
-                  {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                <Box sx={{ ml: 0.5 }}>
+                  {isExpanded ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />}
                 </Box>
               )}
             </ListItemButton>
@@ -289,13 +290,13 @@ const SidebarNavigation = ({
     <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
       <Box
         sx={{
-          p: 2,
+          p: 1.2,
           display: "flex",
           alignItems: "center",
           justifyContent: isCollapsed ? "center" : "space-between",
-          gap: 2,
+          gap: 1.2,
           borderBottom: `1px solid ${theme.palette.divider}`,
-          height: 65,
+          height: 48,
           transition: "padding 0.3s, justify-content 0.3s",
         }}
       >
@@ -304,15 +305,15 @@ const SidebarNavigation = ({
             sx={{
               display: "flex",
               alignItems: "center",
-              gap: 2,
+              gap: 1.2,
               overflow: "hidden",
             }}
           >
             <Box
               sx={{
-                minWidth: 36,
-                height: 36,
-                borderRadius: 2,
+                minWidth: 28,
+                height: 28,
+                borderRadius: 1.2,
                 backgroundColor: theme.palette.primary.main,
                 color: "white",
                 display: "flex",
@@ -320,7 +321,7 @@ const SidebarNavigation = ({
                 justifyContent: "center",
               }}
             >
-              <DashboardIcon sx={{ fontSize: 20 }} />
+              <DashboardIcon sx={{ fontSize: 16 }} />
             </Box>
             <Typography
               variant="h6"
@@ -328,6 +329,7 @@ const SidebarNavigation = ({
                 fontWeight: 700,
                 color: theme.palette.text.primary,
                 whiteSpace: "nowrap",
+                fontSize: "1rem",
               }}
             >
               Sprint Flow
@@ -337,9 +339,9 @@ const SidebarNavigation = ({
         {isCollapsed && (
           <Box
             sx={{
-              width: 36,
-              height: 36,
-              borderRadius: 2,
+              width: 28,
+              height: 28,
+              borderRadius: 1.2,
               backgroundColor: theme.palette.primary.main,
               color: "white",
               display: "flex",
@@ -347,7 +349,7 @@ const SidebarNavigation = ({
               justifyContent: "center",
             }}
           >
-            <DashboardIcon sx={{ fontSize: 20 }} />
+            <DashboardIcon sx={{ fontSize: 16 }} />
           </Box>
         )}
       </Box>
@@ -357,11 +359,11 @@ const SidebarNavigation = ({
 
         <Divider sx={{ my: 2, mx: 2 }} />
 
-        <Box sx={{ px: 2, mb: 1 }}>
+        <Box sx={{ px: 1.2, mb: 0.5 }}>
           <Typography
             variant="overline"
             sx={{
-              fontSize: "0.75rem",
+              fontSize: "0.7rem",
               fontWeight: 600,
               color: theme.palette.text.secondary,
               letterSpacing: "0.5px",
@@ -378,7 +380,7 @@ const SidebarNavigation = ({
       <Box sx={{ flexShrink: 0 }}>
         <Box
           sx={{
-            p: 2,
+            p: 1.2,
             borderTop: `1px solid ${theme.palette.divider}`,
             backgroundColor: theme.palette.background.default,
           }}
@@ -386,7 +388,7 @@ const SidebarNavigation = ({
           <Typography
             variant="caption"
             color="text.secondary"
-            sx={{ display: "block", textAlign: "center", mt: 1 }}
+            sx={{ display: "block", textAlign: "center", mt: 0.5, fontSize: "0.7rem" }}
           >
             Sprint Flow v1.0.0
           </Typography>
