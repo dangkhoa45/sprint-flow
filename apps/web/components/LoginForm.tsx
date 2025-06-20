@@ -18,7 +18,7 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 import { useRouter } from "next/navigation";
-import { useSnackbar } from "notistack";
+import { toast } from "react-toastify";
 import { useState } from "react";
 import { apiLogin } from "../actions/apiLogin";
 import { useCurrentUser } from "../hooks/useCurrentUser";
@@ -30,7 +30,6 @@ type LoginFormProps = {
 
 export default function LoginForm({ error }: LoginFormProps) {
   const router = useRouter();
-  const { enqueueSnackbar } = useSnackbar();
   const { setUser } = useCurrentUser();
   const theme = useTheme();
   const { resolvedTheme } = useThemeMode();
@@ -53,30 +52,18 @@ export default function LoginForm({ error }: LoginFormProps) {
         setUser(result.user);
 
         // Show success message
-        enqueueSnackbar("Đăng nhập thành công!", {
-          variant: "success",
-          autoHideDuration: 2000,
-        });
+        toast.success("Đăng nhập thành công!", { autoClose: 2000 });
 
         // Redirect to dashboard
         router.push("/dashboard");
       } else {
         setLoginError(result.error);
-        enqueueSnackbar(
-          "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.",
-          {
-            variant: "error",
-            autoHideDuration: 4000,
-          }
-        );
+        toast.error("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.", { autoClose: 4000 });
       }
     } catch (error) {
       console.error("Đăng nhập thất bại:", error);
       setLoginError("Có lỗi xảy ra khi đăng nhập. Vui lòng thử lại.");
-      enqueueSnackbar("Có lỗi xảy ra khi đăng nhập. Vui lòng thử lại.", {
-        variant: "error",
-        autoHideDuration: 4000,
-      });
+      toast.error("Có lỗi xảy ra khi đăng nhập. Vui lòng thử lại.", { autoClose: 4000 });
     } finally {
       setIsLoading(false);
     }

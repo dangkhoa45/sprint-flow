@@ -15,7 +15,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useRouter } from "next/navigation";
-import { useSnackbar } from "notistack";
+import { toast } from "react-toastify";
 import { useState } from "react";
 import { apiLogout } from "@/actions/apiLogout";
 import LogoutConfirmDialog from "@/components/LogoutConfirmDialog";
@@ -41,7 +41,6 @@ interface DashboardHeaderProps {
 
 const DashboardHeader = ({ onMenuClick, onToggleSidebarCollapse, isSidebarCollapsed }: DashboardHeaderProps) => {
   const router = useRouter();
-  const { enqueueSnackbar } = useSnackbar();
   const { user } = useCurrentUser();
   const theme = useTheme();
   const { resolvedTheme } = useThemeMode();
@@ -72,10 +71,7 @@ const DashboardHeader = ({ onMenuClick, onToggleSidebarCollapse, isSidebarCollap
 
       await apiLogout();
 
-      enqueueSnackbar("Đăng xuất thành công!", {
-        variant: "success",
-        autoHideDuration: 1000,
-      });
+      toast.success("Đăng xuất thành công!", { autoClose: 1000 });
     } catch (error) {
       console.error("Logout error:", error);
       setIsLoggingOut(false);
