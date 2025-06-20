@@ -27,9 +27,10 @@ interface ProjectGridProps {
   isLoading?: boolean;
   error?: any;
   searchQuery: string;
+  onEditProject?: (project: Project) => void;
 }
 
-const ProjectGrid = ({ projects, isLoading, error, searchQuery }: ProjectGridProps) => {
+const ProjectGrid = ({ projects, isLoading, error, searchQuery, onEditProject }: ProjectGridProps) => {
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -315,7 +316,14 @@ const ProjectGrid = ({ projects, isLoading, error, searchQuery }: ProjectGridPro
         }}
       >
         <MenuItem onClick={handleMenuClose}>Xem chi tiết</MenuItem>
-        <MenuItem onClick={handleMenuClose}>Chỉnh sửa</MenuItem>
+        <MenuItem
+          onClick={() => {
+            if (selectedProject && onEditProject) onEditProject(selectedProject);
+            handleMenuClose();
+          }}
+        >
+          Chỉnh sửa
+        </MenuItem>
         <MenuItem onClick={handleMenuClose}>Sao chép</MenuItem>
         <MenuItem onClick={handleMenuClose} sx={{ color: "error.main" }}>
           Xóa

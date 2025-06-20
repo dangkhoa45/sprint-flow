@@ -1,5 +1,5 @@
 "use client";
-import { ProjectPriority } from "@/types/project";
+import { ProjectPriority, Project } from "@/types/project";
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
 import Box from "@mui/material/Box";
@@ -19,18 +19,20 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { vi } from "date-fns/locale";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { projectsApi } from "@/api/projects";
 import { CreateProjectDto } from "@/types/project";
 
-interface CreateProjectDialogProps {
+interface ProjectDialogProps {
   open: boolean;
   onClose: () => void;
   mutate?: () => void;
   mutateStats?: () => void;
+  mode: 'create' | 'edit';
+  project?: Project;
 }
 
-const CreateProjectDialog = ({ open, onClose, mutate, mutateStats }: CreateProjectDialogProps) => {
+const ProjectDialog = ({ open, onClose, mutate, mutateStats, mode, project }: ProjectDialogProps) => {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -52,6 +54,32 @@ const CreateProjectDialog = ({ open, onClose, mutate, mutateStats }: CreateProje
     { id: "user3", name: "Lê Văn C" },
     { id: "user4", name: "Phạm Văn D" },
   ];
+
+  useEffect(() => {
+    if (mode === 'edit' && project) {
+      setFormData({
+        name: project.name || "",
+        description: project.description || "",
+        priority: project.priority || ProjectPriority.Medium,
+        startDate: project.startDate ? new Date(project.startDate) : null,
+        endDate: project.endDate ? new Date(project.endDate) : null,
+        estimatedHours: project.estimatedHours ? String(project.estimatedHours) : "",
+        members: project.members?.map((m: any) => m._id || m) || [],
+        tags: project.tags || [],
+      });
+    } else if (mode === 'create') {
+      setFormData({
+        name: "",
+        description: "",
+        priority: ProjectPriority.Medium,
+        startDate: null,
+        endDate: null,
+        estimatedHours: "",
+        members: [],
+        tags: [],
+      });
+    }
+  }, [mode, project, open]);
 
   const handleInputChange =
     (field: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -118,12 +146,16 @@ const CreateProjectDialog = ({ open, onClose, mutate, mutateStats }: CreateProje
         estimatedHours: formData.estimatedHours ? Number(formData.estimatedHours) : undefined,
         tags: formData.tags.length > 0 ? formData.tags : undefined,
       };
-      await projectsApi.createProject(payload);
+      if (mode === 'edit' && project?._id) {
+        await projectsApi.updateProject(project._id, payload);
+      } else {
+        await projectsApi.createProject(payload);
+      }
       if (mutate) mutate();
       if (mutateStats) mutateStats();
       handleClose();
     } catch (err: any) {
-      setError(err.message || "Tạo dự án thất bại");
+      setError(err.message || (mode === 'edit' ? "Cập nhật dự án thất bại" : "Tạo dự án thất bại"));
     } finally {
       setLoading(false);
     }
@@ -171,7 +203,7 @@ const CreateProjectDialog = ({ open, onClose, mutate, mutateStats }: CreateProje
         },
       }}
     >
-      <DialogTitle sx={{ pb: 1 }}>Tạo dự án mới</DialogTitle>
+      <DialogTitle sx={{ pb: 1 }}>{mode === 'edit' ? 'Chỉnh sửa dự án' : 'Tạo dự án mới'}</DialogTitle>
 
       <DialogContent>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 3, pt: 1 }}>
@@ -339,7 +371,7 @@ const CreateProjectDialog = ({ open, onClose, mutate, mutateStats }: CreateProje
           disabled={!formData.name.trim() || loading}
           sx={{ textTransform: "none" }}
         >
-          {loading ? "Đang tạo..." : "Tạo dự án"}
+          {loading ? (mode === 'edit' ? 'Đang lưu...' : 'Đang tạo...') : (mode === 'edit' ? 'Lưu thay đổi' : 'Tạo dự án')}
         </Button>
       </DialogActions>
       {error && (
@@ -349,4 +381,4 @@ const CreateProjectDialog = ({ open, onClose, mutate, mutateStats }: CreateProje
   );
 };
 
-export default CreateProjectDialog;
+export default ProjectDialog;

@@ -13,9 +13,10 @@ interface ProjectListProps {
   isLoading?: boolean;
   error?: any;
   searchQuery: string;
+  onEditProject?: (project: Project) => void;
 }
 
-const ProjectList = ({ projects, isLoading, error, searchQuery }: ProjectListProps) => {
+const ProjectList = ({ projects, isLoading, error, searchQuery, onEditProject }: ProjectListProps) => {
   const theme = useTheme();
 
   const handleView = (id: string) => {
@@ -23,7 +24,8 @@ const ProjectList = ({ projects, isLoading, error, searchQuery }: ProjectListPro
   };
 
   const handleEdit = (id: string) => {
-    console.log("Chỉnh sửa dự án:", id);
+    const project = projects.find((p) => p._id === id);
+    if (project && onEditProject) onEditProject(project);
   };
 
   const handleDelete = (id: string) => {

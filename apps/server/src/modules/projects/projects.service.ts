@@ -10,6 +10,7 @@ import { CreateProjectDto } from './dto/create-project.dto';
 import { ProjectQueryDto, ProjectStatsDto } from './dto/project-query.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { Project, ProjectStatus } from './entities/project.entity';
+import { UserRole } from '../users/entities/user.entity';
 
 @Injectable()
 export class ProjectsService extends BaseService<
@@ -194,7 +195,7 @@ export class ProjectsService extends BaseService<
     };
   }
 
-  async findByIdWithAccess(id: string, userId: string): Promise<Project> {
+  async findByIdWithAccess(id: string, userId: string, userRole?: UserRole): Promise<Project> {
     const project = await this.findById(id, [
       'owner',
       'members',
@@ -206,10 +207,11 @@ export class ProjectsService extends BaseService<
       throw new NotFoundException('Project not found');
     }
 
-    // Check if user has access to this project
+    // Cho phép admin truy cập mọi project
     const hasAccess =
       project.owner.toString() === userId ||
-      project.members.some(member => member.toString() === userId);
+      project.members.some(member => member.toString() === userId) ||
+      userRole === UserRole.Admin;
 
     if (!hasAccess) {
       throw new ForbiddenException('You do not have access to this project');
@@ -222,13 +224,14 @@ export class ProjectsService extends BaseService<
     id: string,
     input: UpdateProjectDto,
     userId: string,
+    userRole: UserRole,
   ): Promise<Project> {
-    const project = await this.findByIdWithAccess(id, userId);
+    const project = await this.findByIdWithAccess(id, userId, userRole);
 
-    // Only owner can update project details
-    if (project.owner.toString() !== userId) {
+    // Chỉ owner hoặc admin mới được update
+    if (project.owner.toString() !== userId && userRole !== UserRole.Admin) {
       throw new ForbiddenException(
-        'Only project owner can update project details',
+        'Only project owner or admin can update project details',
       );
     }
 

@@ -13,18 +13,21 @@ import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import Typography from "@mui/material/Typography";
 import { useState } from "react";
-import CreateProjectDialog from "./components/CreateProjectDialog";
+import ProjectDialog from "./components/CreateProjectDialog";
 import ProjectFilters from "./components/ProjectFilters";
 import ProjectGrid from "./components/ProjectGrid";
 import ProjectList from "./components/ProjectList";
 import ProjectStats from "./components/ProjectStats";
 import { useProjects, useProjectStats } from "@/hooks/useProjects";
+import { Project } from "@/types/project";
 
 export default function ProjectsPage() {
   const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   const { projects, isLoading, error, mutate } = useProjects();
   const { mutate: mutateStats } = useProjectStats();
@@ -149,6 +152,10 @@ export default function ProjectsPage() {
             isLoading={isLoading}
             error={error}
             searchQuery={searchQuery}
+            onEditProject={(project) => {
+              setSelectedProject(project);
+              setShowEditDialog(true);
+            }}
           />
         ) : (
           <ProjectList
@@ -156,15 +163,31 @@ export default function ProjectsPage() {
             isLoading={isLoading}
             error={error}
             searchQuery={searchQuery}
+            onEditProject={(project) => {
+              setSelectedProject(project);
+              setShowEditDialog(true);
+            }}
           />
         )}
       </Box>
 
-      <CreateProjectDialog
+      <ProjectDialog
         open={showCreateDialog}
         onClose={() => setShowCreateDialog(false)}
         mutate={mutate}
         mutateStats={mutateStats}
+        mode="create"
+      />
+      <ProjectDialog
+        open={showEditDialog}
+        onClose={() => {
+          setShowEditDialog(false);
+          setSelectedProject(null);
+        }}
+        mutate={mutate}
+        mutateStats={mutateStats}
+        mode="edit"
+        project={selectedProject || undefined}
       />
     </Box>
   );
