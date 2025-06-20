@@ -20,6 +20,7 @@ import {
   ProjectPriority,
   ProjectStatus,
 } from "@/types/project";
+import { formatDateVN } from "@/utils/time";
 
 interface ProjectGridProps {
   projects: Project[];
@@ -227,15 +228,13 @@ const ProjectGrid = ({ projects, isLoading, error, searchQuery }: ProjectGridPro
                     sx={{ fontSize: 14, color: "text.secondary" }}
                   />
                   <Typography variant="caption" color="text.secondary">
-                    {new Date(project.startDate || "").toLocaleDateString(
-                      "vi-VN"
-                    )}
+                    {formatDateVN(project.startDate || "")}
                   </Typography>
                 </Box>
                 {project.endDate && (
                   <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                     <Typography variant="caption" color="text.secondary">
-                      - {new Date(project.endDate).toLocaleDateString("vi-VN")}
+                      - {formatDateVN(project.endDate)}
                     </Typography>
                   </Box>
                 )}

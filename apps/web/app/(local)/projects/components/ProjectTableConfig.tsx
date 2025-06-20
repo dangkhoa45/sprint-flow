@@ -21,6 +21,7 @@ import {
   getPriorityColor,
   getPriorityText,
 } from "@/utils/projectHelpers";
+import { formatDateVN } from "@/utils/time";
 
 interface ProjectTableConfigProps {
   theme: Theme;
@@ -169,9 +170,7 @@ export const useProjectTableConfig = ({
       minWidth: 130,
       renderCell: (params) => (
         <Typography variant="body2">
-          {params.value
-            ? new Date(params.value).toLocaleDateString("vi-VN")
-            : "-"}
+          {params.value ? formatDateVN(params.value) : "-"}
         </Typography>
       ),
     },

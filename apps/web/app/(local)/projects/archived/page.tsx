@@ -9,6 +9,7 @@ import CardContent from "@mui/material/CardContent";
 import Chip from "@mui/material/Chip";
 import { useTheme } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
+import { formatDateVN } from "@/utils/time";
 
 export default function ArchivedProjectsPage() {
   const theme = useTheme();
@@ -158,9 +159,7 @@ export default function ArchivedProjectsPage() {
 
                     <Typography variant="caption" color="text.secondary">
                       Lưu trữ ngày:{" "}
-                      {new Date(project.archivedDate).toLocaleDateString(
-                        "vi-VN"
-                      )}
+                      {formatDateVN(project.archivedDate)}
                     </Typography>
 
                     {project.reason && (

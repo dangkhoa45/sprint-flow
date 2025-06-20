@@ -1,4 +1,5 @@
 "use client";
+import { ProjectPriority } from "@/types/project";
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
 import Box from "@mui/material/Box";
@@ -17,15 +18,19 @@ import TextField from "@mui/material/TextField";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { vi } from "date-fns/locale";
 import { useState } from "react";
-import { ProjectPriority } from "@/types/project";
+import { projectsApi } from "@/api/projects";
+import { CreateProjectDto } from "@/types/project";
 
 interface CreateProjectDialogProps {
   open: boolean;
   onClose: () => void;
+  mutate?: () => void;
+  mutateStats?: () => void;
 }
 
-const CreateProjectDialog = ({ open, onClose }: CreateProjectDialogProps) => {
+const CreateProjectDialog = ({ open, onClose, mutate, mutateStats }: CreateProjectDialogProps) => {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -38,6 +43,8 @@ const CreateProjectDialog = ({ open, onClose }: CreateProjectDialogProps) => {
   });
 
   const [newTag, setNewTag] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const availableMembers = [
     { id: "user1", name: "Nguyễn Văn A" },
@@ -97,9 +104,29 @@ const CreateProjectDialog = ({ open, onClose }: CreateProjectDialogProps) => {
     }));
   };
 
-  const handleSubmit = () => {
-    console.log("Creating project:", formData);
-    onClose();
+  const handleSubmit = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const payload: CreateProjectDto = {
+        name: formData.name.trim(),
+        description: formData.description.trim() || undefined,
+        priority: formData.priority,
+        members: formData.members.length > 0 ? formData.members : undefined,
+        startDate: formData.startDate ? formData.startDate.toISOString() : undefined,
+        endDate: formData.endDate ? formData.endDate.toISOString() : undefined,
+        estimatedHours: formData.estimatedHours ? Number(formData.estimatedHours) : undefined,
+        tags: formData.tags.length > 0 ? formData.tags : undefined,
+      };
+      await projectsApi.createProject(payload);
+      if (mutate) mutate();
+      if (mutateStats) mutateStats();
+      handleClose();
+    } catch (err: any) {
+      setError(err.message || "Tạo dự án thất bại");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleClose = () => {
@@ -148,7 +175,7 @@ const CreateProjectDialog = ({ open, onClose }: CreateProjectDialogProps) => {
 
       <DialogContent>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 3, pt: 1 }}>
-          {/* Project Name */}
+         
           <TextField
             label="Tên dự án"
             value={formData.name}
@@ -158,7 +185,7 @@ const CreateProjectDialog = ({ open, onClose }: CreateProjectDialogProps) => {
             placeholder="Nhập tên dự án..."
           />
 
-          {/* Description */}
+         
           <TextField
             label="Mô tả"
             value={formData.description}
@@ -169,7 +196,7 @@ const CreateProjectDialog = ({ open, onClose }: CreateProjectDialogProps) => {
             placeholder="Mô tả chi tiết về dự án..."
           />
 
-          {/* Priority and Estimated Hours */}
+         
           <Box sx={{ display: "flex", gap: 2 }}>
             <FormControl sx={{ flex: 1 }}>
               <InputLabel>Độ ưu tiên</InputLabel>
@@ -198,13 +225,15 @@ const CreateProjectDialog = ({ open, onClose }: CreateProjectDialogProps) => {
           </Box>
 
           {/* Start and End Dates */}
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={vi}>
             <Box sx={{ display: "flex", gap: 2 }}>
               <DatePicker
                 label="Ngày bắt đầu"
                 value={formData.startDate}
                 onChange={handleDateChange("startDate")}
                 sx={{ flex: 1 }}
+                format="dd/MM/yyyy"
+                slotProps={{ textField: { placeholder: "DD/MM/YYYY" } }}
               />
               <DatePicker
                 label="Ngày kết thúc"
@@ -212,6 +241,8 @@ const CreateProjectDialog = ({ open, onClose }: CreateProjectDialogProps) => {
                 onChange={handleDateChange("endDate")}
                 sx={{ flex: 1 }}
                 minDate={formData.startDate || undefined}
+                format="dd/MM/yyyy"
+                slotProps={{ textField: { placeholder: "DD/MM/YYYY" } }}
               />
             </Box>
           </LocalizationProvider>
@@ -297,6 +328,7 @@ const CreateProjectDialog = ({ open, onClose }: CreateProjectDialogProps) => {
           onClick={handleClose}
           startIcon={<CloseIcon />}
           sx={{ textTransform: "none" }}
+          disabled={loading}
         >
           Hủy
         </Button>
@@ -304,12 +336,15 @@ const CreateProjectDialog = ({ open, onClose }: CreateProjectDialogProps) => {
           onClick={handleSubmit}
           variant="contained"
           startIcon={<SaveIcon />}
-          disabled={!formData.name.trim()}
+          disabled={!formData.name.trim() || loading}
           sx={{ textTransform: "none" }}
         >
-          Tạo dự án
+          {loading ? "Đang tạo..." : "Tạo dự án"}
         </Button>
       </DialogActions>
+      {error && (
+        <Box sx={{ color: "error.main", px: 3, pb: 2 }}>{error}</Box>
+      )}
     </Dialog>
   );
 };

@@ -18,7 +18,7 @@ import ProjectFilters from "./components/ProjectFilters";
 import ProjectGrid from "./components/ProjectGrid";
 import ProjectList from "./components/ProjectList";
 import ProjectStats from "./components/ProjectStats";
-import { useProjects } from "@/hooks/useProjects";
+import { useProjects, useProjectStats } from "@/hooks/useProjects";
 
 export default function ProjectsPage() {
   const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
@@ -26,7 +26,8 @@ export default function ProjectsPage() {
   const [showFilters, setShowFilters] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
 
-  const { projects, isLoading, error } = useProjects();
+  const { projects, isLoading, error, mutate } = useProjects();
+  const { mutate: mutateStats } = useProjectStats();
 
   const handleViewModeChange = (
     event: React.MouseEvent<HTMLElement>,
@@ -162,6 +163,8 @@ export default function ProjectsPage() {
       <CreateProjectDialog
         open={showCreateDialog}
         onClose={() => setShowCreateDialog(false)}
+        mutate={mutate}
+        mutateStats={mutateStats}
       />
     </Box>
   );
