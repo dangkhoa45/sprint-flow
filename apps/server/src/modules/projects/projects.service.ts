@@ -29,13 +29,13 @@ export class ProjectsService extends BaseService<
     input: CreateProjectDto,
     userId: string,
   ): Promise<Project> {
-    const projectData = {
+    // members sẽ là Types.ObjectId[] khi lưu vào DB
+    const projectData: Record<string, any> = {
       ...input,
       owner: new Types.ObjectId(userId),
       createdBy: new Types.ObjectId(userId),
       members: input.members?.map(id => new Types.ObjectId(id)) || [],
     };
-
     return super.create(projectData as any);
   }
 
@@ -235,12 +235,13 @@ export class ProjectsService extends BaseService<
       );
     }
 
-    const updateData = {
+    // Nếu status cập nhật là Completed thì luôn set progress = 100
+    const updateData: Record<string, any> = {
       ...input,
       updatedBy: new Types.ObjectId(userId),
       members: input.members?.map(id => new Types.ObjectId(id)),
+      ...(input.status === ProjectStatus.Completed ? { progress: 100 } : {}),
     };
-
     const updatedProject = await this.update(id, updateData as any);
     if (!updatedProject) {
       throw new NotFoundException('Project not found');
@@ -274,10 +275,11 @@ export class ProjectsService extends BaseService<
 
     if (!project.members.includes(new Types.ObjectId(memberId))) {
       project.members.push(new Types.ObjectId(memberId));
-      const updatedProject = await this.update(projectId, {
+      const updateData: Record<string, any> = {
         members: project.members,
         updatedBy: new Types.ObjectId(userId),
-      } as any);
+      };
+      const updatedProject = await this.update(projectId, updateData as any);
       return updatedProject!;
     }
 
@@ -300,11 +302,11 @@ export class ProjectsService extends BaseService<
       member => member.toString() !== memberId,
     );
 
-    const updatedProject = await this.update(projectId, {
+    const updateData: Record<string, any> = {
       members: project.members,
       updatedBy: new Types.ObjectId(userId),
-    } as any);
-
+    };
+    const updatedProject = await this.update(projectId, updateData as any);
     return updatedProject!;
   }
 
