@@ -151,10 +151,15 @@ const MilestoneDialog = ({ open, onClose, mutate, mode, milestone, projectId }: 
         await milestonesApi.updateMilestone(milestone._id, payload);
         success("Cập nhật milestone thành công!");
       } else {
+        if (!formData.dueDate) {
+          setError("Ngày hạn là bắt buộc");
+          return;
+        }
+        
         const payload: CreateMilestoneDto = {
           title: formData.title.trim(),
           description: formData.description.trim() || undefined,
-          dueDate: formData.dueDate ? formData.dueDate.toISOString() : undefined,
+          dueDate: formData.dueDate.toISOString(),
           status: formData.status,
           progress: formData.progress,
           assignedTo: formData.assignedTo || undefined,
@@ -165,9 +170,10 @@ const MilestoneDialog = ({ open, onClose, mutate, mode, milestone, projectId }: 
       }
       if (mutate) mutate();
       handleClose();
-    } catch (err: any) {
-      setError(err.message || (mode === 'edit' ? "Cập nhật milestone thất bại" : "Tạo milestone thất bại"));
-      toastError(err.message || (mode === 'edit' ? "Cập nhật milestone thất bại" : "Tạo milestone thất bại"));
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : (mode === 'edit' ? "Cập nhật milestone thất bại" : "Tạo milestone thất bại");
+      setError(errorMessage);
+      toastError(errorMessage);
     } finally {
       setLoading(false);
     }

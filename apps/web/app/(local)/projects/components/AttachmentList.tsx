@@ -59,8 +59,9 @@ const AttachmentList = ({ attachments, mutate }: AttachmentListProps) => {
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
       success("Tải file thành công!");
-    } catch (err: any) {
-      toastError(err.message || "Tải file thất bại");
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Tải file thất bại";
+      toastError(errorMessage);
     }
   };
 
@@ -69,8 +70,9 @@ const AttachmentList = ({ attachments, mutate }: AttachmentListProps) => {
       await attachmentsApi.deleteAttachment(attachment._id);
       success("Xóa file thành công!");
       mutate();
-    } catch (err: any) {
-      toastError(err.message || "Xóa file thất bại");
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Xóa file thất bại";
+      toastError(errorMessage);
     }
   };
 

@@ -61,8 +61,9 @@ const MilestoneList = ({ projectId, milestones, mutate }: MilestoneListProps) =>
       await milestonesApi.deleteMilestone(milestone._id);
       success("Xóa milestone thành công!");
       mutate();
-    } catch (err: any) {
-      toastError(err.message || "Xóa milestone thất bại");
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Xóa milestone thất bại";
+      toastError(errorMessage);
     }
   };
 
@@ -175,7 +176,7 @@ const MilestoneList = ({ projectId, milestones, mutate }: MilestoneListProps) =>
                       </Typography>
                       <Chip
                         label={getMilestoneStatusText(milestone.status)}
-                        color={getStatusChipColor(milestone.status) as any}
+                        color={getStatusChipColor(milestone.status) as "default" | "primary" | "secondary" | "error" | "info" | "success" | "warning"}
                         size="small"
                         icon={<span>{getMilestoneStatusIcon(milestone.status)}</span>}
                       />

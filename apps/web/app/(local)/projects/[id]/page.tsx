@@ -6,7 +6,7 @@ import { useToast } from "@/hooks/useToast";
 import { Attachment } from "@/types/attachment";
 import { Milestone } from "@/types/milestone";
 import { Project } from "@/types/project";
-import { getProjectStatusColor, getProjectStatusText } from "@/utils/projectHelpers";
+import { getStatusColor, getStatusText } from "@/utils/projectHelpers";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import EditIcon from "@mui/icons-material/Edit";
@@ -91,8 +91,9 @@ export default function ProjectDetailPage() {
       setProject(projectData);
       setMilestones(milestonesData);
       setAttachments(attachmentsData);
-    } catch (err: any) {
-      toastError(err.message || "Không thể tải thông tin project");
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Không thể tải thông tin project";
+      toastError(errorMessage);
       router.push('/projects');
     } finally {
       setLoading(false);
@@ -103,7 +104,7 @@ export default function ProjectDetailPage() {
     if (projectId) {
       fetchProjectData();
     }
-  }, [projectId]);
+  }, [projectId, fetchProjectData]);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -174,15 +175,15 @@ export default function ProjectDetailPage() {
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Grid container spacing={3} alignItems="flex-start">
-            <Grid item xs={12} lg={8}>
+            <Grid size={{ xs: 12, lg: 8 }}>
               <Box sx={{ mb: 2 }}>
                 <Typography variant="h4" fontWeight={600} gutterBottom>
                   {project.name}
                 </Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2, flexWrap: 'wrap' }}>
                   <Chip
-                    label={getProjectStatusText(project.status)}
-                    color={getProjectStatusColor(project.status) as any}
+                    label={getStatusText(project.status)}
+                    color={getStatusColor(project.status) as "default" | "primary" | "secondary" | "error" | "info" | "success" | "warning"}
                     size="small"
                   />
                   <Chip
@@ -201,7 +202,7 @@ export default function ProjectDetailPage() {
               )}
 
               <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                     <ScheduleIcon fontSize="small" color="action" />
                     <Typography variant="body2" color="text.secondary">
@@ -223,7 +224,7 @@ export default function ProjectDetailPage() {
                   </Box>
                 </Grid>
                 
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                     <InfoIcon fontSize="small" color="action" />
                     <Typography variant="body2" color="text.secondary">
@@ -260,7 +261,7 @@ export default function ProjectDetailPage() {
               )}
             </Grid>
 
-            <Grid item xs={12} lg={4}>
+            <Grid size={{ xs: 12, lg: 4 }}>
               <Box sx={{ display: 'flex', justifyContent: { xs: 'flex-start', lg: 'flex-end' } }}>
                 <Button
                   variant="outlined"
@@ -294,7 +295,7 @@ export default function ProjectDetailPage() {
 
         <TabPanel value={tabValue} index={0}>
           <Grid container spacing={3}>
-            <Grid item xs={12} md={6} lg={4}>
+            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
               <Card sx={{ height: '100%' }}>
                 <CardContent>
                   <Typography variant="h6" gutterBottom>
@@ -341,7 +342,7 @@ export default function ProjectDetailPage() {
               </Card>
             </Grid>
             
-            <Grid item xs={12} md={6} lg={4}>
+            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
               <Card sx={{ height: '100%' }}>
                 <CardContent>
                   <Typography variant="h6" gutterBottom>
@@ -379,7 +380,7 @@ export default function ProjectDetailPage() {
               </Card>
             </Grid>
 
-            <Grid item xs={12} lg={4}>
+            <Grid size={{ xs: 12, lg: 4 }}>
               <Card sx={{ height: '100%' }}>
                 <CardContent>
                   <Typography variant="h6" gutterBottom>
@@ -453,7 +454,7 @@ export default function ProjectDetailPage() {
 
         <TabPanel value={tabValue} index={3}>
           <Grid container spacing={3}>
-            <Grid item xs={12} lg={4}>
+            <Grid size={{ xs: 12, lg: 4 }}>
               <FileUpload
                 projectId={projectId}
                 onUploadSuccess={fetchProjectData}
@@ -461,7 +462,7 @@ export default function ProjectDetailPage() {
                 acceptedTypes={['*/*']}
               />
             </Grid>
-            <Grid item xs={12} lg={8}>
+            <Grid size={{ xs: 12, lg: 8 }}>
               <AttachmentList
                 attachments={attachments}
                 mutate={fetchProjectData}
@@ -478,7 +479,7 @@ export default function ProjectDetailPage() {
           onClose={() => setEditDialogOpen(false)}
           mode="edit"
           project={project}
-          onSuccess={handleEditSuccess}
+          mutate={handleEditSuccess}
         />
       )}
     </Container>

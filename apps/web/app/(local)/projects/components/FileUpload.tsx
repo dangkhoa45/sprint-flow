@@ -103,8 +103,9 @@ const FileUpload = ({
       if (onUploadSuccess) {
         onUploadSuccess();
       }
-    } catch (err: any) {
-      toastError(err.message || "Upload file thất bại");
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Upload file thất bại";
+      toastError(errorMessage);
     } finally {
       setIsUploading(false);
     }
