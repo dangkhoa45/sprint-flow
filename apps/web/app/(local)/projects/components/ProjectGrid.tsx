@@ -2,6 +2,8 @@
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import PersonIcon from "@mui/icons-material/Person";
+import AttachFileIcon from "@mui/icons-material/AttachFile";
+import TimelineIcon from "@mui/icons-material/Timeline";
 import Avatar from "@mui/material/Avatar";
 import AvatarGroup from "@mui/material/AvatarGroup";
 import Box from "@mui/material/Box";
@@ -203,10 +205,10 @@ const ProjectGrid = ({ projects, isLoading, error, searchQuery, onEditProject }:
                     mb: 0.5,
                   }}
                 >
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="caption" color="text.secondary">
                     Tiến độ
                   </Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                  <Typography variant="caption" fontWeight={500}>
                     {project.progress}%
                   </Typography>
                 </Box>
@@ -216,89 +218,68 @@ const ProjectGrid = ({ projects, isLoading, error, searchQuery, onEditProject }:
                   sx={{
                     height: 6,
                     borderRadius: 3,
-                    backgroundColor: `${getStatusColor(project.status)}15`,
+                    backgroundColor: "action.hover",
                     "& .MuiLinearProgress-bar": {
                       backgroundColor: getStatusColor(project.status),
-                      borderRadius: 3,
                     },
                   }}
                 />
               </Box>
 
-              <Box sx={{ display: "flex", gap: 2, mb: 1.5 }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1.5 }}>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                  <CalendarTodayIcon
-                    sx={{ fontSize: 14, color: "text.secondary" }}
-                  />
+                  <CalendarTodayIcon fontSize="small" color="action" />
                   <Typography variant="caption" color="text.secondary">
-                    {formatDateVN(project.startDate || "")}
+                    {formatDateVN(project.startDate || "")} - {formatDateVN(project.endDate || "")}
                   </Typography>
                 </Box>
-                {project.endDate && (
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                    <Typography variant="caption" color="text.secondary">
-                      - {formatDateVN(project.endDate)}
-                    </Typography>
-                  </Box>
-                )}
               </Box>
 
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
+              <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1.5 }}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                  <PersonIcon fontSize="small" color="action" />
+                  <Typography variant="caption" color="text.secondary">
+                    {project.owner?.displayName || project.owner?.username}
+                  </Typography>
+                </Box>
+              </Box>
+
+              {/* Milestones and Attachments Info */}
+              <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1.5 }}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                  <TimelineIcon fontSize="small" color="action" />
+                  <Typography variant="caption" color="text.secondary">
+                    {project.milestones?.length || 0} milestones
+                  </Typography>
+                </Box>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                  <AttachFileIcon fontSize="small" color="action" />
+                  <Typography variant="caption" color="text.secondary">
+                    {project.attachments?.length || 0} files
+                  </Typography>
+                </Box>
+              </Box>
+
+              {project.members && project.members.length > 0 && (
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <PersonIcon sx={{ fontSize: 16, color: "text.secondary" }} />
                   <Typography variant="caption" color="text.secondary">
-                    {project.owner.displayName}
+                    Thành viên:
                   </Typography>
-                </Box>
-                <AvatarGroup
-                  max={4}
-                  sx={{
-                    "& .MuiAvatar-root": {
-                      width: 24,
-                      height: 24,
-                      fontSize: "0.75rem",
-                      border: `2px solid ${theme.palette.background.paper}`,
-                    },
-                  }}
-                >
-                  {project.members.map((member) => (
-                    <Avatar
-                      key={member._id}
-                      alt={member.displayName}
-                      src={member.avatar}
-                    >
-                      {member.displayName.charAt(0)}
-                    </Avatar>
-                  ))}
-                </AvatarGroup>
-              </Box>
-
-              {project.tags.length > 0 && (
-                <Box
-                  sx={{ display: "flex", gap: 0.5, mt: 2, flexWrap: "wrap" }}
-                >
-                  {project.tags.slice(0, 3).map((tag, index) => (
-                    <Chip
-                      key={index}
-                      label={tag}
-                      size="small"
-                      variant="outlined"
-                      sx={{ fontSize: "0.7rem", height: 20 }}
-                    />
-                  ))}
-                  {project.tags.length > 3 && (
-                    <Chip
-                      label={`+${project.tags.length - 3}`}
-                      size="small"
-                      variant="outlined"
-                      sx={{ fontSize: "0.7rem", height: 20 }}
-                    />
+                  <AvatarGroup max={3} sx={{ "& .MuiAvatar-root": { width: 24, height: 24 } }}>
+                    {project.members.slice(0, 3).map((member) => (
+                      <Avatar
+                        key={member._id}
+                        sx={{ width: 24, height: 24, fontSize: "0.75rem" }}
+                        alt={member.displayName || member.username}
+                      >
+                        {(member.displayName || member.username || "").charAt(0).toUpperCase()}
+                      </Avatar>
+                    ))}
+                  </AvatarGroup>
+                  {project.members.length > 3 && (
+                    <Typography variant="caption" color="text.secondary">
+                      +{project.members.length - 3}
+                    </Typography>
                   )}
                 </Box>
               )}
@@ -311,29 +292,13 @@ const ProjectGrid = ({ projects, isLoading, error, searchQuery, onEditProject }:
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
-        PaperProps={{
-          sx: {
-            minWidth: 150,
-          },
-        }}
+        onClick={handleMenuClose}
       >
-        <MenuItem onClick={handleMenuClose}>Xem chi tiết</MenuItem>
-        <MenuItem
-          onClick={() => {
-            if (selectedProject?.status === ProjectStatus.Completed) {
-              warning("Không thể chỉnh sửa dự án đã hoàn thành");
-            } else if (selectedProject && onEditProject) {
-              onEditProject(selectedProject);
-            }
-            handleMenuClose();
-          }}
-          disabled={selectedProject?.status === ProjectStatus.Completed}
-        >
-          Chỉnh sửa
-        </MenuItem>
-        <MenuItem onClick={handleMenuClose} sx={{ color: "error.main" }}>
-          Xóa
-        </MenuItem>
+        {selectedProject && onEditProject && (
+          <MenuItem onClick={() => onEditProject(selectedProject)}>
+            Chỉnh sửa
+          </MenuItem>
+        )}
       </Menu>
     </>
   );

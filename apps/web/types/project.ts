@@ -1,5 +1,7 @@
 import { BaseObject } from "./shared";
 import { User } from "./user";
+import { Milestone } from "./milestone";
+import { Attachment } from "./attachment";
 
 export enum ProjectStatus {
   Planning = "Planning",
@@ -30,6 +32,8 @@ export interface Project extends BaseObject {
   progress: number;
   actualCost: number;
   tags: string[];
+  milestones?: Milestone[];
+  attachments?: Attachment[];
   metadata?: Record<string, unknown>;
   createdBy?: User;
   updatedBy?: User;
