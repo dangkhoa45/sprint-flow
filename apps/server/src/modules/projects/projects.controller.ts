@@ -134,6 +134,7 @@ export class ProjectsController {
       id,
       updateProjectDto,
       user.sub,
+      user.rol,
     );
   }
 

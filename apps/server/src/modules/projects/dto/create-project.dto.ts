@@ -51,12 +51,6 @@ export class CreateProjectDto extends BaseInput {
   @Min(0)
   estimatedHours?: number;
 
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsNumber()
-  @Min(0)
-  budget?: number;
-
   @ApiProperty({ type: [String], required: false })
   @IsOptional()
   @IsArray()

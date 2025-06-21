@@ -20,129 +20,22 @@ import {
   ProjectPriority,
   ProjectStatus,
 } from "@/types/project";
+import { formatDateVN } from "@/utils/time";
+import { useToast } from "@/hooks/useToast";
 
 interface ProjectGridProps {
+  projects: Project[];
+  isLoading?: boolean;
+  error?: any;
   searchQuery: string;
+  onEditProject?: (project: Project) => void;
 }
 
-const mockProjects: Project[] = [
-  {
-    _id: "1",
-    name: "Nền tảng Thương mại điện tử",
-    description:
-      "Xây dựng hệ thống thương mại điện tử hiện đại với React và Node.js",
-    status: ProjectStatus.InProgress,
-    priority: ProjectPriority.High,
-    progress: 75,
-    startDate: "2024-01-15",
-    endDate: "2024-06-30",
-    owner: {
-      _id: "user1",
-      displayName: "Nguyễn Văn A",
-      username: "nguyenvana",
-      role: "Admin" as any,
-      status: "Active" as any,
-      avatar: "/avatars/user1.jpg",
-    },
-    members: [
-      {
-        _id: "user2",
-        displayName: "Trần Thị B",
-        username: "tranthib",
-        role: "User" as any,
-        status: "Active" as any,
-      },
-      {
-        _id: "user3",
-        displayName: "Lê Văn C",
-        username: "levanc",
-        role: "User" as any,
-        status: "Active" as any,
-      },
-    ],
-    actualHours: 320,
-    actualCost: 0,
-    tags: ["React", "Node.js", "MongoDB"],
-    createdAt: "2024-01-01",
-    updatedAt: "2024-01-15",
-  },
-  {
-    _id: "2",
-    name: "Ứng dụng di động iOS",
-    description: "Phát triển ứng dụng mobile native cho iOS",
-    status: ProjectStatus.Planning,
-    priority: ProjectPriority.Medium,
-    progress: 25,
-    startDate: "2024-02-01",
-    endDate: "2024-08-30",
-    owner: {
-      _id: "user2",
-      displayName: "Trần Thị B",
-      username: "tranthib",
-      role: "User" as any,
-      status: "Active" as any,
-      avatar: "/avatars/user2.jpg",
-    },
-    members: [
-      {
-        _id: "user1",
-        displayName: "Nguyễn Văn A",
-        username: "nguyenvana",
-        role: "Admin" as any,
-        status: "Active" as any,
-      },
-    ],
-    actualHours: 80,
-    actualCost: 0,
-    tags: ["iOS", "Swift", "Mobile"],
-    createdAt: "2024-01-15",
-    updatedAt: "2024-02-01",
-  },
-  {
-    _id: "3",
-    name: "Hệ thống CRM",
-    description: "Xây dựng hệ thống quản lý khách hàng tích hợp AI",
-    status: ProjectStatus.Completed,
-    priority: ProjectPriority.Critical,
-    progress: 100,
-    startDate: "2023-10-01",
-    endDate: "2024-01-31",
-    owner: {
-      _id: "user3",
-      displayName: "Lê Văn C",
-      username: "levanc",
-      role: "User" as any,
-      status: "Active" as any,
-      avatar: "/avatars/user3.jpg",
-    },
-    members: [
-      {
-        _id: "user1",
-        displayName: "Nguyễn Văn A",
-        username: "nguyenvana",
-        role: "Admin" as any,
-        status: "Active" as any,
-      },
-      {
-        _id: "user2",
-        displayName: "Trần Thị B",
-        username: "tranthib",
-        role: "User" as any,
-        status: "Active" as any,
-      },
-    ],
-    actualHours: 640,
-    actualCost: 0,
-    tags: ["CRM", "AI", "Python"],
-    createdAt: "2023-10-01",
-    updatedAt: "2024-01-31",
-  },
-];
-
-const ProjectGrid = ({ searchQuery }: ProjectGridProps) => {
+const ProjectGrid = ({ projects, isLoading, error, searchQuery, onEditProject }: ProjectGridProps) => {
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const { warning } = useToast();
 
   const handleMenuClick = (
     event: React.MouseEvent<HTMLElement>,
@@ -222,22 +115,19 @@ const ProjectGrid = ({ searchQuery }: ProjectGridProps) => {
     }
   };
 
-  const filteredProjects = mockProjects.filter(
-    (project) =>
-      project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      project.description?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  if (isLoading) return <div>Đang tải dữ liệu...</div>;
+  if (error) return <div>Lỗi tải dữ liệu dự án!</div>;
 
   return (
     <>
       <Box
         sx={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(350px, 1fr))",
-          gap: 3,
+          gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
+          gap: 2,
         }}
       >
-        {filteredProjects.map((project) => (
+        {projects.map((project) => (
           <Card
             key={project._id}
             sx={{
@@ -253,23 +143,23 @@ const ProjectGrid = ({ searchQuery }: ProjectGridProps) => {
               },
             }}
           >
-            <CardContent sx={{ p: 3 }}>
+            <CardContent sx={{ p: 2.5 }}>
               <Box
                 sx={{
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "start",
-                  mb: 2,
+                  mb: 1.5,
                 }}
               >
                 <Box sx={{ flex: 1 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5 }}>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 0.5 }}>
                     {project.name}
                   </Typography>
                   <Typography
                     variant="body2"
                     color="text.secondary"
-                    sx={{ mb: 1.5 }}
+                    sx={{ mb: 1, height: 40, overflow: "hidden" }}
                   >
                     {project.description}
                   </Typography>
@@ -283,7 +173,7 @@ const ProjectGrid = ({ searchQuery }: ProjectGridProps) => {
                 </IconButton>
               </Box>
 
-              <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
+              <Box sx={{ display: "flex", gap: 1, mb: 1.5 }}>
                 <Chip
                   label={getStatusText(project.status)}
                   size="small"
@@ -304,7 +194,7 @@ const ProjectGrid = ({ searchQuery }: ProjectGridProps) => {
                 />
               </Box>
 
-              <Box sx={{ mb: 2 }}>
+              <Box sx={{ mb: 1.5 }}>
                 <Box
                   sx={{
                     display: "flex",
@@ -335,21 +225,19 @@ const ProjectGrid = ({ searchQuery }: ProjectGridProps) => {
                 />
               </Box>
 
-              <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
+              <Box sx={{ display: "flex", gap: 2, mb: 1.5 }}>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                   <CalendarTodayIcon
                     sx={{ fontSize: 14, color: "text.secondary" }}
                   />
                   <Typography variant="caption" color="text.secondary">
-                    {new Date(project.startDate || "").toLocaleDateString(
-                      "vi-VN"
-                    )}
+                    {formatDateVN(project.startDate || "")}
                   </Typography>
                 </Box>
                 {project.endDate && (
                   <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                     <Typography variant="caption" color="text.secondary">
-                      - {new Date(project.endDate).toLocaleDateString("vi-VN")}
+                      - {formatDateVN(project.endDate)}
                     </Typography>
                   </Box>
                 )}
@@ -430,8 +318,19 @@ const ProjectGrid = ({ searchQuery }: ProjectGridProps) => {
         }}
       >
         <MenuItem onClick={handleMenuClose}>Xem chi tiết</MenuItem>
-        <MenuItem onClick={handleMenuClose}>Chỉnh sửa</MenuItem>
-        <MenuItem onClick={handleMenuClose}>Sao chép</MenuItem>
+        <MenuItem
+          onClick={() => {
+            if (selectedProject?.status === ProjectStatus.Completed) {
+              warning("Không thể chỉnh sửa dự án đã hoàn thành");
+            } else if (selectedProject && onEditProject) {
+              onEditProject(selectedProject);
+            }
+            handleMenuClose();
+          }}
+          disabled={selectedProject?.status === ProjectStatus.Completed}
+        >
+          Chỉnh sửa
+        </MenuItem>
         <MenuItem onClick={handleMenuClose} sx={{ color: "error.main" }}>
           Xóa
         </MenuItem>

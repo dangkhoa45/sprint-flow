@@ -13,17 +13,24 @@ import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import Typography from "@mui/material/Typography";
 import { useState } from "react";
-import CreateProjectDialog from "./components/CreateProjectDialog";
+import ProjectFormDialog from "./components/CreateProjectDialog";
 import ProjectFilters from "./components/ProjectFilters";
 import ProjectGrid from "./components/ProjectGrid";
 import ProjectList from "./components/ProjectList";
 import ProjectStats from "./components/ProjectStats";
+import { useProjects, useProjectStats } from "@/hooks/useProjects";
+import { Project } from "@/types/project";
 
 export default function ProjectsPage() {
   const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+
+  const { projects, isLoading, error, mutate } = useProjects();
+  const { mutate: mutateStats } = useProjectStats();
 
   const handleViewModeChange = (
     event: React.MouseEvent<HTMLElement>,
@@ -33,6 +40,12 @@ export default function ProjectsPage() {
       setViewMode(newViewMode);
     }
   };
+
+  const filteredProjects = projects.filter(
+    (project) =>
+      project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      project.description?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
@@ -134,15 +147,47 @@ export default function ProjectsPage() {
 
       <Box sx={{ flex: 1 }}>
         {viewMode === "grid" ? (
-          <ProjectGrid searchQuery={searchQuery} />
+          <ProjectGrid
+            projects={filteredProjects}
+            isLoading={isLoading}
+            error={error}
+            searchQuery={searchQuery}
+            onEditProject={(project: Project) => {
+              setSelectedProject(project);
+              setShowEditDialog(true);
+            }}
+          />
         ) : (
-          <ProjectList searchQuery={searchQuery} />
+          <ProjectList
+            projects={filteredProjects}
+            isLoading={isLoading}
+            error={error}
+            searchQuery={searchQuery}
+            onEditProject={(project: Project) => {
+              setSelectedProject(project);
+              setShowEditDialog(true);
+            }}
+          />
         )}
       </Box>
 
-      <CreateProjectDialog
+      <ProjectFormDialog
         open={showCreateDialog}
         onClose={() => setShowCreateDialog(false)}
+        mutate={mutate}
+        mutateStats={mutateStats}
+        mode="create"
+      />
+      <ProjectFormDialog
+        open={showEditDialog}
+        onClose={() => {
+          setShowEditDialog(false);
+          setSelectedProject(null);
+        }}
+        mutate={mutate}
+        mutateStats={mutateStats}
+        mode="edit"
+        project={selectedProject!}
       />
     </Box>
   );

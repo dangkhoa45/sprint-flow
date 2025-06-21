@@ -1,59 +1,55 @@
 "use client";
+import { useProjectStats } from "@/hooks/useProjects";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import CancelIcon from "@mui/icons-material/Cancel";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import PauseCircleIcon from "@mui/icons-material/PauseCircle";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import AssignmentIcon from "@mui/icons-material/Assignment";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import PauseCircleIcon from "@mui/icons-material/PauseCircle";
-import CancelIcon from "@mui/icons-material/Cancel";
 
 const ProjectStats = () => {
   const theme = useTheme();
+  const { stats, isLoading, error } = useProjectStats();
 
-  const stats = [
+  // Map dữ liệu API vào UI
+  const statCards = [
     {
       label: "Tổng số dự án",
-      value: "24",
-      change: "+3",
-      trend: "up",
+      value: stats?.total ?? 0,
       icon: AssignmentIcon,
       color: "#6366f1",
     },
     {
       label: "Đang thực hiện",
-      value: "12",
-      change: "+2",
-      trend: "up",
+      value: stats?.inProgress ?? 0,
       icon: TrendingUpIcon,
       color: "#10b981",
     },
     {
       label: "Đã hoàn thành",
-      value: "8",
-      change: "+1",
-      trend: "up",
+      value: stats?.completed ?? 0,
       icon: CheckCircleIcon,
       color: "#3b82f6",
     },
     {
       label: "Tạm dừng",
-      value: "3",
-      change: "0",
-      trend: "neutral",
+      value: stats?.onHold ?? 0,
       icon: PauseCircleIcon,
       color: "#f59e0b",
     },
     {
       label: "Đã hủy",
-      value: "1",
-      change: "0",
-      trend: "neutral",
+      value: stats?.cancelled ?? 0,
       icon: CancelIcon,
       color: "#ef4444",
     },
   ];
+
+  if (isLoading) return <div>Đang tải thống kê...</div>;
+  if (error) return <div>Lỗi tải thống kê dự án!</div>;
 
   return (
     <Box
@@ -63,13 +59,13 @@ const ProjectStats = () => {
         gap: 2,
       }}
     >
-      {stats.map((stat, index) => {
+      {statCards.map((stat, index) => {
         const IconComponent = stat.icon;
         return (
           <Card
             key={index}
             sx={{
-              p: 2.5,
+              p: 2,
               border: `1px solid ${theme.palette.divider}`,
               borderRadius: 2,
               transition: "all 0.2s ease-in-out",
@@ -84,14 +80,14 @@ const ProjectStats = () => {
               sx={{
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "space-between",
-                mb: 1.5,
+                justifyContent: "flex-start",
+                gap: 2,
               }}
             >
               <Box
                 sx={{
-                  width: 40,
-                  height: 40,
+                  width: 36,
+                  height: 36,
                   borderRadius: 2,
                   backgroundColor: `${stat.color}15`,
                   display: "flex",
@@ -99,42 +95,29 @@ const ProjectStats = () => {
                   justifyContent: "center",
                 }}
               >
-                <IconComponent sx={{ fontSize: 20, color: stat.color }} />
+                <IconComponent sx={{ fontSize: 18, color: stat.color }} />
               </Box>
-              {stat.change !== "0" && (
-                <Box
+              <Box>
+                <Typography
+                  variant="h5"
                   sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 0.5,
-                    color: stat.trend === "up" ? "#10b981" : "#ef4444",
-                    fontSize: "0.75rem",
-                    fontWeight: 500,
+                    fontWeight: 700,
+                    color: theme.palette.text.primary,
                   }}
                 >
-                  {stat.change}
-                </Box>
-              )}
+                  {stat.value}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: theme.palette.text.secondary,
+                    fontSize: "0.875rem",
+                  }}
+                >
+                  {stat.label}
+                </Typography>
+              </Box>
             </Box>
-            <Typography
-              variant="h4"
-              sx={{
-                fontWeight: 700,
-                color: theme.palette.text.primary,
-                mb: 0.5,
-              }}
-            >
-              {stat.value}
-            </Typography>
-            <Typography
-              variant="body2"
-              sx={{
-                color: theme.palette.text.secondary,
-                fontSize: "0.875rem",
-              }}
-            >
-              {stat.label}
-            </Typography>
           </Card>
         );
       })}
