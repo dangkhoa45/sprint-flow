@@ -4,6 +4,9 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import PersonIcon from "@mui/icons-material/Person";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import TimelineIcon from "@mui/icons-material/Timeline";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import Avatar from "@mui/material/Avatar";
 import AvatarGroup from "@mui/material/AvatarGroup";
 import Box from "@mui/material/Box";
@@ -14,9 +17,12 @@ import IconButton from "@mui/material/IconButton";
 import LinearProgress from "@mui/material/LinearProgress";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
 import { useTheme } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Project,
   ProjectPriority,
@@ -24,6 +30,7 @@ import {
 } from "@/types/project";
 import { formatDateVN } from "@/utils/time";
 import { useToast } from "@/hooks/useToast";
+import { projectsApi } from "@/api/projects";
 
 interface ProjectGridProps {
   projects: Project[];
@@ -31,13 +38,15 @@ interface ProjectGridProps {
   error?: any;
   searchQuery: string;
   onEditProject?: (project: Project) => void;
+  mutate?: () => void;
 }
 
-const ProjectGrid = ({ projects, isLoading, error, searchQuery, onEditProject }: ProjectGridProps) => {
+const ProjectGrid = ({ projects, isLoading, error, searchQuery, onEditProject, mutate }: ProjectGridProps) => {
   const theme = useTheme();
+  const router = useRouter();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const { warning } = useToast();
+  const { success, error: toastError, warning } = useToast();
 
   const handleMenuClick = (
     event: React.MouseEvent<HTMLElement>,
@@ -51,6 +60,38 @@ const ProjectGrid = ({ projects, isLoading, error, searchQuery, onEditProject }:
   const handleMenuClose = () => {
     setAnchorEl(null);
     setSelectedProject(null);
+  };
+
+  const handleViewProject = () => {
+    if (selectedProject) {
+      router.push(`/projects/${selectedProject._id}`);
+    }
+    handleMenuClose();
+  };
+
+  const handleEditProject = () => {
+    if (selectedProject && onEditProject) {
+      onEditProject(selectedProject);
+    }
+    handleMenuClose();
+  };
+
+  const handleDeleteProject = async () => {
+    if (!selectedProject) return;
+
+    try {
+      await projectsApi.deleteProject(selectedProject._id);
+      success("Xóa project thành công!");
+      mutate?.();
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Không thể xóa project";
+      toastError(errorMessage);
+    }
+    handleMenuClose();
+  };
+
+  const handleCardClick = (project: Project) => {
+    router.push(`/projects/${project._id}`);
   };
 
   const getStatusColor = (status: ProjectStatus) => {
@@ -132,6 +173,7 @@ const ProjectGrid = ({ projects, isLoading, error, searchQuery, onEditProject }:
         {projects.map((project) => (
           <Card
             key={project._id}
+            onClick={() => handleCardClick(project)}
             sx={{
               height: "100%",
               border: `1px solid ${theme.palette.divider}`,
@@ -295,10 +337,25 @@ const ProjectGrid = ({ projects, isLoading, error, searchQuery, onEditProject }:
         onClick={handleMenuClose}
       >
         {selectedProject && onEditProject && (
-          <MenuItem onClick={() => onEditProject(selectedProject)}>
-            Chỉnh sửa
+          <MenuItem onClick={handleEditProject}>
+            <ListItemIcon>
+              <EditIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText primary="Chỉnh sửa" />
           </MenuItem>
         )}
+        <MenuItem onClick={handleViewProject}>
+          <ListItemIcon>
+            <VisibilityIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText primary="Xem chi tiết" />
+        </MenuItem>
+        <MenuItem onClick={handleDeleteProject}>
+          <ListItemIcon>
+            <DeleteIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText primary="Xóa" />
+        </MenuItem>
       </Menu>
     </>
   );

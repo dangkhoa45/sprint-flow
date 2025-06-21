@@ -2,28 +2,34 @@
 import { attachmentsApi } from "@/api/attachments";
 import { useToast } from "@/hooks/useToast";
 import { Attachment, AttachmentType } from "@/types/attachment";
-import { formatFileSize, getAttachmentTypeColor, getAttachmentTypeIcon, getAttachmentTypeText } from "@/utils/attachmentHelpers";
-import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
+import {
+  formatFileSize,
+  getAttachmentTypeIcon
+} from "@/utils/attachmentHelpers";
 import DeleteIcon from "@mui/icons-material/Delete";
-import DescriptionIcon from "@mui/icons-material/Description";
 import GetAppIcon from "@mui/icons-material/GetApp";
-import ImageIcon from "@mui/icons-material/Image";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import PersonIcon from "@mui/icons-material/Person";
-import VideoFileIcon from "@mui/icons-material/VideoFile";
+import CloseIcon from "@mui/icons-material/Close";
+import {
+  CardActionArea,
+  CardMedia,
+  Grid,
+  Divider,
+  Chip,
+  Stack,
+  Link,
+  useTheme,
+  alpha,
+  Paper,
+} from "@mui/material";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
-import Chip from "@mui/material/Chip";
 import IconButton from "@mui/material/IconButton";
-import List from "@mui/material/List";
-import ListItemIcon from "@mui/material/ListItemIcon";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
-import { format } from "date-fns";
-import { vi } from "date-fns/locale";
 import { useState } from "react";
 
 interface AttachmentListProps {
@@ -31,27 +37,325 @@ interface AttachmentListProps {
   mutate: () => void;
 }
 
-const AttachmentList = ({ attachments, mutate }: AttachmentListProps) => {
+const AttachmentCard = ({
+  attachment,
+  onPreview,
+  onDelete,
+  isSelected,
+}: {
+  attachment: Attachment;
+  onPreview: (attachment: Attachment) => void;
+  onDelete: (attachment: Attachment) => void;
+  isSelected: boolean;
+}) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [selectedAttachment, setSelectedAttachment] = useState<Attachment | null>(null);
+  const theme = useTheme();
 
-  const { success, error: toastError } = useToast();
-
-  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, attachment: Attachment) => {
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
     setAnchorEl(event.currentTarget);
-    setSelectedAttachment(attachment);
   };
 
   const handleMenuClose = () => {
     setAnchorEl(null);
-    setSelectedAttachment(null);
   };
+
+  const handleDownloadClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    // This is a placeholder. The actual download is handled by the preview component.
+    // We can't directly download here easily because the download logic is in the parent.
+    // For now, let's just log it. Or we can pass down the download handler.
+    // Let's defer this decision.
+    handleMenuClose();
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onDelete(attachment);
+    handleMenuClose();
+  };
+
+  const isImage = attachment.type === AttachmentType.IMAGE;
+
+  return (
+    <Card
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        transition: "box-shadow 0.3s, background-color 0.3s",
+        "&:hover": {
+          boxShadow: 6,
+        },
+        backgroundColor: isSelected
+          ? alpha(theme.palette.primary.main, 0.1)
+          : "transparent",
+        border: isSelected
+          ? `1px solid ${theme.palette.primary.main}`
+          : "1px solid transparent",
+      }}
+      onClick={() => onPreview(attachment)}
+    >
+      <CardActionArea sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
+        <Box
+          sx={{
+            height: 100,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "100%",
+            position: "relative",
+            overflow: "hidden",
+            backgroundColor: isImage ? "grey.100" : "transparent",
+          }}
+        >
+          {isImage ? (
+            <CardMedia
+              component="img"
+              image={attachmentsApi.getFileUrl(attachment)}
+              alt={attachment.originalName}
+              sx={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+              }}
+            />
+          ) : (
+            <Typography sx={{ fontSize: "3rem" }}>
+              {getAttachmentTypeIcon(attachment.type)}
+            </Typography>
+          )}
+        </Box>
+        <CardContent sx={{ width: "100%", p: 1.5 }}>
+          <Typography
+            variant="body2"
+            fontWeight={600}
+            title={attachment.originalName}
+            noWrap
+          >
+            {attachment.originalName}
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            {formatFileSize(attachment.size)}
+          </Typography>
+        </CardContent>
+      </CardActionArea>
+
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          px: 1.5,
+          pb: 1,
+          borderTop: "1px solid",
+          borderColor: "divider",
+        }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center", flexGrow: 1 }}>
+          <PersonIcon fontSize="small" sx={{ mr: 0.5, color: "grey.600" }} />
+          <Typography variant="caption" noWrap>
+            {attachment.uploadedBy.displayName || attachment.uploadedBy.username}
+          </Typography>
+        </Box>
+        <IconButton size="small" onClick={handleMenuOpen}>
+          <MoreVertIcon />
+        </IconButton>
+      </Box>
+
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "left",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+      >
+        {/* The download logic will be on the preview pane */}
+        {/* <MenuItem onClick={handleDownloadClick}>
+          <GetAppIcon fontSize="small" sx={{ mr: 1 }} />
+          Tải xuống
+        </MenuItem> */}
+        <MenuItem
+          onClick={handleDeleteClick}
+          sx={{ color: "error.main" }}
+        >
+          <DeleteIcon fontSize="small" sx={{ mr: 1 }} />
+          Xóa
+        </MenuItem>
+      </Menu>
+    </Card>
+  );
+};
+
+const FilePreview = ({
+  attachment,
+  onClose,
+  onDownload,
+}: {
+  attachment: Attachment;
+  onClose: () => void;
+  onDownload: (attachment: Attachment) => void;
+}) => {
+  const isImage = attachment.type === AttachmentType.IMAGE;
+  const isPdf = attachment.type === AttachmentType.PDF;
+  const isPreviewable = isImage || isPdf;
+
+  const fileUrl = attachmentsApi.getFileUrl(attachment);
+
+  return (
+    <Paper
+      variant="outlined"
+      sx={{
+        p: 2,
+        height: "calc(100vh - 220px)",
+        position: "sticky",
+        top: "100px",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        sx={{ mb: 2 }}
+      >
+        <Typography variant="h6" fontWeight={600} noWrap>
+          {attachment.originalName}
+        </Typography>
+        <IconButton onClick={onClose}>
+          <CloseIcon />
+        </IconButton>
+      </Stack>
+      <Divider sx={{ mb: 2 }} />
+
+      {isPreviewable ? (
+        <Box
+          sx={{
+            flexGrow: 1,
+            overflow: "hidden",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            bgcolor: "grey.100",
+            borderRadius: 1,
+          }}
+        >
+          {isImage && (
+            <img
+              src={fileUrl}
+              alt={attachment.originalName}
+              style={{
+                maxWidth: "100%",
+                maxHeight: "100%",
+                objectFit: "contain",
+              }}
+            />
+          )}
+          {isPdf && (
+            <iframe
+              src={fileUrl}
+              title={attachment.originalName}
+              width="100%"
+              height="100%"
+              style={{ border: "none" }}
+            />
+          )}
+        </Box>
+      ) : (
+        <Box
+          sx={{
+            flexGrow: 1,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            textAlign: "center",
+          }}
+        >
+          <Typography variant="h4" sx={{ mb: 2 }}>
+            {getAttachmentTypeIcon(attachment.type)}
+          </Typography>
+          <Typography sx={{ mb: 1 }}>
+            Không thể xem trước file này.
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            Bạn có thể tải về để xem.
+          </Typography>
+        </Box>
+      )}
+
+      <Divider sx={{ my: 2 }} />
+
+      <Stack spacing={1}>
+        <Typography variant="subtitle2" fontWeight={600}>
+          Chi tiết
+        </Typography>
+        <Stack direction="row" justifyContent="space-between">
+          <Typography variant="body2" color="text.secondary">
+            Loại file
+          </Typography>
+          <Chip label={attachment.type.toUpperCase()} size="small" />
+        </Stack>
+        <Stack direction="row" justifyContent="space-between">
+          <Typography variant="body2" color="text.secondary">
+            Kích thước
+          </Typography>
+          <Typography variant="body2" fontWeight={500}>
+            {formatFileSize(attachment.size)}
+          </Typography>
+        </Stack>
+        <Stack direction="row" justifyContent="space-between">
+          <Typography variant="body2" color="text.secondary">
+            Người đăng
+          </Typography>
+          <Typography variant="body2" fontWeight={500}>
+            {attachment.uploadedBy.displayName || attachment.uploadedBy.username}
+          </Typography>
+        </Stack>
+        <Stack direction="row" justifyContent="space-between">
+          <Typography variant="body2" color="text.secondary">
+            Ngày đăng
+          </Typography>
+          <Typography variant="body2" fontWeight={500}>
+            {new Date(attachment.createdAt as string).toLocaleString()}
+          </Typography>
+        </Stack>
+      </Stack>
+
+      <Box sx={{ mt: 2 }}>
+        <Link
+          href={fileUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          underline="none"
+        >
+          <IconButton sx={{ mr: 1 }}>
+            <GetAppIcon />
+          </IconButton>
+          Tải xuống
+        </Link>
+      </Box>
+    </Paper>
+  );
+};
+
+const AttachmentList = ({ attachments, mutate }: AttachmentListProps) => {
+  const { success, error: toastError } = useToast();
+  const [selectedAttachment, setSelectedAttachment] =
+    useState<Attachment | null>(null);
 
   const handleDownload = async (attachment: Attachment) => {
     try {
       const blob = await attachmentsApi.downloadAttachment(attachment._id);
       const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
       link.download = attachment.originalName;
       document.body.appendChild(link);
@@ -60,61 +364,40 @@ const AttachmentList = ({ attachments, mutate }: AttachmentListProps) => {
       window.URL.revokeObjectURL(url);
       success("Tải file thành công!");
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : "Tải file thất bại";
+      const errorMessage =
+        err instanceof Error ? err.message : "Tải file thất bại";
       toastError(errorMessage);
     }
   };
 
   const handleDelete = async (attachment: Attachment) => {
     try {
+      if (selectedAttachment?._id === attachment._id) {
+        setSelectedAttachment(null);
+      }
       await attachmentsApi.deleteAttachment(attachment._id);
       success("Xóa file thành công!");
       mutate();
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : "Xóa file thất bại";
+      const errorMessage =
+        err instanceof Error ? err.message : "Xóa file thất bại";
       toastError(errorMessage);
     }
   };
 
-  const handleMenuAction = (action: 'download' | 'delete') => {
-    if (!selectedAttachment) return;
-    
-    if (action === 'download') {
-      handleDownload(selectedAttachment);
-    } else if (action === 'delete') {
-      handleDelete(selectedAttachment);
-    }
-    handleMenuClose();
+  const handlePreview = (attachment: Attachment) => {
+    setSelectedAttachment(attachment);
   };
 
-  const getFileIcon = (type: AttachmentType) => {
-    switch (type) {
-      case AttachmentType.IMAGE:
-        return <ImageIcon />;
-      case AttachmentType.VIDEO:
-        return <VideoFileIcon />;
-      case AttachmentType.DOCUMENT:
-        return <DescriptionIcon />;
-      case AttachmentType.ARCHIVE:
-        return <DescriptionIcon />;
-      case AttachmentType.AUDIO:
-        return <DescriptionIcon />;
-      default:
-        return <DescriptionIcon />;
-    }
+  const handleClosePreview = () => {
+    setSelectedAttachment(null);
   };
 
-  const formatDate = (dateString: string) => {
-    try {
-      return format(new Date(dateString), 'dd/MM/yyyy HH:mm', { locale: vi });
-    } catch {
-      return dateString;
-    }
-  };
-
-  const sortedAttachments = [...attachments].sort((a, b) => {
-    return new Date(b.createdAt as string).getTime() - new Date(a.createdAt as string).getTime();
-  });
+  const sortedAttachments = [...attachments].sort(
+    (a, b) =>
+      new Date(b.createdAt as string).getTime() -
+      new Date(a.createdAt as string).getTime()
+  );
 
   return (
     <Box>
@@ -123,113 +406,41 @@ const AttachmentList = ({ attachments, mutate }: AttachmentListProps) => {
       </Typography>
 
       {attachments.length === 0 ? (
-        <Paper sx={{ p: 4, textAlign: 'center' }}>
+        <Paper sx={{ p: 4, textAlign: "center" }}>
           <Typography variant="body1" color="text.secondary">
             Chưa có file nào được upload
           </Typography>
         </Paper>
       ) : (
-        <List>
-          {sortedAttachments.map((attachment) => (
-            <Card key={attachment._id} sx={{ mb: 2 }}>
-              <CardContent sx={{ py: 2, '&:last-child': { pb: 2 } }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', flex: 1, minWidth: 0 }}>
-                    <ListItemIcon sx={{ minWidth: 40 }}>
-                      {getFileIcon(attachment.type)}
-                    </ListItemIcon>
-                    
-                    <Box sx={{ flex: 1, minWidth: 0, mr: 2 }}>
-                      <Typography variant="body1" fontWeight={500} noWrap>
-                        {attachment.originalName}
-                      </Typography>
-                      
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 0.5 }}>
-                        <Chip
-                          label={getAttachmentTypeText(attachment.type)}
-                          size="small"
-                          icon={<span>{getAttachmentTypeIcon(attachment.type)}</span>}
-                          sx={{
-                            backgroundColor: getAttachmentTypeColor(attachment.type) + '20',
-                            color: getAttachmentTypeColor(attachment.type),
-                            border: `1px solid ${getAttachmentTypeColor(attachment.type)}40`,
-                          }}
-                        />
-                        
-                        <Typography variant="caption" color="text.secondary">
-                          {formatFileSize(attachment.size)}
-                        </Typography>
-                        
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                          <PersonIcon fontSize="small" color="action" />
-                          <Typography variant="caption" color="text.secondary">
-                            {attachment.uploadedBy.displayName || attachment.uploadedBy.username}
-                          </Typography>
-                        </Box>
-                        
-                        <Typography variant="caption" color="text.secondary">
-                          {formatDate(attachment.createdAt as string)}
-                        </Typography>
-                      </Box>
-                      
-                      {attachment.description && (
-                        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                          {attachment.description}
-                        </Typography>
-                      )}
-                      
-                      {attachment.tags && attachment.tags.length > 0 && (
-                        <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', mt: 1 }}>
-                          {attachment.tags.map((tag) => (
-                            <Chip
-                              key={tag}
-                              label={tag}
-                              size="small"
-                              variant="outlined"
-                            />
-                          ))}
-                        </Box>
-                      )}
-                    </Box>
-                  </Box>
-                  
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <IconButton
-                      size="small"
-                      onClick={() => handleDownload(attachment)}
-                      title="Tải xuống"
-                    >
-                      <GetAppIcon />
-                    </IconButton>
-                    
-                    <IconButton
-                      size="small"
-                      onClick={(e) => handleMenuOpen(e, attachment)}
-                    >
-                      <MoreVertIcon />
-                    </IconButton>
-                  </Box>
-                </Box>
-              </CardContent>
-            </Card>
-          ))}
-        </List>
+        <Grid container spacing={3}>
+          <Grid size={{ xs: 12, md: selectedAttachment ? 7 : 12 }}>
+            <Grid container spacing={2}>
+              {sortedAttachments.map((attachment) => (
+                <Grid
+                  key={attachment._id}
+                  size={{ xs: 12, sm: 6, md: 4, lg: 3 }}
+                >
+                  <AttachmentCard
+                    attachment={attachment}
+                    onPreview={handlePreview}
+                    onDelete={handleDelete}
+                    isSelected={selectedAttachment?._id === attachment._id}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+          </Grid>
+          {selectedAttachment && (
+            <Grid size={{ xs: 12, md: 5 }}>
+              <FilePreview
+                attachment={selectedAttachment}
+                onClose={handleClosePreview}
+                onDownload={handleDownload}
+              />
+            </Grid>
+          )}
+        </Grid>
       )}
-
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
-      >
-        <MenuItem onClick={() => handleMenuAction('download')}>
-          <CloudDownloadIcon fontSize="small" sx={{ mr: 1 }} />
-          Tải xuống
-        </MenuItem>
-        <MenuItem onClick={() => handleMenuAction('delete')} sx={{ color: 'error.main' }}>
-          <DeleteIcon fontSize="small" sx={{ mr: 1 }} />
-          Xóa
-        </MenuItem>
-      </Menu>
     </Box>
   );
 };

@@ -1,5 +1,6 @@
 "use client";
 import { milestonesApi } from "@/api/milestones";
+import { useToast } from "@/hooks/useToast";
 import { CreateMilestoneDto, Milestone, MilestoneStatus, UpdateMilestoneDto } from "@/types/milestone";
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
@@ -13,7 +14,6 @@ import DialogTitle from "@mui/material/DialogTitle";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
-import OutlinedInput from "@mui/material/OutlinedInput";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import Slider from "@mui/material/Slider";
 import TextField from "@mui/material/TextField";
@@ -23,7 +23,6 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { vi } from "date-fns/locale";
 import { useEffect, useState } from "react";
-import { useToast } from "@/hooks/useToast";
 
 interface MilestoneDialogProps {
   open: boolean;
@@ -149,7 +148,7 @@ const MilestoneDialog = ({ open, onClose, mutate, mode, milestone, projectId }: 
           tags: formData.tags.length > 0 ? formData.tags : undefined,
         };
         await milestonesApi.updateMilestone(milestone._id, payload);
-        success("Cập nhật milestone thành công!");
+        success("Cập nhật mốc công việc thành công!");
       } else {
         if (!formData.dueDate) {
           setError("Ngày hạn là bắt buộc");
@@ -166,12 +165,12 @@ const MilestoneDialog = ({ open, onClose, mutate, mode, milestone, projectId }: 
           tags: formData.tags.length > 0 ? formData.tags : undefined,
         };
         await milestonesApi.createMilestone(projectId, payload);
-        success("Tạo milestone thành công!");
+        success("Tạo mốc công việc thành công!");
       }
       if (mutate) mutate();
       handleClose();
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : (mode === 'edit' ? "Cập nhật milestone thất bại" : "Tạo milestone thất bại");
+      const errorMessage = err instanceof Error ? err.message : (mode === 'edit' ? "Cập nhật mốc công việc thất bại" : "Tạo mốc công việc thất bại");
       setError(errorMessage);
       toastError(errorMessage);
     } finally {
@@ -224,18 +223,18 @@ const MilestoneDialog = ({ open, onClose, mutate, mode, milestone, projectId }: 
       }}
     >
       <DialogTitle sx={{ pb: 1 }}>
-        {mode === 'edit' ? 'Chỉnh sửa milestone' : 'Tạo milestone mới'}
+        {mode === 'edit' ? 'Chỉnh sửa mốc công việc' : 'Tạo mốc công việc mới'}
       </DialogTitle>
 
       <DialogContent>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 3, pt: 1 }}>
           <TextField
-            label="Tiêu đề milestone"
+            label="Tiêu đề mốc công việc"
             value={formData.title}
             onChange={handleInputChange("title")}
             fullWidth
             required
-            placeholder="Nhập tiêu đề milestone..."
+            placeholder="Nhập tiêu đề mốc công việc..."
           />
 
           <TextField
@@ -245,7 +244,7 @@ const MilestoneDialog = ({ open, onClose, mutate, mode, milestone, projectId }: 
             fullWidth
             multiline
             rows={3}
-            placeholder="Mô tả chi tiết về milestone..."
+            placeholder="Mô tả chi tiết về mốc công việc..."
           />
 
           <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={vi}>
@@ -274,32 +273,37 @@ const MilestoneDialog = ({ open, onClose, mutate, mode, milestone, projectId }: 
           </FormControl>
 
           <Box>
-            <Typography gutterBottom fontWeight={500}>
-              Tiến độ (%)
-            </Typography>
+            <Typography gutterBottom>Tiến độ ({formData.progress}%)</Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               <Slider
                 value={formData.progress}
                 onChange={handleSliderChange}
+                aria-labelledby="progress-slider"
+                valueLabelDisplay="auto"
+                step={5}
+                marks
                 min={0}
                 max={100}
-                step={1}
                 sx={{ flex: 1 }}
-                aria-labelledby="progress-slider"
               />
               <TextField
-                value={formData.progress}
-                onChange={handleProgressInputChange}
-                type="number"
-                inputProps={{ min: 0, max: 100, style: { width: 60 } }}
-                size="small"
+                  value={formData.progress}
+                  onChange={handleProgressInputChange}
+                  type="number"
+                  inputProps={{
+                      style: {
+                          width: '50px',
+                          textAlign: 'center'
+                      },
+                      min: 0,
+                      max: 100
+                  }}
               />
-              <Typography>%</Typography>
             </Box>
           </Box>
 
           <FormControl fullWidth>
-            <InputLabel>Giao cho</InputLabel>
+            <InputLabel>Người được giao</InputLabel>
             <Select
               value={formData.assignedTo}
               onChange={handleSelectChange("assignedTo")}
@@ -317,57 +321,44 @@ const MilestoneDialog = ({ open, onClose, mutate, mode, milestone, projectId }: 
           </FormControl>
 
           <Box>
-            <Typography gutterBottom fontWeight={500}>
-              Tags
-            </Typography>
-            <Box sx={{ display: "flex", gap: 1, mb: 2, flexWrap: "wrap" }}>
+            <Typography gutterBottom>Tags</Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+              <TextField
+                label="Thêm tag mới"
+                value={newTag}
+                onChange={(e) => setNewTag(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleAddTag()}
+                size="small"
+                sx={{ flex: 1 }}
+              />
+              <Button onClick={handleAddTag} variant="outlined" size="small">Thêm</Button>
+            </Box>
+            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
               {formData.tags.map((tag) => (
                 <Chip
                   key={tag}
                   label={tag}
                   onDelete={() => handleRemoveTag(tag)}
-                  size="small"
                 />
               ))}
             </Box>
-            <Box sx={{ display: "flex", gap: 1 }}>
-              <TextField
-                value={newTag}
-                onChange={(e) => setNewTag(e.target.value)}
-                placeholder="Thêm tag..."
-                size="small"
-                sx={{ flex: 1 }}
-                onKeyPress={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    handleAddTag();
-                  }
-                }}
-              />
-              <Button
-                variant="outlined"
-                onClick={handleAddTag}
-                disabled={!newTag.trim()}
-                size="small"
-              >
-                Thêm
-              </Button>
-            </Box>
           </Box>
+
+          {error && <Typography color="error">{error}</Typography>}
         </Box>
       </DialogContent>
 
-      <DialogActions sx={{ p: 3, pt: 1 }}>
+      <DialogActions sx={{ p: '16px 24px' }}>
         <Button onClick={handleClose} startIcon={<CloseIcon />}>
           Hủy
         </Button>
         <Button
           onClick={handleSubmit}
           variant="contained"
+          disabled={loading}
           startIcon={<SaveIcon />}
-          disabled={loading || !formData.title.trim()}
         >
-          {loading ? "Đang lưu..." : mode === 'edit' ? "Cập nhật" : "Tạo"}
+          {loading ? "Đang lưu..." : (mode === 'edit' ? 'Lưu thay đổi' : 'Tạo mốc công việc')}
         </Button>
       </DialogActions>
     </Dialog>

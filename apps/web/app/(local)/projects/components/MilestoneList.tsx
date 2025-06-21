@@ -1,5 +1,6 @@
 "use client";
 import { milestonesApi } from "@/api/milestones";
+import { useToast } from "@/hooks/useToast";
 import { Milestone, MilestoneStatus } from "@/types/milestone";
 import { getMilestoneStatusColor, getMilestoneStatusIcon, getMilestoneStatusText, isMilestoneOverdue } from "@/utils/milestoneHelpers";
 import AddIcon from "@mui/icons-material/Add";
@@ -15,9 +16,6 @@ import CardContent from "@mui/material/CardContent";
 import Chip from "@mui/material/Chip";
 import IconButton from "@mui/material/IconButton";
 import LinearProgress from "@mui/material/LinearProgress";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemText from "@mui/material/ListItemText";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Paper from "@mui/material/Paper";
@@ -26,7 +24,6 @@ import Typography from "@mui/material/Typography";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import { useState } from "react";
-import { useToast } from "@/hooks/useToast";
 import MilestoneDialog from "./MilestoneDialog";
 
 interface MilestoneListProps {
@@ -59,10 +56,10 @@ const MilestoneList = ({ projectId, milestones, mutate }: MilestoneListProps) =>
   const handleDeleteMilestone = async (milestone: Milestone) => {
     try {
       await milestonesApi.deleteMilestone(milestone._id);
-      success("Xóa milestone thành công!");
+      success("Xóa mốc công việc thành công!");
       mutate();
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : "Xóa milestone thất bại";
+      const errorMessage = err instanceof Error ? err.message : "Xóa mốc công việc thất bại";
       toastError(errorMessage);
     }
   };
@@ -137,7 +134,7 @@ const MilestoneList = ({ projectId, milestones, mutate }: MilestoneListProps) =>
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h6" fontWeight={600}>
-          Milestones ({milestones.length})
+          Mốc công việc ({milestones.length})
         </Typography>
         <Button
           variant="contained"
@@ -145,14 +142,14 @@ const MilestoneList = ({ projectId, milestones, mutate }: MilestoneListProps) =>
           onClick={handleCreateMilestone}
           size="small"
         >
-          Thêm Milestone
+          Thêm mốc công việc
         </Button>
       </Box>
 
       {milestones.length === 0 ? (
         <Paper sx={{ p: 4, textAlign: 'center' }}>
           <Typography variant="body1" color="text.secondary" gutterBottom>
-            Chưa có milestone nào
+            Chưa có mốc công việc nào
           </Typography>
           <Button
             variant="outlined"
@@ -160,7 +157,7 @@ const MilestoneList = ({ projectId, milestones, mutate }: MilestoneListProps) =>
             onClick={handleCreateMilestone}
             sx={{ mt: 1 }}
           >
-            Tạo milestone đầu tiên
+            Tạo mốc công việc đầu tiên
           </Button>
         </Paper>
       ) : (

@@ -20,6 +20,10 @@ interface MilestoneTimelineProps {
   milestones: Milestone[];
 }
 
+const CustomChip = ({ onClick, ...props }: any) => {
+  return <Chip {...props} />;
+};
+
 const MilestoneTimeline = ({ milestones }: MilestoneTimelineProps) => {
   const formatDate = (dateString: string) => {
     try {
@@ -114,10 +118,9 @@ const MilestoneTimeline = ({ milestones }: MilestoneTimelineProps) => {
                         <Typography variant="subtitle2" fontWeight={600}>
                           {milestone.title}
                         </Typography>
-                        <Chip
+                        <CustomChip
                           label={getMilestoneStatusText(milestone.status)}
                           size="small"
-                          icon={<span>{getMilestoneStatusIcon(milestone.status)}</span>}
                           sx={{
                             backgroundColor: getMilestoneStatusColor(milestone.status) + '20',
                             color: getMilestoneStatusColor(milestone.status),
@@ -125,7 +128,7 @@ const MilestoneTimeline = ({ milestones }: MilestoneTimelineProps) => {
                           }}
                         />
                         {isMilestoneOverdue(milestone.dueDate) && milestone.status !== MilestoneStatus.Completed && (
-                          <Chip
+                          <CustomChip
                             label="Quá hạn"
                             color="error"
                             size="small"
@@ -180,7 +183,7 @@ const MilestoneTimeline = ({ milestones }: MilestoneTimelineProps) => {
                   {milestone.tags && milestone.tags.length > 0 && (
                     <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
                       {milestone.tags.slice(0, 3).map((tag) => (
-                        <Chip
+                        <CustomChip
                           key={tag}
                           label={tag}
                           size="small"
@@ -188,7 +191,7 @@ const MilestoneTimeline = ({ milestones }: MilestoneTimelineProps) => {
                         />
                       ))}
                       {milestone.tags.length > 3 && (
-                        <Chip
+                        <CustomChip
                           label={`+${milestone.tags.length - 3}`}
                           size="small"
                           variant="outlined"

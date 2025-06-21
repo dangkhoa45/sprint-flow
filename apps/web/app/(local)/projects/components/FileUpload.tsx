@@ -25,7 +25,7 @@ interface FileUploadProps {
 const FileUpload = ({ 
   projectId, 
   onUploadSuccess, 
-  maxFileSize = 10 * 1024 * 1024, // 10MB default
+  maxFileSize = 100 * 1024 * 1024,
   acceptedTypes = ['*/*']
 }: FileUploadProps) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -133,10 +133,10 @@ const FileUpload = ({
       <Box sx={{ textAlign: 'center', mb: 3 }}>
         <CloudUploadIcon sx={{ fontSize: 48, color: 'primary.main', mb: 2 }} />
         <Typography variant="h6" gutterBottom>
-          Upload File
+          Tải lên tệp
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-          Kéo thả file vào đây hoặc click để chọn file
+          Kéo thả tệp vào đây hoặc nhấp để chọn tệp
         </Typography>
         <Typography variant="caption" color="text.secondary">
           Kích thước tối đa: {formatFileSize(maxFileSize)}
@@ -150,7 +150,7 @@ const FileUpload = ({
           disabled={isUploading}
           sx={{ alignSelf: 'center' }}
         >
-          Chọn File
+          Chọn tệp
           <input
             type="file"
             hidden
@@ -190,7 +190,7 @@ const FileUpload = ({
               onChange={(e) => setDescription(e.target.value)}
               fullWidth
               size="small"
-              placeholder="Mô tả về file..."
+              placeholder="Mô tả về tệp..."
             />
 
             <TextField
@@ -200,7 +200,7 @@ const FileUpload = ({
               fullWidth
               size="small"
               placeholder="tag1, tag2, tag3..."
-              helperText="Phân cách các tag bằng dấu phẩy"
+              helperText="Phân cách các thẻ bằng dấu phẩy"
             />
 
             {isUploading && (
@@ -208,7 +208,7 @@ const FileUpload = ({
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                   <CircularProgress size={16} />
                   <Typography variant="body2">
-                    Đang upload... {uploadProgress}%
+                    Đang tải lên... {uploadProgress}%
                   </Typography>
                 </Box>
                 <LinearProgress variant="determinate" value={uploadProgress} />
@@ -222,7 +222,7 @@ const FileUpload = ({
               fullWidth
               sx={{ mt: 2 }}
             >
-              {isUploading ? "Đang Upload..." : "Upload File"}
+              {isUploading ? "Đang tải lên..." : "Tải lên tệp"}
             </Button>
           </>
         )}
