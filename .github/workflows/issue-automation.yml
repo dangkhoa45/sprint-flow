@@ -1,0 +1,325 @@
+name: Issue Automation
+
+on:
+  issues:
+    types: [ opened, edited, labeled, unlabeled, closed, reopened ]
+  pull_request:
+    types: [ opened, synchronize, reopened, closed, labeled, unlabeled ]
+
+jobs:
+  # Tự động gán labels dựa trên nội dung
+  auto-label:
+    name: Auto Label Issues
+    runs-on: ubuntu-latest
+    if: github.event_name == 'issues' && github.event.action == 'opened'
+    
+    steps:
+      - name: Auto label based on content
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const title = issue.title.toLowerCase();
+            const body = issue.body?.toLowerCase() || '';
+            const content = title + ' ' + body;
+            
+            const labels = [];
+            
+            // Bug detection
+            if (content.includes('bug') || content.includes('error') || content.includes('crash') || 
+                content.includes('broken') || content.includes('not working') || content.includes('fix')) {
+              labels.push('bug');
+            }
+            
+            // Feature request detection
+            if (content.includes('feature') || content.includes('enhancement') || content.includes('improvement') ||
+                content.includes('add') || content.includes('new') || content.includes('request')) {
+              labels.push('enhancement');
+            }
+            
+            // Documentation detection
+            if (content.includes('doc') || content.includes('documentation') || content.includes('readme') ||
+                content.includes('guide') || content.includes('tutorial')) {
+              labels.push('documentation');
+            }
+            
+            // Priority detection
+            if (content.includes('urgent') || content.includes('critical') || content.includes('high priority') ||
+                content.includes('blocking') || content.includes('asap')) {
+              labels.push('high-priority');
+            } else if (content.includes('low priority') || content.includes('nice to have') ||
+                       content.includes('optional')) {
+              labels.push('low-priority');
+            } else {
+              labels.push('medium-priority');
+            }
+            
+            // Component detection
+            if (content.includes('frontend') || content.includes('ui') || content.includes('react') ||
+                content.includes('next') || content.includes('client')) {
+              labels.push('frontend');
+            }
+            
+            if (content.includes('backend') || content.includes('api') || content.includes('server') ||
+                content.includes('nest') || content.includes('database')) {
+              labels.push('backend');
+            }
+            
+            if (content.includes('devops') || content.includes('ci/cd') || content.includes('deploy') ||
+                content.includes('docker') || content.includes('kubernetes')) {
+              labels.push('devops');
+            }
+            
+            // Add labels if any were detected
+            if (labels.length > 0) {
+              await github.rest.issues.addLabels({
+                issue_number: issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                labels: labels
+              });
+              
+              console.log(`Added labels: ${labels.join(', ')}`);
+            }
+
+  # Tự động đóng issue khi PR được merge
+  close-issue-on-merge:
+    name: Close Issue on PR Merge
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.pull_request.merged == true
+    
+    steps:
+      - name: Close related issues
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: commits } = await github.rest.pulls.listCommits({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+            });
+
+            const issueNumbers = new Set();
+            
+            // Extract issue numbers from commit messages and PR description
+            const patterns = [
+              /(?:close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved)\s+#(\d+)/gi,
+              /#(\d+)/g
+            ];
+            
+            // Check commit messages
+            commits.forEach(commit => {
+              patterns.forEach(pattern => {
+                const matches = commit.commit.message.match(pattern);
+                if (matches) {
+                  matches.forEach(match => {
+                    const issueNum = match.match(/#(\d+)/)?.[1];
+                    if (issueNum) issueNumbers.add(parseInt(issueNum));
+                  });
+                }
+              });
+            });
+            
+            // Check PR description
+            const prBody = context.payload.pull_request.body || '';
+            patterns.forEach(pattern => {
+              const matches = prBody.match(pattern);
+              if (matches) {
+                matches.forEach(match => {
+                  const issueNum = match.match(/#(\d+)/)?.[1];
+                  if (issueNum) issueNumbers.add(parseInt(issueNum));
+                });
+              }
+            });
+
+            // Close issues
+            for (const issueNumber of issueNumbers) {
+              try {
+                // Check if issue exists and is open
+                const { data: issue } = await github.rest.issues.get({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNumber,
+                });
+                
+                if (issue.state === 'open') {
+                  await github.rest.issues.update({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issueNumber,
+                    state: 'closed',
+                    labels: ['auto-closed', 'merged']
+                  });
+                  
+                  await github.rest.issues.createComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issueNumber,
+                    body: `✅ This issue has been automatically closed because it was referenced in PR #${context.issue.number} which has been merged.
+
+**Merged by:** @${context.actor}
+**Merged at:** ${new Date().toISOString()}
+**PR Title:** ${context.payload.pull_request.title}
+
+### 📋 What was implemented
+${context.payload.pull_request.body || 'No description provided'}
+
+---
+*This issue was automatically closed by the CI/CD pipeline.*`
+                  });
+                  
+                  console.log(`✅ Closed issue #${issueNumber}`);
+                } else {
+                  console.log(`ℹ️ Issue #${issueNumber} is already closed`);
+                }
+              } catch (error) {
+                console.log(`❌ Failed to close issue #${issueNumber}:`, error.message);
+              }
+            }
+
+  # Tự động comment khi issue được tạo
+  welcome-issue:
+    name: Welcome New Issue
+    runs-on: ubuntu-latest
+    if: github.event_name == 'issues' && github.event.action == 'opened'
+    
+    steps:
+      - name: Welcome new issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            
+            const welcomeMessage = `## 👋 Welcome to SprintFlow!
+
+Thank you for creating this issue. Our team will review it shortly.
+
+### 📋 Issue Information
+- **Issue ID:** #${issue.number}
+- **Created by:** @${issue.user.login}
+- **Created at:** ${new Date(issue.created_at).toLocaleString()}
+
+### 🔍 Next Steps
+1. Our team will review this issue within 24 hours
+2. We'll add appropriate labels and assignees
+3. We'll provide updates on the implementation timeline
+
+### 📝 Guidelines
+- Please provide as much detail as possible
+- Include screenshots if applicable
+- Mention any related issues or PRs
+
+### 🏷️ Auto-detected Labels
+${issue.labels.map(label => `- \`${label.name}\``).join('\n')}
+
+---
+*This message was automatically generated. For urgent issues, please tag @maintainers*`;
+
+            await github.rest.issues.createComment({
+              issue_number: issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: welcomeMessage
+            });
+
+  # Tự động assign reviewer cho PR
+  auto-assign-pr:
+    name: Auto Assign PR Reviewers
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.action == 'opened'
+    
+    steps:
+      - name: Auto assign reviewers
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const files = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+            });
+            
+            const reviewers = new Set();
+            
+            // Assign reviewers based on file changes
+            files.data.forEach(file => {
+              if (file.filename.startsWith('apps/server/')) {
+                reviewers.add('backend-maintainer'); // Replace with actual username
+              }
+              if (file.filename.startsWith('apps/web/')) {
+                reviewers.add('frontend-maintainer'); // Replace with actual username
+              }
+              if (file.filename.includes('docker') || file.filename.includes('.github/')) {
+                reviewers.add('devops-maintainer'); // Replace with actual username
+              }
+            });
+            
+            // Add default reviewers
+            reviewers.add('project-lead'); // Replace with actual username
+            
+            if (reviewers.size > 0) {
+              await github.rest.pulls.requestReviewers({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.number,
+                reviewers: Array.from(reviewers)
+              });
+              
+              console.log(`Assigned reviewers: ${Array.from(reviewers).join(', ')}`);
+            }
+
+  # Tự động update issue status
+  update-issue-status:
+    name: Update Issue Status
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.action == 'opened'
+    
+    steps:
+      - name: Update related issues status
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const prBody = pr.body || '';
+            
+            // Extract issue numbers from PR description
+            const issueMatches = prBody.match(/#(\d+)/g);
+            if (!issueMatches) return;
+            
+            const issueNumbers = [...new Set(issueMatches.map(match => parseInt(match.slice(1))))];
+            
+            for (const issueNumber of issueNumbers) {
+              try {
+                // Update issue labels
+                await github.rest.issues.addLabels({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNumber,
+                  labels: ['in-progress']
+                });
+                
+                // Add comment to issue
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNumber,
+                  body: `🔄 **Work in Progress**
+
+This issue is now being worked on in PR #${pr.number}.
+
+**PR Title:** ${pr.title}
+**Created by:** @${pr.user.login}
+**Status:** In Progress
+
+[View PR →](${pr.html_url})
+
+---
+*This status was automatically updated by the CI/CD pipeline.*`
+                });
+                
+                console.log(`Updated issue #${issueNumber} status to in-progress`);
+              } catch (error) {
+                console.log(`Failed to update issue #${issueNumber}:`, error.message);
+              }
+            } 

@@ -1,0 +1,94 @@
+# Code Owners for SprintFlow Project
+# This file defines who is responsible for different parts of the codebase
+
+# Global project owners
+* @project-lead @devops-lead
+
+# Backend (NestJS) - Server-side code
+/apps/server/ @backend-maintainer @project-lead
+/apps/server/src/ @backend-maintainer
+/apps/server/src/modules/ @backend-maintainer
+/apps/server/src/modules/auth/ @backend-maintainer @security-team
+/apps/server/src/modules/users/ @backend-maintainer
+/apps/server/src/modules/projects/ @backend-maintainer
+/apps/server/test/ @backend-maintainer
+
+# Frontend (Next.js) - Client-side code
+/apps/web/ @frontend-maintainer @project-lead
+/apps/web/app/ @frontend-maintainer
+/apps/web/components/ @frontend-maintainer
+/apps/web/hooks/ @frontend-maintainer
+/apps/web/lib/ @frontend-maintainer
+/apps/web/utils/ @frontend-maintainer
+/apps/web/types/ @frontend-maintainer
+/apps/web/api/ @frontend-maintainer
+
+# DevOps & Infrastructure
+/.github/ @devops-lead @project-lead
+/.github/workflows/ @devops-lead
+/docker-compose.yml @devops-lead
+/Dockerfile @devops-lead
+/scripts/ @devops-lead
+
+# Testing
+/testing/ @backend-maintainer @frontend-maintainer
+/testing/*.js @backend-maintainer
+/testing/*.md @backend-maintainer
+
+# Documentation
+/README.md @project-lead @devops-lead
+/docs/ @project-lead
+*.md @project-lead
+
+# Configuration files
+/package.json @devops-lead
+/pnpm-workspace.yaml @devops-lead
+/tsconfig.json @devops-lead
+/.eslintrc* @devops-lead
+/.prettierrc* @devops-lead
+
+# Security-related files
+/apps/server/src/modules/auth/ @security-team @backend-maintainer
+/apps/server/src/decorators/ @security-team @backend-maintainer
+/apps/server/src/interceptors/ @security-team @backend-maintainer
+/apps/web/middleware.ts @security-team @frontend-maintainer
+
+# Database & Models
+/apps/server/src/modules/*/entities/ @backend-maintainer
+/apps/server/src/shared/ @backend-maintainer
+
+# API & DTOs
+/apps/server/src/modules/*/dto/ @backend-maintainer
+/apps/web/api/ @frontend-maintainer
+
+# UI Components
+/apps/web/components/layouts/ @frontend-maintainer @ui-team
+/apps/web/components/ @frontend-maintainer
+
+# Styling & Theme
+/apps/web/app/theme.ts @frontend-maintainer @ui-team
+/apps/web/public/globals.css @frontend-maintainer @ui-team
+
+# Environment & Secrets
+/.env* @devops-lead @security-team
+/apps/*/.env* @devops-lead @security-team
+
+# Dependencies
+/package-lock.json @devops-lead
+/pnpm-lock.yaml @devops-lead
+/apps/*/package.json @devops-lead
+
+# Build & Output
+/apps/*/dist/ @devops-lead
+/apps/*/.next/ @devops-lead
+/apps/*/coverage/ @devops-lead
+
+# Uploads & Static files
+/apps/server/uploads/ @backend-maintainer
+/apps/web/public/ @frontend-maintainer
+
+# Special cases - require multiple approvals
+/.github/workflows/ci-cd.yml @devops-lead @project-lead @security-team
+/.github/workflows/deploy-production.yml @devops-lead @project-lead @security-team
+/docker-compose.yml @devops-lead @project-lead
+/Dockerfile @devops-lead @project-lead 
