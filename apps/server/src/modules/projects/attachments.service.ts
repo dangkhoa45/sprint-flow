@@ -162,6 +162,31 @@ export class AttachmentsService extends BaseService<
     });
   }
 
+  async getAttachmentAndCheckAccess(
+    id: string,
+    userId: string,
+  ): Promise<Attachment> {
+    const attachment = await this.findById(id, ['projectId', 'originalName', 'path']);
+    if (!attachment) {
+      throw new NotFoundException('Attachment not found');
+    }
+
+    const project = await this.projectModel.findById(attachment.projectId);
+    if (!project) {
+      throw new NotFoundException(
+        'The project associated with this attachment could not be found.',
+      );
+    }
+    if (
+      project.owner.toString() !== userId &&
+      !project.members.includes(new Types.ObjectId(userId))
+    ) {
+      throw new ForbiddenException('You do not have access to this attachment.');
+    }
+
+    return attachment;
+  }
+
   private getFileType(mimeType: string): AttachmentType {
     if (mimeType.startsWith('image/')) {
       return AttachmentType.IMAGE;

@@ -69,10 +69,6 @@ export class Project extends BaseEntity {
   @ApiProperty()
   progress: number;
 
-  @Prop({ default: 0 })
-  @ApiProperty()
-  actualCost: number;
-
   @Prop([String])
   @ApiProperty()
   tags: string[];

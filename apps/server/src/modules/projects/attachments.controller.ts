@@ -7,11 +7,13 @@ import {
   Param,
   Post,
   Query,
+  Req,
+  Res,
   UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express/multer/interceptors';
+import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -26,8 +28,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
-import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
+import * as path from 'path';
 import { CurrentUser } from 'src/decorators/current-user.decor';
 import { BadRequestResponse } from 'src/shared/base.dto';
 import { TokenPayload } from '../auth/dto/tokenPayload';
@@ -35,6 +37,8 @@ import { AuthGuard } from '../auth/auth.guard';
 import { AttachmentQueryDto } from './dto/attachment-query.dto';
 import { Attachment } from './entities/attachment.entity';
 import { AttachmentsService } from './attachments.service';
+import { UploadAttachmentDto } from './dto/upload-attachment.dto';
+import { Request, Response } from 'express';
 
 @ApiTags('Attachments')
 @ApiBearerAuth()
@@ -51,6 +55,12 @@ export class AttachmentsController {
       storage: diskStorage({
         destination: './uploads/attachments',
         filename: (req, file, callback) => {
+          if (!file || !file.originalname) {
+            return callback(
+              new BadRequestException('File is invalid or missing a name.'),
+              null,
+            );
+          }
           const uniqueSuffix = `${uuidv4()}${path.extname(file.originalname)}`;
           callback(null, uniqueSuffix);
         },
@@ -58,15 +68,27 @@ export class AttachmentsController {
       fileFilter: (req, file, callback) => {
         // Allow common file types
         const allowedMimes = [
-          'image/jpeg', 'image/png', 'image/gif', 'image/webp',
-          'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-          'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-          'text/plain', 'text/csv',
-          'application/zip', 'application/x-rar-compressed',
-          'video/mp4', 'video/avi', 'video/mov',
-          'audio/mpeg', 'audio/wav', 'audio/mp3'
+          'image/jpeg',
+          'image/png',
+          'image/gif',
+          'image/webp',
+          'application/pdf',
+          'application/msword',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          'application/vnd.ms-excel',
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          'text/plain',
+          'text/csv',
+          'application/zip',
+          'application/x-rar-compressed',
+          'video/mp4',
+          'video/avi',
+          'video/mov',
+          'audio/mpeg',
+          'audio/wav',
+          'audio/mp3',
         ];
-        
+
         if (!allowedMimes.includes(file.mimetype)) {
           return callback(
             new BadRequestException('File type not allowed!'),
@@ -76,17 +98,19 @@ export class AttachmentsController {
         callback(null, true);
       },
       limits: {
-        fileSize: 10 * 1024 * 1024, // 10MB limit
+        fileSize: 100 * 1024 * 1024, 
       },
     }),
   )
   @ApiBody({
     schema: {
       type: 'object',
+      required: ['file'],
       properties: {
         file: {
           type: 'string',
           format: 'binary',
+          description: 'The file to upload',
         },
         description: {
           type: 'string',
@@ -106,15 +130,15 @@ export class AttachmentsController {
     @Param('projectId') projectId: string,
     @UploadedFile() file: Express.Multer.File,
     @CurrentUser() user: TokenPayload,
-    @Body('description') description?: string,
-    @Body('tags') tags?: string,
+    @Req() req: Request,
   ) {
     if (!file) {
       throw new BadRequestException('File is not provided.');
     }
 
-    const tagsArray = tags ? tags.split(',').map(tag => tag.trim()) : [];
-    
+    const { description, tags } = req.body as UploadAttachmentDto;
+    const tagsArray = tags ? tags.split(',').map((tag) => tag.trim()) : [];
+
     return this.attachmentsService.uploadAttachment(
       file,
       projectId,
@@ -180,6 +204,34 @@ export class AttachmentsController {
   ): Promise<{ message: string }> {
     await this.attachmentsService.deleteWithAccess(id, user.sub);
     return { message: 'Attachment deleted successfully' };
+  }
+
+  @Get(':id/download')
+  @ApiOperation({ summary: 'Download an attachment file' })
+  @ApiOkResponse({
+    description: 'The file is sent as a download.',
+    content: {
+      'application/octet-stream': {
+        schema: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @ApiNotFoundResponse({ description: 'Attachment not found' })
+  @ApiForbiddenResponse({ description: 'Access denied' })
+  async downloadAttachment(
+    @Param('id') id: string,
+    @CurrentUser() user: TokenPayload,
+    @Res() res: Response,
+  ) {
+    const attachment = await this.attachmentsService.getAttachmentAndCheckAccess(
+      id,
+      user.sub,
+    );
+
+    return res.download(attachment.path, attachment.originalName);
   }
 
   @Get('project/:projectId')

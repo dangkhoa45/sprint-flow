@@ -362,8 +362,6 @@ export class ProjectsService extends BaseService<
               ],
             },
           },
-          totalBudget: { $sum: { $ifNull: ['$budget', 0] } },
-          totalActualCost: { $sum: { $ifNull: ['$actualCost', 0] } },
           averageProgress: { $avg: { $ifNull: ['$progress', 0] } },
         },
       },
@@ -378,8 +376,6 @@ export class ProjectsService extends BaseService<
         onHold: 0,
         cancelled: 0,
         overdue: 0,
-        totalBudget: 0,
-        totalActualCost: 0,
         averageProgress: 0,
       }
     );
