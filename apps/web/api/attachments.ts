@@ -34,21 +34,19 @@ export const attachmentsApi = {
   uploadAttachment: async (
     projectId: string,
     file: File,
-    data?: CreateAttachmentDto,
+    data: CreateAttachmentDto,
     onProgress?: (progress: number) => void
-  ) => {
+  ): Promise<Attachment> => {
     const formData = new FormData();
-    formData.append('file', file);
-    
-    if (data?.description) {
+    formData.append('file', file, file.name);
+    if (data.description) {
       formData.append('description', data.description);
     }
-    
-    if (data?.tags && data.tags.length > 0) {
+    if (data.tags && data.tags.length > 0) {
       formData.append('tags', data.tags.join(','));
     }
 
-    return fetcher<Attachment>({
+    const response = await fetcher<Attachment>({
       path: `${API_HOST}/api/attachments/${projectId}/upload`,
       method: "POST",
       body: formData,
@@ -57,6 +55,8 @@ export const attachmentsApi = {
       },
       onUploadProgress: onProgress,
     });
+
+    return response;
   },
 
   // Delete attachment

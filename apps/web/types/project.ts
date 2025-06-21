@@ -55,7 +55,6 @@ export interface UpdateProjectDto extends Partial<CreateProjectDto> {
   status?: ProjectStatus;
   progress?: number;
   actualHours?: number;
-  actualCost?: number;
 }
 
 export interface ProjectQueryDto {
@@ -83,8 +82,6 @@ export interface ProjectStatsDto {
   onHold: number;
   cancelled: number;
   overdue: number;
-  totalBudget: number;
-  totalActualCost: number;
   averageProgress: number;
 }
 

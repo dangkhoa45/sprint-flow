@@ -7,6 +7,7 @@ export enum AttachmentType {
   VIDEO = "video",
   AUDIO = "audio",
   ARCHIVE = "archive",
+  PDF = "pdf",
   OTHER = "other"
 }
 
