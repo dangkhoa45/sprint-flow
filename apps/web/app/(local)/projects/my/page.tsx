@@ -1,18 +1,18 @@
 "use client";
+import { useProjects } from "@/hooks/useProjects";
 import AddIcon from "@mui/icons-material/Add";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { useState } from "react";
-import ProjectFormDialog from "../components/CreateProjectDialog";
+import ProjectFormDialog from "../components/ProjectFormDialog";
 import ProjectGrid from "../components/ProjectGrid";
 import ProjectStats from "../components/ProjectStats";
-import { useProjects, useProjectStats } from "@/hooks/useProjects";
 
 export default function MyProjectsPage() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const { projects, isLoading, error, mutate } = useProjects();
-  const { mutate: mutateStats } = useProjectStats();
+  
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
@@ -60,7 +60,6 @@ export default function MyProjectsPage() {
         onClose={() => setShowCreateDialog(false)}
         mode="create"
         mutate={mutate}
-        mutateStats={mutateStats}
       />
     </Box>
   );

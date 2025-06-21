@@ -13,7 +13,7 @@ import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import Typography from "@mui/material/Typography";
 import { useState } from "react";
-import ProjectFormDialog from "./components/CreateProjectDialog";
+import ProjectFormDialog from "./components/ProjectFormDialog";
 import ProjectFilters from "./components/ProjectFilters";
 import ProjectGrid from "./components/ProjectGrid";
 import ProjectList from "./components/ProjectList";
@@ -156,6 +156,7 @@ export default function ProjectsPage() {
               setSelectedProject(project);
               setShowEditDialog(true);
             }}
+            mutate={mutate}
           />
         ) : (
           <ProjectList
@@ -175,7 +176,6 @@ export default function ProjectsPage() {
         open={showCreateDialog}
         onClose={() => setShowCreateDialog(false)}
         mutate={mutate}
-        mutateStats={mutateStats}
         mode="create"
       />
       <ProjectFormDialog
@@ -185,7 +185,6 @@ export default function ProjectsPage() {
           setSelectedProject(null);
         }}
         mutate={mutate}
-        mutateStats={mutateStats}
         mode="edit"
         project={selectedProject!}
       />
