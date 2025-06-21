@@ -6,3 +6,4 @@ build
 generate_issues.sh
 issues.json
 ROADMAP.md
+apps/server/uploads/
