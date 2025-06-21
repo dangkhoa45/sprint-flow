@@ -31,6 +31,8 @@ import {
 import { formatDateVN } from "@/utils/time";
 import { useToast } from "@/hooks/useToast";
 import { projectsApi } from "@/api/projects";
+import ProjectLoading from "./ProjectLoading";
+import ProjectError from "./ProjectError";
 
 interface ProjectGridProps {
   projects: Project[];
@@ -166,7 +168,7 @@ const ProjectGrid = ({ projects, isLoading, error, searchQuery, onEditProject, m
       <Box
         sx={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
           gap: 2,
         }}
       >
@@ -187,7 +189,7 @@ const ProjectGrid = ({ projects, isLoading, error, searchQuery, onEditProject, m
               },
             }}
           >
-            <CardContent sx={{ p: 2.5 }}>
+            <CardContent sx={{ p: 2 }}>
               <Box
                 sx={{
                   display: "flex",
@@ -225,6 +227,11 @@ const ProjectGrid = ({ projects, isLoading, error, searchQuery, onEditProject, m
                     backgroundColor: `${getStatusColor(project.status)}15`,
                     color: getStatusColor(project.status),
                     fontWeight: 500,
+                    height: '24px',
+                    fontSize: '0.75rem',
+                    '.MuiChip-label': {
+                      paddingX: '8px',
+                    },
                   }}
                 />
                 <Chip
@@ -234,6 +241,11 @@ const ProjectGrid = ({ projects, isLoading, error, searchQuery, onEditProject, m
                     backgroundColor: `${getPriorityColor(project.priority)}15`,
                     color: getPriorityColor(project.priority),
                     fontWeight: 500,
+                    height: '24px',
+                    fontSize: '0.75rem',
+                    '.MuiChip-label': {
+                      paddingX: '8px',
+                    },
                   }}
                 />
               </Box>
@@ -291,13 +303,13 @@ const ProjectGrid = ({ projects, isLoading, error, searchQuery, onEditProject, m
                 <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                   <TimelineIcon fontSize="small" color="action" />
                   <Typography variant="caption" color="text.secondary">
-                    {project.milestones?.length || 0} milestones
+                    {project.milestoneCount || 0} mốc công việc
                   </Typography>
                 </Box>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                   <AttachFileIcon fontSize="small" color="action" />
                   <Typography variant="caption" color="text.secondary">
-                    {project.attachments?.length || 0} files
+                    {project.attachmentCount || 0} tệp
                   </Typography>
                 </Box>
               </Box>
@@ -334,7 +346,6 @@ const ProjectGrid = ({ projects, isLoading, error, searchQuery, onEditProject, m
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
-        onClick={handleMenuClose}
       >
         {selectedProject && onEditProject && (
           <MenuItem onClick={handleEditProject}>

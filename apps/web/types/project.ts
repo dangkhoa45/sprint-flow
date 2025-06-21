@@ -34,6 +34,8 @@ export interface Project extends BaseObject {
   tags: string[];
   milestones?: Milestone[];
   attachments?: Attachment[];
+  milestoneCount?: number;
+  attachmentCount?: number;
   metadata?: Record<string, unknown>;
   createdBy?: User;
   updatedBy?: User;

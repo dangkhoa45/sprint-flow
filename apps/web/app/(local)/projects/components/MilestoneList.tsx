@@ -176,6 +176,13 @@ const MilestoneList = ({ projectId, milestones, mutate }: MilestoneListProps) =>
                         color={getStatusChipColor(milestone.status) as "default" | "primary" | "secondary" | "error" | "info" | "success" | "warning"}
                         size="small"
                         icon={<span>{getMilestoneStatusIcon(milestone.status)}</span>}
+                        sx={{
+                          height: '24px',
+                          fontSize: '0.75rem',
+                          '.MuiChip-label': {
+                            paddingX: '8px',
+                          },
+                        }}
                       />
                       {isMilestoneOverdue(milestone.dueDate) && milestone.status !== MilestoneStatus.Completed && (
                         <Chip
@@ -183,6 +190,13 @@ const MilestoneList = ({ projectId, milestones, mutate }: MilestoneListProps) =>
                           color="error"
                           size="small"
                           variant="outlined"
+                          sx={{
+                            height: '24px',
+                            fontSize: '0.75rem',
+                            '.MuiChip-label': {
+                              paddingX: '8px',
+                            },
+                          }}
                         />
                       )}
                     </Box>
@@ -242,6 +256,13 @@ const MilestoneList = ({ projectId, milestones, mutate }: MilestoneListProps) =>
                             label={tag}
                             size="small"
                             variant="outlined"
+                            sx={{
+                              height: '24px',
+                              fontSize: '0.75rem',
+                              '.MuiChip-label': {
+                                paddingX: '8px',
+                              },
+                            }}
                           />
                         ))}
                       </Box>

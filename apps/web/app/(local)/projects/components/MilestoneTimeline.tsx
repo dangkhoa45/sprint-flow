@@ -125,6 +125,9 @@ const MilestoneTimeline = ({ milestones }: MilestoneTimelineProps) => {
                             backgroundColor: getMilestoneStatusColor(milestone.status) + '20',
                             color: getMilestoneStatusColor(milestone.status),
                             border: `1px solid ${getMilestoneStatusColor(milestone.status)}40`,
+                            height: '22px',
+                            fontSize: '0.7rem',
+                            '.MuiChip-label': { paddingX: '6px' },
                           }}
                         />
                         {isMilestoneOverdue(milestone.dueDate) && milestone.status !== MilestoneStatus.Completed && (
@@ -133,6 +136,11 @@ const MilestoneTimeline = ({ milestones }: MilestoneTimelineProps) => {
                             color="error"
                             size="small"
                             variant="outlined"
+                            sx={{
+                              height: '22px',
+                              fontSize: '0.7rem',
+                              '.MuiChip-label': { paddingX: '6px' },
+                            }}
                           />
                         )}
                       </Box>
@@ -188,6 +196,11 @@ const MilestoneTimeline = ({ milestones }: MilestoneTimelineProps) => {
                           label={tag}
                           size="small"
                           variant="outlined"
+                          sx={{
+                            height: '22px',
+                            fontSize: '0.7rem',
+                            '.MuiChip-label': { paddingX: '6px' },
+                          }}
                         />
                       ))}
                       {milestone.tags.length > 3 && (
@@ -195,6 +208,11 @@ const MilestoneTimeline = ({ milestones }: MilestoneTimelineProps) => {
                           label={`+${milestone.tags.length - 3}`}
                           size="small"
                           variant="outlined"
+                          sx={{
+                            height: '22px',
+                            fontSize: '0.7rem',
+                            '.MuiChip-label': { paddingX: '6px' },
+                          }}
                         />
                       )}
                     </Box>

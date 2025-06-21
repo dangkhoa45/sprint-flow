@@ -92,7 +92,14 @@ export default function ProjectHeader({ project, onEdit }: ProjectHeaderProps) {
             label={`Trạng thái: ${getStatusText(project.status)}`}
             color={getStatusColor(project.status) as any}
             size="small"
-            sx={{ fontWeight: 500 }}
+            sx={{
+              fontWeight: 500,
+              height: '28px',
+              fontSize: '0.8rem',
+              '.MuiChip-label': {
+                paddingX: '10px',
+              },
+            }}
           />
         </Grid>
         <Grid size={{ xs: 12, md: 'auto' }}>
@@ -101,6 +108,13 @@ export default function ProjectHeader({ project, onEdit }: ProjectHeaderProps) {
             icon={<FlagIcon />}
             variant="outlined"
             size="small"
+            sx={{
+              height: '28px',
+              fontSize: '0.8rem',
+              '.MuiChip-label': {
+                paddingX: '10px',
+              },
+            }}
           />
         </Grid>
       </Grid>
