@@ -20,7 +20,7 @@ interface ProjectOverviewProps {
 const InfoCard = ({ title, children }: { title: string, children: React.ReactNode }) => (
   <Card variant="outlined" sx={{ height: '100%' }}>
     <CardContent>
-      <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+      <Typography variant="body2" fontWeight={600} gutterBottom>
         {title}
       </Typography>
       <Divider sx={{ mb: 2 }} />
@@ -66,7 +66,7 @@ export default function ProjectOverview({
     <Grid container spacing={3}>
       {/* Effort Info */}
       <Grid size={{ xs: 12, md: 4 }}>
-        <InfoCard title="Nỗ lực">
+        <InfoCard title="Thời gian" >
           <InfoRow label="Giờ dự kiến" value={`${project.estimatedHours || 0} giờ`} />
           <InfoRow label="Giờ thực tế" value={`${project.actualHours || 0} giờ`} />
           <InfoRow label="Chênh lệch" value={`${(project.estimatedHours || 0) - (project.actualHours || 0)} giờ`} />

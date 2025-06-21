@@ -90,7 +90,7 @@ export default function ProjectTabs({
             "& .MuiTab-root": {
               textTransform: "none",
               fontWeight: 500,
-              fontSize: '0.95rem',
+              fontSize: '0.8rem',
               color: 'text.secondary',
               "&.Mui-selected": {
                 color: "text.primary",
