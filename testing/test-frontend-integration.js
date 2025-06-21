@@ -51,7 +51,6 @@ class FrontendIntegrationTest {
         progress: 25,
         estimatedHours: 40,
         actualHours: 10,
-        actualCost: 5000000,
         tags: ['frontend', 'test', 'integration']
       };
 
