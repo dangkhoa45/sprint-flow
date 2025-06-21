@@ -21,8 +21,15 @@ export async function fetcher<T = unknown>(options: FetchOptions): Promise<T> {
       url,
       method: options.method || "GET",
       timeout: options.timeout || 10000,
-      responseType: "json",
+      responseType: options.responseType || "json",
       data: options.body,
+      headers: options.headers,
+      onUploadProgress: options.onUploadProgress ? (progressEvent) => {
+        if (progressEvent.total) {
+          const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          options.onUploadProgress!(progress);
+        }
+      } : undefined,
     });
 
     return response.data;

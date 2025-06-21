@@ -9,8 +9,8 @@ import { BaseService } from 'src/shared/base.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { ProjectQueryDto, ProjectStatsDto } from './dto/project-query.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
-import { Project, ProjectStatus } from './entities/project.entity';
-import { UserRole } from '../users/entities/user.entity';
+import { Project, ProjectStatus, ProjectDocument } from './entities/project.entity';
+import { User, UserRole } from '../users/entities/user.entity';
 
 @Injectable()
 export class ProjectsService extends BaseService<
@@ -40,84 +40,9 @@ export class ProjectsService extends BaseService<
   }
 
   async findAllWithQuery(query: ProjectQueryDto, userId: string) {
-    const filter: FilterQuery<Project> = {};
-
-    // Search functionality
-    if (query.search) {
-      filter.$or = [
-        { name: { $regex: query.search, $options: 'i' } },
-        { description: { $regex: query.search, $options: 'i' } },
-      ];
-    }
-
-    // Status filter
-    if (query.status) {
-      filter.status = query.status;
-    }
-
-    // Priority filter
-    if (query.priority) {
-      filter.priority = query.priority;
-    }
-
-    // Owner filter
-    if (query.owner) {
-      filter.owner = new Types.ObjectId(query.owner);
-    }
-
-    // Member filter
-    if (query.member) {
-      filter.$or = [
-        { owner: new Types.ObjectId(query.member) },
-        { members: { $in: [new Types.ObjectId(query.member)] } },
-      ];
-    }
-
-    // Date range filters
-    if (query.startDateFrom || query.startDateTo) {
-      filter.startDate = {};
-      if (query.startDateFrom) {
-        filter.startDate.$gte = new Date(query.startDateFrom);
-      }
-      if (query.startDateTo) {
-        filter.startDate.$lte = new Date(query.startDateTo);
-      }
-    }
-
-    if (query.endDateFrom || query.endDateTo) {
-      filter.endDate = {};
-      if (query.endDateFrom) {
-        filter.endDate.$gte = new Date(query.endDateFrom);
-      }
-      if (query.endDateTo) {
-        filter.endDate.$lte = new Date(query.endDateTo);
-      }
-    }
-
-    // Tags filter
-    if (query.tags && query.tags.length > 0) {
-      filter.tags = { $in: query.tags };
-    }
-
-    // User access control - only show projects where user is owner or member
-    filter.$or = [
-      { owner: new Types.ObjectId(userId) },
-      { members: { $in: [new Types.ObjectId(userId)] } },
-    ];
-
-    const projects = await this.findAll({
-      ...filter,
-      offset: query.offset,
-      limit: query.limit,
-      sortField: query.sortField as never,
-      sortOrder: query.sortOrder,
-      populate: ['owner', 'members', 'createdBy', 'updatedBy'],
-    });
-
-    const total = await this.countAll(filter);
-
+    const { data, total } = await this.findAllWithCounts(query, userId);
     return {
-      data: projects,
+      data,
       total,
       page: Math.floor((query.offset || 0) / (query.limit || 10)) + 1,
       limit: query.limit || 10,
@@ -125,92 +50,126 @@ export class ProjectsService extends BaseService<
   }
 
   async findAllForAdmin(query: ProjectQueryDto) {
-    const filter: FilterQuery<Project> = {};
-
-    // Search functionality
-    if (query.search) {
-      filter.$or = [
-        { name: { $regex: query.search, $options: 'i' } },
-        { description: { $regex: query.search, $options: 'i' } },
-      ];
-    }
-
-    // Status filter
-    if (query.status) {
-      filter.status = query.status;
-    }
-
-    // Priority filter
-    if (query.priority) {
-      filter.priority = query.priority;
-    }
-
-    // Owner filter
-    if (query.owner) {
-      filter.owner = new Types.ObjectId(query.owner);
-    }
-
-    // Date range filters
-    if (query.startDateFrom || query.startDateTo) {
-      filter.startDate = {};
-      if (query.startDateFrom) {
-        filter.startDate.$gte = new Date(query.startDateFrom);
-      }
-      if (query.startDateTo) {
-        filter.startDate.$lte = new Date(query.startDateTo);
-      }
-    }
-
-    if (query.endDateFrom || query.endDateTo) {
-      filter.endDate = {};
-      if (query.endDateFrom) {
-        filter.endDate.$gte = new Date(query.endDateFrom);
-      }
-      if (query.endDateTo) {
-        filter.endDate.$lte = new Date(query.endDateTo);
-      }
-    }
-
-    // Tags filter
-    if (query.tags && query.tags.length > 0) {
-      filter.tags = { $in: query.tags };
-    }
-
-    const projects = await this.findAll({
-      ...filter,
-      offset: query.offset,
-      limit: query.limit,
-      sortField: query.sortField as never,
-      sortOrder: query.sortOrder,
-      populate: ['owner', 'members', 'createdBy', 'updatedBy'],
-    });
-
-    const total = await this.countAll(filter);
-
+    const { data, total } = await this.findAllWithCounts(query);
     return {
-      data: projects,
+      data,
       total,
       page: Math.floor((query.offset || 0) / (query.limit || 10)) + 1,
       limit: query.limit || 10,
     };
   }
 
+  private async findAllWithCounts(query: ProjectQueryDto, userId?: string) {
+    const filter: FilterQuery<Project> = {};
+    const andConditions = [];
+
+    if (query.search) {
+      andConditions.push({
+        $or: [
+          { name: { $regex: query.search, $options: 'i' } },
+          { description: { $regex: query.search, $options: 'i' } },
+        ],
+      });
+    }
+
+    if (query.status) {
+      andConditions.push({ status: query.status });
+    }
+    if (query.priority) {
+      andConditions.push({ priority: query.priority });
+    }
+    if (query.owner) {
+      andConditions.push({ owner: new Types.ObjectId(query.owner) });
+    }
+
+    if (query.member) {
+      andConditions.push({
+        $or: [
+          { owner: new Types.ObjectId(query.member) },
+          { members: { $in: [new Types.ObjectId(query.member)] } },
+        ],
+      });
+    } else if (userId) {
+      andConditions.push({
+        $or: [
+          { owner: new Types.ObjectId(userId) },
+          { members: { $in: [new Types.ObjectId(userId)] } },
+        ],
+      });
+    }
+
+    if (andConditions.length > 0) {
+      filter.$and = andConditions;
+    }
+
+    const total = await this.projectModel.countDocuments(filter);
+
+    const sortOptions: any = {};
+    if (query.sortField && query.sortOrder) {
+      sortOptions[query.sortField] = query.sortOrder === 'desc' ? -1 : 1;
+    } else {
+      sortOptions['createdAt'] = -1;
+    }
+
+    const aggregation: any = [
+      { $match: filter },
+      { $sort: sortOptions },
+      { $skip: query.offset || 0 },
+      { $limit: query.limit || 10 },
+      { $lookup: { from: 'milestones', localField: '_id', foreignField: 'projectId', as: 'milestones' } },
+      { $lookup: { from: 'attachments', localField: '_id', foreignField: 'projectId', as: 'attachments' } },
+      { $lookup: { from: 'users', localField: 'owner', foreignField: '_id', as: 'owner' } },
+      { $unwind: { path: '$owner', preserveNullAndEmptyArrays: true } },
+      { $lookup: { from: 'users', localField: 'members', foreignField: '_id', as: 'members' } },
+      {
+        $addFields: {
+          milestoneCount: { $size: '$milestones' },
+          attachmentCount: { $size: '$attachments' },
+          id: '$_id',
+        },
+      },
+      {
+        $project: {
+          milestones: 0,
+          attachments: 0,
+        },
+      },
+    ];
+
+    const data = await this.projectModel.aggregate(aggregation);
+    return { data, total };
+  }
+
   async findByIdWithAccess(id: string, userId: string, userRole?: UserRole): Promise<Project> {
-    const project = await this.findById(id, [
-      'owner',
-      'members',
-      'createdBy',
-      'updatedBy',
+    const results = await this.projectModel.aggregate([
+      { $match: { _id: new Types.ObjectId(id) } },
+      { $lookup: { from: 'milestones', localField: '_id', foreignField: 'projectId', as: 'milestones' } },
+      { $lookup: { from: 'attachments', localField: '_id', foreignField: 'projectId', as: 'attachments' } },
+      { $lookup: { from: 'users', localField: 'owner', foreignField: '_id', as: 'owner' } },
+      { $unwind: { path: '$owner', preserveNullAndEmptyArrays: true } },
+      { $lookup: { from: 'users', localField: 'members', foreignField: '_id', as: 'members' } },
+      { $lookup: { from: 'users', localField: 'createdBy', foreignField: '_id', as: 'createdBy' } },
+      { $unwind: { path: '$createdBy', preserveNullAndEmptyArrays: true } },
+      { $lookup: { from: 'users', localField: 'updatedBy', foreignField: '_id', as: 'updatedBy' } },
+      { $unwind: { path: '$updatedBy', preserveNullAndEmptyArrays: true } },
+      {
+        $addFields: {
+          milestones: '$milestones',
+          attachments: '$attachments',
+          id: '$_id',
+        },
+      },
     ]);
+
+    const project = results[0];
 
     if (!project) {
       throw new NotFoundException('Project not found');
     }
 
-    // Cho phép admin truy cập mọi project
     const hasAccess =
-      project.owner.toString() === userId ||
-      project.members.some(member => member.toString() === userId) ||
+      project.owner._id.toString() === userId ||
+      project.members.some((member: User) => member._id.toString() === userId) ||
       userRole === UserRole.Admin;
 
     if (!hasAccess) {
@@ -362,8 +321,6 @@ export class ProjectsService extends BaseService<
               ],
             },
           },
-          totalBudget: { $sum: { $ifNull: ['$budget', 0] } },
-          totalActualCost: { $sum: { $ifNull: ['$actualCost', 0] } },
           averageProgress: { $avg: { $ifNull: ['$progress', 0] } },
         },
       },
@@ -378,8 +335,6 @@ export class ProjectsService extends BaseService<
         onHold: 0,
         cancelled: 0,
         overdue: 0,
-        totalBudget: 0,
-        totalActualCost: 0,
         averageProgress: 0,
       }
     );

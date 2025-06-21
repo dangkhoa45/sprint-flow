@@ -1,0 +1,26 @@
+{
+  "name": "testing",
+  "version": "1.0.0",
+  "description": "API Testing for SprintFlow Project Management",
+  "main": "run-all-tests.js",
+  "scripts": {
+    "setup": "node setup-test-users.js",
+    "test": "node run-all-tests.js",
+    "test:projects": "node project-api-tests.js",
+    "test:milestones": "node milestone-api-tests.js",
+    "test:attachments": "node attachment-api-tests.js"
+  },
+  "keywords": [
+    "api",
+    "testing",
+    "project-management"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "axios": "^1.6.0",
+    "bcrypt": "^5.1.1",
+    "form-data": "^4.0.0"
+  }
+}

@@ -116,7 +116,7 @@ export class ProjectsController {
     @Param('id') id: string,
     @CurrentUser() user: TokenPayload,
   ): Promise<Project> {
-    return this.projectsService.findByIdWithAccess(id, user.sub);
+    return this.projectsService.findByIdWithAccess(id, user.sub, user.rol);
   }
 
   @Patch(':id')

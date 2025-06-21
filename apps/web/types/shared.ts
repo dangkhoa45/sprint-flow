@@ -41,6 +41,9 @@ export type FetchOptions<Params = unknown, Body = unknown> = {
   path: string;
   params?: Params;
   body?: Body;
+  headers?: Record<string, string>;
+  responseType?: 'json' | 'blob' | 'text';
+  onUploadProgress?: (progress: number) => void;
 };
 
 export interface BaseObject {

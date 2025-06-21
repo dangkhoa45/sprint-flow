@@ -1,3 +1,4 @@
+import "../public/globals.css";
 import { cookies, headers } from "next/headers";
 import AppProvider from "../provider/AppProvider";
 import { User } from "../types/user";

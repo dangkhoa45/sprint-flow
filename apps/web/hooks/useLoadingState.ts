@@ -14,7 +14,7 @@ export function useLoadingState(options: UseLoadingStateOptions = {}) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const router = useRouter();
-  const { addToast } = useToast();
+  const { success, error: toastError } = useToast();
 
   const {
     onSuccess,
@@ -36,7 +36,7 @@ export function useLoadingState(options: UseLoadingStateOptions = {}) {
         const result = await asyncFunction();
 
         if (showSuccessToast) {
-          addToast(successMessage, "success");
+          success(successMessage);
         }
 
         onSuccess?.();
@@ -52,7 +52,7 @@ export function useLoadingState(options: UseLoadingStateOptions = {}) {
         setError(error);
 
         if (showErrorToast) {
-          addToast(error.message || "Đã có lỗi xảy ra", "error");
+          toastError(error.message || "Đã có lỗi xảy ra");
         }
 
         onError?.(error);
@@ -68,7 +68,8 @@ export function useLoadingState(options: UseLoadingStateOptions = {}) {
       showSuccessToast,
       showErrorToast,
       router,
-      addToast,
+      success,
+      toastError,
     ]
   );
 

@@ -1,5 +1,7 @@
 import { BaseObject } from "./shared";
 import { User } from "./user";
+import { Milestone } from "./milestone";
+import { Attachment } from "./attachment";
 
 export enum ProjectStatus {
   Planning = "Planning",
@@ -30,6 +32,10 @@ export interface Project extends BaseObject {
   progress: number;
   actualCost: number;
   tags: string[];
+  milestones?: Milestone[];
+  attachments?: Attachment[];
+  milestoneCount?: number;
+  attachmentCount?: number;
   metadata?: Record<string, unknown>;
   createdBy?: User;
   updatedBy?: User;
@@ -51,7 +57,6 @@ export interface UpdateProjectDto extends Partial<CreateProjectDto> {
   status?: ProjectStatus;
   progress?: number;
   actualHours?: number;
-  actualCost?: number;
 }
 
 export interface ProjectQueryDto {
@@ -79,8 +84,6 @@ export interface ProjectStatsDto {
   onHold: number;
   cancelled: number;
   overdue: number;
-  totalBudget: number;
-  totalActualCost: number;
   averageProgress: number;
 }
 

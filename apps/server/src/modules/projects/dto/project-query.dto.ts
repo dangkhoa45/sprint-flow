@@ -86,11 +86,5 @@ export class ProjectStatsDto {
   overdue: number;
 
   @ApiProperty()
-  totalBudget: number;
-
-  @ApiProperty()
-  totalActualCost: number;
-
-  @ApiProperty()
   averageProgress: number;
 }

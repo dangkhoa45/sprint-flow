@@ -51,6 +51,7 @@ async function bootstrap() {
   });
 
   app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+  app.use('/uploads/attachments', express.static(path.join(__dirname, 'uploads', 'attachments')));
 
   const config = new DocumentBuilder()
     .setTitle('SprintFlow API')
