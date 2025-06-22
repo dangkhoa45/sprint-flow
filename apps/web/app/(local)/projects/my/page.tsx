@@ -47,11 +47,7 @@ export default function MyProjectsPage() {
 
       <ProjectStats />
 
-      <ProjectGrid
-        projects={projects}
-        isLoading={isLoading}
-        error={error}
-      />
+      <ProjectGrid projects={projects} isLoading={isLoading} error={error} />
 
       <ProjectFormDialog
         open={showCreateDialog}

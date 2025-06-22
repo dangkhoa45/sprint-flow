@@ -19,4 +19,4 @@ export class UploadAttachmentDto {
   @IsOptional()
   @IsString()
   tags?: string;
-} 
+}

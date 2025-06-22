@@ -1,5 +1,12 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { IsDateString, IsEnum, IsNumber, IsOptional, Max, Min } from 'class-validator';
+import {
+  IsDateString,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  Max,
+  Min,
+} from 'class-validator';
 import { MilestoneStatus } from '../entities/milestone.entity';
 import { CreateMilestoneDto } from './create-milestone.dto';
 
@@ -20,4 +27,4 @@ export class UpdateMilestoneDto extends PartialType(CreateMilestoneDto) {
   @IsOptional()
   @IsDateString()
   dueDate?: string;
-} 
+}

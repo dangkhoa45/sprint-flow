@@ -22,7 +22,11 @@ import { UsersModule } from '../users/users.module';
     ]),
     UsersModule,
   ],
-  controllers: [ProjectsController, MilestonesController, AttachmentsController],
+  controllers: [
+    ProjectsController,
+    MilestonesController,
+    AttachmentsController,
+  ],
   providers: [ProjectsService, MilestonesService, AttachmentsService],
   exports: [ProjectsService, MilestonesService, AttachmentsService],
 })

@@ -152,7 +152,6 @@ const ProjectFormDialog = ({
     }));
   };
 
-
   const handleSubmit = async () => {
     if (!formData.name.trim()) {
       setFormError('Tên dự án là bắt buộc.');

@@ -26,7 +26,11 @@ export class Milestone extends BaseEntity {
   @ApiProperty()
   projectId: Types.ObjectId;
 
-  @Prop({ type: String, enum: MilestoneStatus, default: MilestoneStatus.Pending })
+  @Prop({
+    type: String,
+    enum: MilestoneStatus,
+    default: MilestoneStatus.Pending,
+  })
   @ApiProperty({ enum: MilestoneStatus })
   status: MilestoneStatus;
 
@@ -67,4 +71,4 @@ MilestoneSchema.index({ projectId: 1 });
 MilestoneSchema.index({ status: 1 });
 MilestoneSchema.index({ dueDate: 1 });
 MilestoneSchema.index({ assignedTo: 1 });
-MilestoneSchema.index({ createdAt: -1 }); 
+MilestoneSchema.index({ createdAt: -1 });

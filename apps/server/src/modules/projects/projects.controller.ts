@@ -101,7 +101,7 @@ export class ProjectsController {
   @ApiOkResponse({ type: [Project] })
   @ApiQuery({ name: 'limit', required: false, type: Number })
   async getRecent(
-    @Query('limit') limit: number = 5,
+    @Query('limit') limit = 5,
     @CurrentUser() user: TokenPayload,
   ): Promise<Project[]> {
     return this.projectsService.getRecentProjects(user.sub, limit);

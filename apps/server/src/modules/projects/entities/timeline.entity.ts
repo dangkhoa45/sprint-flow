@@ -19,14 +19,14 @@ export enum TimelineEventType {
   DEADLINE_APPROACHING = 'deadline_approaching',
   COMMENT_ADDED = 'comment_added',
   FILE_UPLOADED = 'file_uploaded',
-  STATUS_CHANGED = 'status_changed'
+  STATUS_CHANGED = 'status_changed',
 }
 
 export enum TimelineEventPriority {
   LOW = 'low',
   MEDIUM = 'medium',
   HIGH = 'high',
-  URGENT = 'urgent'
+  URGENT = 'urgent',
 }
 
 @Schema({ timestamps: true })
@@ -43,7 +43,11 @@ export class TimelineEvent extends BaseEntity {
   @ApiProperty({ enum: TimelineEventType })
   type: TimelineEventType;
 
-  @Prop({ type: String, enum: TimelineEventPriority, default: TimelineEventPriority.MEDIUM })
+  @Prop({
+    type: String,
+    enum: TimelineEventPriority,
+    default: TimelineEventPriority.MEDIUM,
+  })
   @ApiProperty({ enum: TimelineEventPriority })
   priority: TimelineEventPriority;
 
@@ -88,4 +92,4 @@ TimelineEventSchema.index({ projectId: 1 });
 TimelineEventSchema.index({ type: 1 });
 TimelineEventSchema.index({ priority: 1 });
 TimelineEventSchema.index({ userId: 1 });
-TimelineEventSchema.index({ createdAt: -1 }); 
+TimelineEventSchema.index({ createdAt: -1 });

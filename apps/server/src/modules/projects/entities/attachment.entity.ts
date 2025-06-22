@@ -10,7 +10,7 @@ export enum AttachmentType {
   VIDEO = 'video',
   AUDIO = 'audio',
   ARCHIVE = 'archive',
-  OTHER = 'other'
+  OTHER = 'other',
 }
 
 @Schema({ timestamps: true })
@@ -71,4 +71,4 @@ export const AttachmentSchema = SchemaFactory.createForClass(Attachment);
 AttachmentSchema.index({ projectId: 1 });
 AttachmentSchema.index({ type: 1 });
 AttachmentSchema.index({ uploadedBy: 1 });
-AttachmentSchema.index({ createdAt: -1 }); 
+AttachmentSchema.index({ createdAt: -1 });

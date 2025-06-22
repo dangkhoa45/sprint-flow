@@ -42,7 +42,10 @@ export class MilestonesService extends BaseService<
       throw new NotFoundException('Project not found');
     }
 
-    if (project.owner.toString() !== userId && !project.members.includes(new Types.ObjectId(userId))) {
+    if (
+      project.owner.toString() !== userId &&
+      !project.members.includes(new Types.ObjectId(userId))
+    ) {
       throw new ForbiddenException('Access denied to this project');
     }
 
@@ -50,7 +53,9 @@ export class MilestonesService extends BaseService<
       ...input,
       projectId: new Types.ObjectId(projectId),
       createdBy: new Types.ObjectId(userId),
-      assignedTo: input.assignedTo ? new Types.ObjectId(input.assignedTo) : undefined,
+      assignedTo: input.assignedTo
+        ? new Types.ObjectId(input.assignedTo)
+        : undefined,
       dueDate: new Date(input.dueDate),
     };
 
@@ -108,13 +113,15 @@ export class MilestonesService extends BaseService<
 
     // User access control - only show milestones from projects where user is owner or member
     if (!query.projectId) {
-      const userProjects = await this.projectModel.find({
-        $or: [
-          { owner: new Types.ObjectId(userId) },
-          { members: { $in: [new Types.ObjectId(userId)] } },
-        ],
-      }).select('_id');
-      
+      const userProjects = await this.projectModel
+        .find({
+          $or: [
+            { owner: new Types.ObjectId(userId) },
+            { members: { $in: [new Types.ObjectId(userId)] } },
+          ],
+        })
+        .select('_id');
+
       filter.projectId = { $in: userProjects.map(p => p._id) };
     }
 
@@ -154,7 +161,10 @@ export class MilestonesService extends BaseService<
       throw new NotFoundException('Project not found');
     }
 
-    if (project.owner.toString() !== userId && !project.members.includes(new Types.ObjectId(userId))) {
+    if (
+      project.owner.toString() !== userId &&
+      !project.members.includes(new Types.ObjectId(userId))
+    ) {
       throw new ForbiddenException('Access denied to this milestone');
     }
 
@@ -198,7 +208,10 @@ export class MilestonesService extends BaseService<
       throw new NotFoundException('Project not found');
     }
 
-    if (project.owner.toString() !== userId && !project.members.includes(new Types.ObjectId(userId))) {
+    if (
+      project.owner.toString() !== userId &&
+      !project.members.includes(new Types.ObjectId(userId))
+    ) {
       throw new ForbiddenException('Access denied to this milestone');
     }
 
@@ -227,4 +240,4 @@ export class MilestonesService extends BaseService<
       createdBy: eventData.userId,
     });
   }
-} 
+}

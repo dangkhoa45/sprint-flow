@@ -51,7 +51,11 @@ export class MilestonesController {
     @Body() createMilestoneDto: CreateMilestoneDto,
     @CurrentUser() user: TokenPayload,
   ): Promise<Milestone> {
-    return this.milestonesService.createMilestone(createMilestoneDto, projectId, user.sub);
+    return this.milestonesService.createMilestone(
+      createMilestoneDto,
+      projectId,
+      user.sub,
+    );
   }
 
   @Get()
@@ -98,7 +102,11 @@ export class MilestonesController {
     @Param('id') id: string,
     @CurrentUser() user: TokenPayload,
   ): Promise<Milestone> {
-    return this.milestonesService.findById(id, ['assignedTo', 'createdBy', 'updatedBy']);
+    return this.milestonesService.findById(id, [
+      'assignedTo',
+      'createdBy',
+      'updatedBy',
+    ]);
   }
 
   @Patch(':id')
@@ -112,7 +120,12 @@ export class MilestonesController {
     @Body() updateMilestoneDto: UpdateMilestoneDto,
     @CurrentUser() user: TokenPayload,
   ): Promise<Milestone> {
-    return this.milestonesService.updateWithAccess(id, updateMilestoneDto, user.sub, user.rol);
+    return this.milestonesService.updateWithAccess(
+      id,
+      updateMilestoneDto,
+      user.sub,
+      user.rol,
+    );
   }
 
   @Delete(':id')
@@ -138,7 +151,10 @@ export class MilestonesController {
     @CurrentUser() user: TokenPayload,
   ): Promise<Milestone[]> {
     const query: MilestoneQueryDto = { projectId };
-    const result = await this.milestonesService.findAllWithQuery(query, user.sub);
+    const result = await this.milestonesService.findAllWithQuery(
+      query,
+      user.sub,
+    );
     return result.data;
   }
-} 
+}

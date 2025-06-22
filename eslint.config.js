@@ -48,7 +48,7 @@ export default tseslint.config(
       '@typescript-eslint/no-explicit-any': 'warn',
       'max-lines': [
         'error',
-        { max: 400, skipBlankLines: true, skipComments: true },
+        { max: 200, skipBlankLines: true, skipComments: true },
       ],
     },
   },

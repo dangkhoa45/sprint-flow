@@ -23,4 +23,4 @@ export class AttachmentQueryDto extends BaseQuery {
   @IsOptional()
   @IsString()
   uploadedBy?: string;
-} 
+}
