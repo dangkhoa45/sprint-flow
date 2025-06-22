@@ -78,6 +78,7 @@ const ProjectFormDialog = ({
         const users = await usersApi.getUsers();
         setAvailableMembers(users);
       } catch (error) {
+        console.error(error);
         toastError('Không thể tải danh sách thành viên');
       }
     };
@@ -152,17 +153,6 @@ const ProjectFormDialog = ({
     }));
   };
 
-  const handleSliderChange = (event: Event, value: number | number[]) => {
-    setFormData(prev => ({ ...prev, progress: value as number }));
-  };
-
-  const handleProgressInputChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const value = Math.max(0, Math.min(100, Number(event.target.value) || 0));
-    setFormData(prev => ({ ...prev, progress: value }));
-  };
-
   const handleSubmit = async () => {
     if (!formData.name.trim()) {
       setFormError('Tên dự án là bắt buộc.');
@@ -206,7 +196,9 @@ const ProjectFormDialog = ({
       onClose();
     } catch (err) {
       const error = err as ErrorResponse;
-      const message = error.message || 'Đã có lỗi xảy ra. Vui lòng thử lại.';
+      const message = Array.isArray(error.message) 
+        ? error.message.join(', ') 
+        : error.message || 'Đã có lỗi xảy ra. Vui lòng thử lại.';
       toastError(message);
       setFormError(message);
     } finally {

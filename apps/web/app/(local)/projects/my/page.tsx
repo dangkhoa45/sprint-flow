@@ -51,7 +51,6 @@ export default function MyProjectsPage() {
         projects={projects}
         isLoading={isLoading}
         error={error}
-        searchQuery=''
       />
 
       <ProjectFormDialog
