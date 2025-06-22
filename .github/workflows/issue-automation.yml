@@ -16,7 +16,9 @@ jobs:
         with:
           node-version: '18'
       - name: Install Dependencies
-        run: npm install @octokit/rest @actions/core
+        run: npm install @octokit/rest
+      - name: List files for debugging
+        run: ls -R
       - name: Run Auto PR Script
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
