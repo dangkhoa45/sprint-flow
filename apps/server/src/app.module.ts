@@ -8,6 +8,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { RolesGuard } from './modules/auth/roles.guard';
 import { UsersModule } from './modules/users/users.module';
 import { ProjectsModule } from './modules/projects/projects.module';
+import { TasksModule } from './modules/tasks/tasks.module';
 import { JwtModule } from '@nestjs/jwt';
 
 @Module({
@@ -17,6 +18,7 @@ import { JwtModule } from '@nestjs/jwt';
     AuthModule,
     UsersModule,
     ProjectsModule,
+    TasksModule,
     JwtModule.register({
       global: true,
       secret: process.env.APP_SECRET,

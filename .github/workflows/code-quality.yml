@@ -220,6 +220,26 @@ jobs:
         with:
           args: --severity-threshold=high
 
+      - name: Build server for ZAP scan
+        run: |
+          cd apps/server
+          pnpm build
+
+      - name: Install wait-on
+        run: pnpm add -g wait-on
+
+      - name: Start server in background for ZAP scan
+        run: |
+          cd apps/server
+          pnpm start:prod &
+        env:
+          MONGO_URI: mongodb://localhost:27017/sprintflow_test
+          APP_SECRET: test_secret_key_for_ci_cd
+          NODE_ENV: test
+
+      - name: Wait for server to be ready
+        run: wait-on http://localhost:8005 --timeout 60000
+
       - name: Run OWASP ZAP scan
         uses: zaproxy/action-full-scan@v0.8.0
         with:
