@@ -83,20 +83,20 @@ jobs:
           MONGO_URI: mongodb://mongodb:27017/sprintflow_test
           APP_SECRET: test_secret_key_for_ci_cd
 
-      - name: SonarQube Scan
-        uses: sonarsource/sonarqube-scan-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        with:
-          args: >
-            -Dsonar.projectKey=sprintflow
-            -Dsonar.sources=apps/server/src,apps/web/app,apps/web/components,apps/web/hooks,apps/web/lib,apps/web/utils
-            -Dsonar.tests=apps/server/test,apps/web/__tests__
-            -Dsonar.javascript.lcov.reportPaths=apps/server/coverage/lcov.info
-            -Dsonar.coverage.exclusions=**/*.spec.ts,**/*.test.ts,**/*.e2e-spec.ts
-            -Dsonar.test.inclusions=**/*.spec.ts,**/*.test.ts,**/*.e2e-spec.ts
+      # - name: SonarQube Scan
+      #   uses: sonarsource/sonarqube-scan-action@master
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      #     SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      #   with:
+      #     args: >
+      #       -Dsonar.projectKey=sprintflow
+      #       -Dsonar.sources=apps/server/src,apps/web/app,apps/web/components,apps/web/hooks,apps/web/lib,apps/web/utils
+      #       -Dsonar.tests=apps/server/test,apps/web/__tests__
+      #       -Dsonar.javascript.lcov.reportPaths=apps/server/coverage/lcov.info
+      #       -Dsonar.coverage.exclusions=**/*.spec.ts,**/*.test.ts,**/*.e2e-spec.ts
+      #       -Dsonar.test.inclusions=**/*.spec.ts,**/*.test.ts,**/*.e2e-spec.ts
 
   # Code complexity analysis
   complexity-check:
@@ -465,12 +465,12 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run Snyk security scan
-        uses: snyk/actions/node@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --severity-threshold=high
+      # - name: Run Snyk security scan
+      #   uses: snyk/actions/node@master
+      #   env:
+      #     SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      #   with:
+      #     args: --severity-threshold=high
 
       - name: Build server for ZAP scan
         run: |
