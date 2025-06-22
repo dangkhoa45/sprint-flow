@@ -204,6 +204,348 @@ SprintFlow/
 
 ---
 
+## 📋 Source Code Analysis
+
+### 🏗️ **Kiến trúc tổng thể**
+
+SprintFlow được xây dựng theo kiến trúc **Monorepo** với **Microservices** pattern:
+
+```
+SprintFlow/
+├── apps/
+│   ├── server/     # Backend API (NestJS)
+│   └── web/        # Frontend (Next.js 15)
+├── docker-compose.yml
+└── pnpm-workspace.yaml
+```
+
+### 🔧 **Backend (NestJS Server)**
+
+#### **1. Cấu trúc Module**
+```typescript
+// app.module.ts - Module chính
+@Module({
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    MongooseModule.forRoot(process.env.MONGO_URI),
+    AuthModule,
+    UsersModule, 
+    ProjectsModule,
+    TasksModule,
+    JwtModule.register({...})
+  ],
+  providers: [
+    { provide: APP_GUARD, useClass: AuthGuard },
+    { provide: APP_GUARD, useClass: RolesGuard }
+  ]
+})
+```
+
+#### **2. Hệ thống Authentication**
+- **JWT + Session Management**: Kết hợp JWT token với session lưu trong MongoDB
+- **Role-based Access Control**: Admin, User roles
+- **Session Tracking**: Theo dõi IP, User Agent, thời gian đăng nhập
+- **Password Reset**: Hệ thống reset password với token mã hóa
+
+```typescript
+// auth.service.ts
+async signIn(username: string, pass: string, ip: string, ua: string) {
+  const user = await this.usersService.findOne({ username, status: UserStatus.Active });
+  const isAuthenticated = await compareSync(pass, user.password);
+  
+  const session = await this.sessionService.create({
+    user: user._id.toString(),
+    startAt: new Date(),
+    endAt: new Date(Date.now() + 1000 * 60 * 1),
+    ip, ...uaData
+  });
+  
+  return {
+    accessToken: await this.jwtService.signAsync(payload),
+    refreshToken: await this.jwtService.signAsync(payload, { expiresIn: REFRESH_TOKEN_EXPIRE }),
+    profile: { _id, username, displayName, role, avatar }
+  };
+}
+```
+
+#### **3. Data Models (MongoDB + Mongoose)**
+
+**User Entity:**
+```typescript
+@Schema({ timestamps: true })
+export class User extends BaseEntity {
+  @Prop({ required: true }) displayName: string;
+  @Prop({ unique: true }) username: string;
+  @Prop({ required: true }) password: string;
+  @Prop({ type: String, enum: UserRole, required: true }) role: UserRole;
+  @Prop({ type: String, enum: UserStatus, default: UserStatus.Active }) status: UserStatus;
+  @Prop() lastLogin?: Date;
+  @Prop() email?: string;
+  @Prop() avatar?: string;
+  @Prop() resetPasswordToken?: string;
+  @Prop() resetPasswordExpires?: Date;
+}
+```
+
+**Project Entity:**
+```typescript
+@Schema({ timestamps: true })
+export class Project extends BaseEntity {
+  @Prop({ required: true, trim: true }) name: string;
+  @Prop({ trim: true }) description?: string;
+  @Prop({ type: String, enum: ProjectStatus, default: ProjectStatus.Planning }) status: ProjectStatus;
+  @Prop({ type: String, enum: ProjectPriority, default: ProjectPriority.Medium }) priority: ProjectPriority;
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true }) owner: Types.ObjectId;
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'User' }], default: [] }) members: Types.ObjectId[];
+  @Prop() startDate?: Date;
+  @Prop() endDate?: Date;
+  @Prop() estimatedHours?: number;
+  @Prop({ default: 0 }) actualHours: number;
+  @Prop({ min: 0, max: 100, default: 0 }) progress: number;
+  @Prop([String]) tags: string[];
+}
+```
+
+**Task Entity:**
+```typescript
+@Schema({ timestamps: true })
+export class Task extends BaseEntity {
+  @Prop({ required: true, trim: true }) title: string;
+  @Prop({ trim: true }) description?: string;
+  @Prop({ type: Types.ObjectId, ref: 'Project', required: true }) projectId: Types.ObjectId;
+  @Prop({ type: String, enum: TaskStatus, default: TaskStatus.TODO }) status: TaskStatus;
+  @Prop({ type: String, enum: TaskPriority, default: TaskPriority.MEDIUM }) priority: TaskPriority;
+  @Prop({ type: Types.ObjectId, ref: 'User' }) assignedTo?: Types.ObjectId;
+  @Prop() dueDate?: Date;
+  @Prop({ min: 0 }) estimatedTime?: number;
+  @Prop({ min: 0, default: 0 }) actualTime?: number;
+  @Prop([String]) tags: string[];
+}
+```
+
+#### **4. API Endpoints Structure**
+- **Authentication**: `/api/auth/*` (login, register, refresh, forgot-password)
+- **Users**: `/api/users/*` (CRUD operations, sessions)
+- **Projects**: `/api/projects/*` (CRUD, members, stats, attachments)
+- **Tasks**: `/api/tasks/*` (CRUD, assignment, time tracking)
+- **Attachments**: `/api/attachments/*` (file upload/download)
+
+### 🎨 **Frontend (Next.js 15)**
+
+#### **1. App Router Structure**
+```
+app/
+├── (local)/           # Protected routes
+│   ├── dashboard/     # Dashboard pages
+│   ├── projects/      # Project management
+│   └── layout.tsx     # App layout with sidebar
+├── login/             # Authentication pages
+├── forgot-password/   # Password reset
+└── layout.tsx         # Root layout
+```
+
+#### **2. State Management**
+- **SWR**: Data fetching và caching
+- **React Context**: Global state (user, theme)
+- **Local Storage**: UI preferences (sidebar collapse)
+
+```typescript
+// AppProvider.tsx
+function AppProvider({ children, currentUser }: Props) {
+  const [user, setUser] = useState<User | undefined>(currentUser);
+  
+  return (
+    <AppContext.Provider value={{ user, setUser }}>
+      <ThemeModeProvider>
+        <ThemeRegistry>
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <ToastProvider>
+              <SWRProvider>{children}</SWRProvider>
+            </ToastProvider>
+          </LocalizationProvider>
+        </ThemeRegistry>
+      </ThemeModeProvider>
+    </AppContext.Provider>
+  );
+}
+```
+
+#### **3. Custom Hooks Pattern**
+```typescript
+// useProjects.ts
+export function useProjects(query?: ProjectQueryDto) {
+  const { data, error, mutate, isLoading } = useSWR(
+    query ? [`/api/projects`, query] : `/api/projects`,
+    () => projectsApi.getProjects(query),
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: true,
+    }
+  );
+
+  return {
+    projects: data?.data || [],
+    total: data?.total || 0,
+    page: data?.page || 1,
+    limit: data?.limit || 10,
+    isLoading,
+    error: error as ErrorResponse,
+    mutate,
+  };
+}
+```
+
+#### **4. API Layer**
+```typescript
+// projects.ts
+export const projectsApi = {
+  getProjects: async (query?: ProjectQueryDto) => {
+    return fetcher<{
+      data: Project[];
+      total: number;
+      page: number;
+      limit: number;
+    }>({
+      path: `${API_HOST}/api/projects`,
+      method: "GET",
+      params: query,
+    });
+  },
+  
+  createProject: async (data: CreateProjectDto) => {
+    return fetcher<Project>({
+      path: `${API_HOST}/api/projects`,
+      method: "POST",
+      body: data,
+    });
+  }
+};
+```
+
+#### **5. UI Components (Material-UI)**
+- **Responsive Layout**: Sidebar navigation với collapse/expand
+- **Data Grid**: MUI X Data Grid cho tables
+- **Date Pickers**: MUI X Date Pickers
+- **Theme System**: Dark/Light mode toggle
+- **Toast Notifications**: React Toastify integration
+
+### 🐳 **DevOps & Infrastructure**
+
+#### **1. Docker Setup**
+```yaml
+# docker-compose.yml
+services:
+  apps:
+    build: .
+    command: pnpm dev:all
+    ports:
+      - 8000:3000  # Frontend
+      - 8005:8005  # Backend
+    volumes:
+      - .:/home/app
+      
+  dbSF:
+    image: mongo:5.0
+    environment:
+      - MONGO_INITDB_DATABASE=$MONGO_DB
+      - MONGO_INITDB_ROOT_USERNAME=$MONGO_USER
+      - MONGO_INITDB_ROOT_PASSWORD=$MONGO_PASS
+      
+  admin:
+    image: mongo-express
+    ports:
+      - $ADMIN_PORT:8081
+```
+
+#### **2. Package Management**
+- **pnpm Workspace**: Monorepo management
+- **TypeScript**: Strict type checking
+- **ESLint + Prettier**: Code quality
+- **Jest**: Unit testing
+
+### 🔐 **Security Features**
+
+1. **Authentication & Authorization**
+   - JWT tokens với expiration
+   - Session management với MongoDB
+   - Role-based access control
+   - Password hashing với bcrypt
+
+2. **Input Validation**
+   - Class-validator decorators
+   - DTO validation
+   - SQL injection prevention (MongoDB)
+
+3. **CORS & Security Headers**
+   - CORS configuration
+   - Secure cookies
+   - CSRF protection
+
+### 📈 **Performance Optimizations**
+
+1. **Frontend**
+   - SWR caching strategy
+   - React.memo cho components
+   - Lazy loading với Next.js
+   - Image optimization
+
+2. **Backend**
+   - MongoDB indexes
+   - Query optimization
+   - Response caching
+   - File upload streaming
+
+3. **Database**
+   - Indexed fields cho queries
+   - Text search indexes
+   - Compound indexes cho complex queries
+
+### 🎯 **Key Features Implemented**
+
+1. **Project Management**
+   - CRUD operations
+   - Member management
+   - Progress tracking
+   - File attachments
+
+2. **Task Management**
+   - Task assignment
+   - Status tracking
+   - Time estimation
+   - Priority levels
+
+3. **User Management**
+   - User registration/login
+   - Role management
+   - Session tracking
+   - Password reset
+
+4. **Real-time Features**
+   - WebSocket ready (infrastructure)
+   - Live updates (planned)
+   - Notifications system
+
+### 🚀 **Development Workflow**
+
+1. **Local Development**
+   ```bash
+   pnpm dev:all        # Start both frontend & backend
+   pnpm dev:server     # Backend only
+   pnpm dev:web        # Frontend only
+   ```
+
+2. **Docker Development**
+   ```bash
+   docker compose up -d  # Start all services
+   ```
+
+3. **API Documentation**
+   - Swagger UI tại `/api/docs`
+   - Auto-generated từ decorators
+   - Interactive testing
+
+---
+
 ## 🔧 Development
 
 ### **Available Scripts**
