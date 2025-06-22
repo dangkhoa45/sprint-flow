@@ -1,90 +1,26 @@
-name: Issue Automation & PR Creation
+name: Issue Automation
 
 on:
-  push:
-    branches: [main, develop]
-  issues:
-    types: [opened, edited]
   issue_comment:
     types: [created]
 
 jobs:
-  analyze-commits:
+  auto-pr:
     runs-on: ubuntu-latest
-    name: Analyze Commits & Update Issues
-    
+    if: github.event.issue.pull_request == null && contains(github.event.comment.body, '/create-pr')
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          
-      - name: Install Node.js dependencies
-        run: |
-          npm install @octokit/rest @actions/core
-          
-      - name: Analyze recent commits for issue references
-        id: analyze-commits
-        run: |
-          echo "Analyzing recent commits..."
-          ISSUE_NUMBERS=$(git log --oneline --since="1 day ago" | grep -o '#[0-9]*' | sort -u | sed 's/#//')
-          if [ -n "$ISSUE_NUMBERS" ]; then
-            echo "Found issue numbers: $ISSUE_NUMBERS"
-            echo "issue_numbers=$ISSUE_NUMBERS" >> $GITHUB_OUTPUT
-          else
-            echo "No issue numbers found in recent commits."
-            echo "issue_numbers=" >> $GITHUB_OUTPUT
-          fi
-          
-      - name: Update issue with commit info
-        if: steps.analyze-commits.outputs.issue_numbers
+      - name: Install Dependencies
+        run: npm install @octokit/rest @actions/core
+      - name: Run Auto PR Script
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          for issue_num in ${{ steps.analyze-commits.outputs.issue_numbers }}; do
-            echo "Updating issue #$issue_num with progress..."
-            node ./scripts/auto-pr-creator.js
-          done
-        with:
-          issue-number: ${{ issue_num }}
-
-  code-quality:
-    runs-on: ubuntu-latest
-    name: Code Quality Analysis
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          cache: 'pnpm'
-          
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
-          
-      - name: Install dependencies
-        run: pnpm install
-        
-      - name: Run linting
-        run: pnpm lint
-        
-      - name: Generate quality report
-        run: |
-          echo "# Code Quality Report" > quality-report.md
-          echo "Linting passed successfully." >> quality-report.md
-          
-      - name: Upload quality report
-        uses: actions/upload-artifact@v4
-        with:
-          name: quality-report
-          path: quality-report.md 
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
+        run: node scripts/auto-pr-creator.js 
