@@ -17,4 +17,4 @@ export { default as ProjectFilters } from './ProjectFilters';
 export { default as ProjectGrid } from './ProjectGrid';
 export { default as ProjectList } from './ProjectList';
 export { default as ProjectStats } from './ProjectStats';
-export { useProjectTableConfig } from './ProjectTableConfig'; 
+export { useProjectTableConfig } from './ProjectTableConfig';

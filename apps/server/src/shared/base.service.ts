@@ -20,7 +20,7 @@ export abstract class BaseService<
   create(input: CreateInput): Promise<Data> {
     return this.model
       .create(input)
-      .then((data) => data.toObject())
+      .then(data => data.toObject())
       .catch((error: Error & { code?: number }) => {
         if (error.code === 11000) {
           throw new HttpException(error.message, HttpStatus.CONFLICT);
@@ -53,7 +53,7 @@ export abstract class BaseService<
 
     if (search && searchFields) {
       if (Array.isArray(searchFields)) {
-        filter.$or = searchFields.map((field) => ({
+        filter.$or = searchFields.map(field => ({
           [field as any]: { $regex: search },
         }));
       } else {
@@ -114,7 +114,7 @@ export abstract class BaseService<
     if (populate?.length) {
       return query.populate(
         Array.isArray(populate)
-          ? populate.map((field) => ({
+          ? populate.map(field => ({
               path: field as string,
               strictPopulate: false,
             }))
@@ -140,14 +140,14 @@ export abstract class BaseService<
     const query = this.model.findById(id);
     if (populate?.length) {
       const result = await query.populate(
-        populate.map((field) => ({
+        populate.map(field => ({
           path: field as string,
           strictPopulate: false,
         })),
       );
       return result?.toObject();
     }
-    return query.then((res) => res?.toObject());
+    return query.then(res => res?.toObject());
   }
 
   async findOne(
@@ -157,14 +157,14 @@ export abstract class BaseService<
     const query = this.model.findOne(filter);
     if (populate?.length) {
       const result = await query.populate(
-        populate.map((field) => ({
+        populate.map(field => ({
           path: field as string,
           strictPopulate: false,
         })),
       );
       return result?.toObject();
     }
-    return query.then((res) => res?.toObject());
+    return query.then(res => res?.toObject());
   }
 
   // async findOneAndUpdate(

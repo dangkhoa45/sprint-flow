@@ -1,12 +1,12 @@
-import { API_HOST } from "../config/env";
+import { API_HOST } from '../config/env';
 import {
   CreateProjectDto,
   Project,
   ProjectQueryDto,
   ProjectStatsDto,
   UpdateProjectDto,
-} from "../types/project";
-import { fetcher } from "../utils/fetcher";
+} from '../types/project';
+import { fetcher } from '../utils/fetcher';
 
 export const projectsApi = {
   // Get all projects with query
@@ -18,7 +18,7 @@ export const projectsApi = {
       limit: number;
     }>({
       path: `${API_HOST}/api/projects`,
-      method: "GET",
+      method: 'GET',
       params: query,
     });
   },
@@ -27,7 +27,7 @@ export const projectsApi = {
   getProject: async (id: string) => {
     return fetcher<Project>({
       path: `${API_HOST}/api/projects/${id}`,
-      method: "GET",
+      method: 'GET',
     });
   },
 
@@ -35,7 +35,7 @@ export const projectsApi = {
   createProject: async (data: CreateProjectDto) => {
     return fetcher<Project>({
       path: `${API_HOST}/api/projects`,
-      method: "POST",
+      method: 'POST',
       body: data,
     });
   },
@@ -44,7 +44,7 @@ export const projectsApi = {
   updateProject: async (id: string, data: UpdateProjectDto) => {
     return fetcher<Project>({
       path: `${API_HOST}/api/projects/${id}`,
-      method: "PATCH",
+      method: 'PATCH',
       body: data,
     });
   },
@@ -53,7 +53,7 @@ export const projectsApi = {
   deleteProject: async (id: string) => {
     return fetcher<{ message: string }>({
       path: `${API_HOST}/api/projects/${id}`,
-      method: "DELETE",
+      method: 'DELETE',
     });
   },
 
@@ -61,7 +61,7 @@ export const projectsApi = {
   getProjectStats: async () => {
     return fetcher<ProjectStatsDto>({
       path: `${API_HOST}/api/projects/stats`,
-      method: "GET",
+      method: 'GET',
     });
   },
 
@@ -69,7 +69,7 @@ export const projectsApi = {
   getRecentProjects: async (limit = 5) => {
     return fetcher<Project[]>({
       path: `${API_HOST}/api/projects/recent`,
-      method: "GET",
+      method: 'GET',
       params: { limit },
     });
   },
@@ -78,7 +78,7 @@ export const projectsApi = {
   addMember: async (projectId: string, memberId: string) => {
     return fetcher<Project>({
       path: `${API_HOST}/api/projects/${projectId}/members/${memberId}`,
-      method: "POST",
+      method: 'POST',
     });
   },
 
@@ -86,7 +86,7 @@ export const projectsApi = {
   removeMember: async (projectId: string, memberId: string) => {
     return fetcher<Project>({
       path: `${API_HOST}/api/projects/${projectId}/members/${memberId}`,
-      method: "DELETE",
+      method: 'DELETE',
     });
   },
 };

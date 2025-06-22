@@ -25,7 +25,7 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
   return (
     <html>
       <body>
-        <Container maxWidth="md">
+        <Container maxWidth='md'>
           <Box
             sx={{
               display: 'flex',
@@ -44,10 +44,10 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
                 mb: 3,
               }}
             />
-            
+
             <Typography
-              variant="h3"
-              component="h1"
+              variant='h3'
+              component='h1'
               gutterBottom
               sx={{
                 fontWeight: 'bold',
@@ -56,32 +56,33 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
             >
               Lỗi nghiêm trọng
             </Typography>
-            
+
             <Typography
-              variant="h6"
-              color="text.secondary"
+              variant='h6'
+              color='text.secondary'
               sx={{ mb: 4, maxWidth: 600 }}
             >
-              Ứng dụng đã gặp phải một lỗi nghiêm trọng và cần được khởi động lại.
+              Ứng dụng đã gặp phải một lỗi nghiêm trọng và cần được khởi động
+              lại.
             </Typography>
 
-            <Stack direction="row" spacing={2}>
+            <Stack direction='row' spacing={2}>
               <Button
-                variant="contained"
-                color="primary"
+                variant='contained'
+                color='primary'
                 onClick={reset}
                 startIcon={<Refresh />}
-                size="large"
+                size='large'
               >
                 Khởi động lại
               </Button>
-              
+
               <Button
-                variant="outlined"
-                color="primary"
+                variant='outlined'
+                color='primary'
                 onClick={handleGoHome}
                 startIcon={<Home />}
-                size="large"
+                size='large'
               >
                 Về trang chủ
               </Button>

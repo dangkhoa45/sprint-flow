@@ -73,7 +73,7 @@ export class AuthService {
   }
 
   async refreshToken(token: string, ip: string, ua: string) {
-    const payload = (await this.jwtService.verifyAsync(token)) as TokenPayload;
+    const payload = await this.jwtService.verifyAsync(token);
 
     const user = await this.usersService.findById(payload.sub);
 
@@ -133,16 +133,19 @@ export class AuthService {
 
   async forgotPassword(email: string) {
     // Tìm user theo email hoặc username (nếu email được dùng làm username)
-    const user = await this.usersService.findOne({ 
-      email: email 
-    }) || await this.usersService.findOne({ 
-      username: email 
-    });
+    const user =
+      (await this.usersService.findOne({
+        email: email,
+      })) ||
+      (await this.usersService.findOne({
+        username: email,
+      }));
 
     if (!user) {
       // Không báo lỗi cụ thể để tránh enumeration attack
       return {
-        message: 'If an account with that email exists, we have sent you a password reset link.',
+        message:
+          'If an account with that email exists, we have sent you a password reset link.',
       };
     }
 
@@ -164,7 +167,8 @@ export class AuthService {
     // await this.emailService.sendPasswordResetEmail(user.email, resetToken);
 
     return {
-      message: 'If an account with that email exists, we have sent you a password reset link.',
+      message:
+        'If an account with that email exists, we have sent you a password reset link.',
     };
   }
 
@@ -175,13 +179,15 @@ export class AuthService {
 
     // Tìm tất cả users có reset token chưa hết hạn
     const users = await this.usersService.findAll({});
-    
+
     let user = null;
     for (const u of users) {
-      if (u.resetPasswordToken && 
-          u.resetPasswordExpires && 
-          u.resetPasswordExpires > new Date() &&
-          compareSync(token, u.resetPasswordToken)) {
+      if (
+        u.resetPasswordToken &&
+        u.resetPasswordExpires &&
+        u.resetPasswordExpires > new Date() &&
+        compareSync(token, u.resetPasswordToken)
+      ) {
         user = u;
         break;
       }

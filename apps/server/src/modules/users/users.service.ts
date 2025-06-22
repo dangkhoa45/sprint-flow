@@ -34,7 +34,7 @@ export class UsersService extends BaseService<
     id: string | Types.ObjectId,
     input: UpdateUserDto,
   ): Promise<User | null | undefined> {
-    if (!!input.password) {
+    if (input.password) {
       const salt = genSaltSync(10);
       input.password = hashSync(input.password, salt);
     }

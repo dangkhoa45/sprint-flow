@@ -1,12 +1,12 @@
-import { API_HOST } from "../config/env";
+import { API_HOST } from '../config/env';
 import {
   CreateMilestoneDto,
   Milestone,
   MilestoneQueryDto,
   MilestoneStats,
   UpdateMilestoneDto,
-} from "../types/milestone";
-import { fetcher } from "../utils/fetcher";
+} from '../types/milestone';
+import { fetcher } from '../utils/fetcher';
 
 export const milestonesApi = {
   // Get all milestones with query
@@ -18,7 +18,7 @@ export const milestonesApi = {
       limit: number;
     }>({
       path: `${API_HOST}/api/milestones`,
-      method: "GET",
+      method: 'GET',
       params: query,
     });
   },
@@ -27,7 +27,7 @@ export const milestonesApi = {
   getMilestone: async (id: string) => {
     return fetcher<Milestone>({
       path: `${API_HOST}/api/milestones/${id}`,
-      method: "GET",
+      method: 'GET',
     });
   },
 
@@ -35,7 +35,7 @@ export const milestonesApi = {
   createMilestone: async (projectId: string, data: CreateMilestoneDto) => {
     return fetcher<Milestone>({
       path: `${API_HOST}/api/milestones/${projectId}`,
-      method: "POST",
+      method: 'POST',
       body: data,
     });
   },
@@ -44,7 +44,7 @@ export const milestonesApi = {
   updateMilestone: async (id: string, data: UpdateMilestoneDto) => {
     return fetcher<Milestone>({
       path: `${API_HOST}/api/milestones/${id}`,
-      method: "PATCH",
+      method: 'PATCH',
       body: data,
     });
   },
@@ -53,7 +53,7 @@ export const milestonesApi = {
   deleteMilestone: async (id: string) => {
     return fetcher<{ message: string }>({
       path: `${API_HOST}/api/milestones/${id}`,
-      method: "DELETE",
+      method: 'DELETE',
     });
   },
 
@@ -61,7 +61,7 @@ export const milestonesApi = {
   getProjectMilestones: async (projectId: string) => {
     return fetcher<Milestone[]>({
       path: `${API_HOST}/api/milestones/project/${projectId}`,
-      method: "GET",
+      method: 'GET',
     });
   },
 
@@ -69,8 +69,8 @@ export const milestonesApi = {
   getMilestoneStats: async (projectId?: string) => {
     return fetcher<MilestoneStats>({
       path: `${API_HOST}/api/milestones/stats`,
-      method: "GET",
+      method: 'GET',
       params: projectId ? { projectId } : undefined,
     });
   },
-}; 
+};

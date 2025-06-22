@@ -1,15 +1,15 @@
-"use client";
-import Box from "@mui/material/Box";
-import { useTheme, Theme } from "@mui/material/styles";
-import { 
-  DataGrid, 
-  GridColDef, 
-  GridRowsProp, 
+'use client';
+import Box from '@mui/material/Box';
+import { useTheme, Theme } from '@mui/material/styles';
+import {
+  DataGrid,
+  GridColDef,
+  GridRowsProp,
   GridPaginationModel,
   GridSortModel,
-  GridFilterModel 
-} from "@mui/x-data-grid";
-import { ReactNode } from "react";
+  GridFilterModel,
+} from '@mui/x-data-grid';
+import { ReactNode } from 'react';
 
 interface ReusableDataGridProps {
   rows: GridRowsProp;
@@ -29,8 +29,8 @@ interface ReusableDataGridProps {
   toolbar?: ReactNode;
   noRowsOverlay?: ReactNode;
   loadingOverlay?: ReactNode;
-  getRowHeight?: () => number | "auto";
-  density?: "compact" | "standard" | "comfortable";
+  getRowHeight?: () => number | 'auto';
+  density?: 'compact' | 'standard' | 'comfortable';
 }
 
 const ReusableDataGrid = ({
@@ -51,54 +51,54 @@ const ReusableDataGrid = ({
   toolbar,
   noRowsOverlay,
   loadingOverlay,
-  getRowHeight = () => "auto",
-  density = "standard",
+  getRowHeight = () => 'auto',
+  density = 'standard',
 }: ReusableDataGridProps) => {
   const theme = useTheme();
 
   const defaultSx = {
     border: `1px solid ${theme.palette.divider}`,
     borderRadius: 2,
-    "& .MuiDataGrid-cell": {
+    '& .MuiDataGrid-cell': {
       py: 1.5,
-      display: "flex",
-      alignItems: "center",
+      display: 'flex',
+      alignItems: 'center',
     },
-    "& .MuiDataGrid-row": {
-      minHeight: "70px !important",
-      "&:hover": {
+    '& .MuiDataGrid-row': {
+      minHeight: '70px !important',
+      '&:hover': {
         backgroundColor: theme.palette.action.hover,
       },
     },
-    "& .MuiDataGrid-columnHeaders": {
+    '& .MuiDataGrid-columnHeaders': {
       backgroundColor: theme.palette.grey[50],
       borderRadius: `8px 8px 0 0`,
       borderBottom: `1px solid ${theme.palette.divider}`,
-      "& .MuiDataGrid-columnHeader": {
+      '& .MuiDataGrid-columnHeader': {
         fontWeight: 600,
       },
     },
-    "& .MuiDataGrid-footerContainer": {
+    '& .MuiDataGrid-footerContainer': {
       borderTop: `1px solid ${theme.palette.divider}`,
       borderRadius: `0 0 8px 8px`,
     },
-    "& .MuiDataGrid-columnSeparator": {
-      display: "none",
+    '& .MuiDataGrid-columnSeparator': {
+      display: 'none',
     },
-    "& .MuiDataGrid-cell:focus": {
-      outline: "none",
+    '& .MuiDataGrid-cell:focus': {
+      outline: 'none',
     },
-    "& .MuiDataGrid-row:focus": {
-      outline: "none",
+    '& .MuiDataGrid-row:focus': {
+      outline: 'none',
     },
-    "& .MuiDataGrid-virtualScroller": {
-      minHeight: "200px",
+    '& .MuiDataGrid-virtualScroller': {
+      minHeight: '200px',
     },
     ...customSx,
   };
 
   return (
-    <Box sx={{ height, width: "100%" }}>
+    <Box sx={{ height, width: '100%' }}>
       <DataGrid
         rows={rows}
         columns={columns}

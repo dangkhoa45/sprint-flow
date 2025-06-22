@@ -13,9 +13,7 @@
     "strictNullChecks": false,
     "baseUrl": "./",
     "paths": {
-      "@api/*": [
-        "./src/*"
-      ]
+      "@api/*": ["./src/*"]
     }
   }
 }

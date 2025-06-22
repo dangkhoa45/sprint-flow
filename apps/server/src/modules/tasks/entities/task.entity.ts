@@ -45,7 +45,6 @@ export class Task extends BaseEntity {
   @ApiProperty()
   assignedTo?: Types.ObjectId;
 
-
   @Prop()
   @ApiProperty()
   dueDate?: Date;
@@ -82,4 +81,4 @@ TaskSchema.index({ assignedTo: 1 });
 TaskSchema.index({ createdBy: 1 });
 TaskSchema.index({ dueDate: 1 });
 TaskSchema.index({ createdAt: -1 });
-TaskSchema.index({ title: 'text', description: 'text' }); 
+TaskSchema.index({ title: 'text', description: 'text' });

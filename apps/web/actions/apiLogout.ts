@@ -1,38 +1,41 @@
-"use server";
+'use server';
 
-import { cookies, headers } from "next/headers";
-import { redirect } from "next/navigation";
-import { INTERNAL_API_HOST } from "../config/env";
+import { cookies, headers } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { INTERNAL_API_HOST } from '../config/env';
 
 export async function apiLogout() {
   try {
-    const host = (await headers()).get("host");
+    const host = (await headers()).get('host');
     const cookieStore = await cookies();
-    
+
     if (!host) {
-      throw new Error("Host header not found");
+      throw new Error('Host header not found');
     }
 
     // Get access token for server-side logout if available
     const accessToken = cookieStore.get(`${host}:at`)?.value;
-    
+
     // Call server logout API to invalidate session
     if (accessToken) {
       try {
         const response = await fetch(`${INTERNAL_API_HOST}/api/auth/logout`, {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${accessToken}`,
           },
-          cache: "no-cache",
+          cache: 'no-cache',
         });
-        
+
         if (!response.ok) {
-          console.warn("Server logout failed with status:", response.status);
+          console.warn('Server logout failed with status:', response.status);
         }
       } catch (serverError) {
-        console.warn("Server logout failed, continuing with client logout:", serverError);
+        console.warn(
+          'Server logout failed, continuing with client logout:',
+          serverError
+        );
       }
     }
 
@@ -41,17 +44,16 @@ export async function apiLogout() {
     cookieStore.delete(`${host}:at`); // access token
     cookieStore.delete(`${host}:rt`); // refresh token
     cookieStore.delete(`${host}:re`); // remember me
-    
+
     // Clear any other session-related cookies
     cookieStore.delete(`${host}:session`);
-    
-    console.log("User logged out successfully");
-    
+
+    console.log('User logged out successfully');
   } catch (error) {
-    console.error("Logout error:", error);
+    console.error('Logout error:', error);
     // Even if there's an error, we should still try to clear cookies
     try {
-      const host = (await headers()).get("host");
+      const host = (await headers()).get('host');
       const cookieStore = await cookies();
       if (host) {
         cookieStore.delete(`${host}:ut`);
@@ -61,11 +63,11 @@ export async function apiLogout() {
         cookieStore.delete(`${host}:session`);
       }
     } catch (cleanupError) {
-      console.error("Cookie cleanup error:", cleanupError);
+      console.error('Cookie cleanup error:', cleanupError);
     }
     throw error; // Re-throw to let the caller handle it
   }
-  
+
   // Redirect to login page
-  redirect("/login");
+  redirect('/login');
 }

@@ -1,8 +1,8 @@
-import { User } from "./user";
+import { User } from './user';
 
 export const enum SortOrder {
-  ASC = "asc",
-  DESC = "desc",
+  ASC = 'asc',
+  DESC = 'desc',
 }
 
 export type ListOptions<T> = Partial<T> & {
@@ -33,9 +33,9 @@ export interface QueryParamsProps<T> {
   offset: number;
 }
 
-export type FetchMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+export type FetchMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
-export type FetchOptions<Params = unknown, Body = unknown> = {
+export interface FetchOptions<Params = unknown, Body = unknown> {
   timeout?: number;
   method?: FetchMethod;
   path: string;
@@ -44,7 +44,7 @@ export type FetchOptions<Params = unknown, Body = unknown> = {
   headers?: Record<string, string>;
   responseType?: 'json' | 'blob' | 'text';
   onUploadProgress?: (progress: number) => void;
-};
+}
 
 export interface BaseObject {
   _id: string;
@@ -55,17 +55,26 @@ export interface BaseObject {
 }
 
 export type ThemeColor =
-  | "default"
-  | "error"
-  | "success"
-  | "info"
-  | "warning"
-  | "primary"
-  | "secondary";
+  | 'default'
+  | 'error'
+  | 'success'
+  | 'info'
+  | 'warning'
+  | 'primary'
+  | 'secondary';
 
 export interface TimeFilter<T> {
   startTime?: string;
   endTime?: string;
   timeField?: keyof T;
-  timeUnit?: "year" | "month" | "week" | "day" | "hour" | "minute";
+  timeUnit?: 'year' | 'month' | 'week' | 'day' | 'hour' | 'minute';
 }
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export type SortDirection = 'asc' | 'desc';

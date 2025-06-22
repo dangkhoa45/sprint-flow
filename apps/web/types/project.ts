@@ -1,21 +1,27 @@
-import { BaseObject } from "./shared";
-import { User } from "./user";
-import { Milestone } from "./milestone";
-import { Attachment } from "./attachment";
+import { BaseObject } from './shared';
+import { User } from './user';
+import { Milestone } from './milestone';
+import { Attachment } from './attachment';
+
+export interface Member {
+  _id: string;
+  displayName: string;
+  avatar?: string;
+}
 
 export enum ProjectStatus {
-  Planning = "Planning",
-  InProgress = "InProgress",
-  OnHold = "OnHold",
-  Completed = "Completed",
-  Cancelled = "Cancelled",
+  Planning = 'Planning',
+  InProgress = 'InProgress',
+  OnHold = 'OnHold',
+  Completed = 'Completed',
+  Cancelled = 'Cancelled',
 }
 
 export enum ProjectPriority {
-  Low = "Low",
-  Medium = "Medium",
-  High = "High",
-  Critical = "Critical",
+  Low = 'Low',
+  Medium = 'Medium',
+  High = 'High',
+  Critical = 'Critical',
 }
 
 export interface Project extends BaseObject {
@@ -73,7 +79,7 @@ export interface ProjectQueryDto {
   offset?: number;
   limit?: number;
   sortField?: string;
-  sortOrder?: "asc" | "desc";
+  sortOrder?: 'asc' | 'desc';
 }
 
 export interface ProjectStatsDto {

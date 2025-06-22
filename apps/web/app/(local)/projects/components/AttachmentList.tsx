@@ -1,16 +1,16 @@
-"use client";
-import { attachmentsApi } from "@/api/attachments";
-import { useToast } from "@/hooks/useToast";
-import { Attachment, AttachmentType } from "@/types/attachment";
+'use client';
+import { attachmentsApi } from '@/api/attachments';
+import { useToast } from '@/hooks/useToast';
+import { Attachment, AttachmentType } from '@/types/attachment';
 import {
   formatFileSize,
-  getAttachmentTypeIcon
-} from "@/utils/attachmentHelpers";
-import DeleteIcon from "@mui/icons-material/Delete";
-import GetAppIcon from "@mui/icons-material/GetApp";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import PersonIcon from "@mui/icons-material/Person";
-import CloseIcon from "@mui/icons-material/Close";
+  getAttachmentTypeIcon,
+} from '@/utils/attachmentHelpers';
+import DeleteIcon from '@mui/icons-material/Delete';
+import GetAppIcon from '@mui/icons-material/GetApp';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import PersonIcon from '@mui/icons-material/Person';
+import CloseIcon from '@mui/icons-material/Close';
 import {
   CardActionArea,
   CardMedia,
@@ -22,15 +22,15 @@ import {
   useTheme,
   alpha,
   Paper,
-} from "@mui/material";
-import Box from "@mui/material/Box";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import IconButton from "@mui/material/IconButton";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import Typography from "@mui/material/Typography";
-import { useState } from "react";
+} from '@mui/material';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Typography from '@mui/material/Typography';
+import { useState } from 'react';
 
 interface AttachmentListProps {
   attachments: Attachment[];
@@ -81,62 +81,64 @@ const AttachmentCard = ({
   return (
     <Card
       sx={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-        transition: "box-shadow 0.3s, background-color 0.3s",
-        "&:hover": {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        transition: 'box-shadow 0.3s, background-color 0.3s',
+        '&:hover': {
           boxShadow: 6,
         },
         backgroundColor: isSelected
           ? alpha(theme.palette.primary.main, 0.1)
-          : "transparent",
+          : 'transparent',
         border: isSelected
           ? `1px solid ${theme.palette.primary.main}`
-          : "1px solid transparent",
+          : '1px solid transparent',
       }}
       onClick={() => onPreview(attachment)}
     >
-      <CardActionArea sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
+      <CardActionArea
+        sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}
+      >
         <Box
           sx={{
             height: 100,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            width: "100%",
-            position: "relative",
-            overflow: "hidden",
-            backgroundColor: isImage ? "grey.100" : "transparent",
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            position: 'relative',
+            overflow: 'hidden',
+            backgroundColor: isImage ? 'grey.100' : 'transparent',
           }}
         >
           {isImage ? (
             <CardMedia
-              component="img"
+              component='img'
               image={attachmentsApi.getFileUrl(attachment)}
               alt={attachment.originalName}
               sx={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
               }}
             />
           ) : (
-            <Typography sx={{ fontSize: "3rem" }}>
+            <Typography sx={{ fontSize: '3rem' }}>
               {getAttachmentTypeIcon(attachment.type)}
             </Typography>
           )}
         </Box>
-        <CardContent sx={{ width: "100%", p: 1.5 }}>
+        <CardContent sx={{ width: '100%', p: 1.5 }}>
           <Typography
-            variant="body2"
+            variant='body2'
             fontWeight={600}
             title={attachment.originalName}
             noWrap
           >
             {attachment.originalName}
           </Typography>
-          <Typography variant="caption" color="text.secondary">
+          <Typography variant='caption' color='text.secondary'>
             {formatFileSize(attachment.size)}
           </Typography>
         </CardContent>
@@ -144,21 +146,22 @@ const AttachmentCard = ({
 
       <Box
         sx={{
-          display: "flex",
-          alignItems: "center",
+          display: 'flex',
+          alignItems: 'center',
           px: 1.5,
           pb: 1,
-          borderTop: "1px solid",
-          borderColor: "divider",
+          borderTop: '1px solid',
+          borderColor: 'divider',
         }}
       >
-        <Box sx={{ display: "flex", alignItems: "center", flexGrow: 1 }}>
-          <PersonIcon fontSize="small" sx={{ mr: 0.5, color: "grey.600" }} />
-          <Typography variant="caption" noWrap>
-            {attachment.uploadedBy.displayName || attachment.uploadedBy.username}
+        <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+          <PersonIcon fontSize='small' sx={{ mr: 0.5, color: 'grey.600' }} />
+          <Typography variant='caption' noWrap>
+            {attachment.uploadedBy.displayName ||
+              attachment.uploadedBy.username}
           </Typography>
         </Box>
-        <IconButton size="small" onClick={handleMenuOpen}>
+        <IconButton size='small' onClick={handleMenuOpen}>
           <MoreVertIcon />
         </IconButton>
       </Box>
@@ -168,12 +171,12 @@ const AttachmentCard = ({
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
         anchorOrigin={{
-          vertical: "top",
-          horizontal: "left",
+          vertical: 'top',
+          horizontal: 'left',
         }}
         transformOrigin={{
-          vertical: "top",
-          horizontal: "right",
+          vertical: 'top',
+          horizontal: 'right',
         }}
       >
         {/* The download logic will be on the preview pane */}
@@ -181,11 +184,8 @@ const AttachmentCard = ({
           <GetAppIcon fontSize="small" sx={{ mr: 1 }} />
           Tải xuống
         </MenuItem> */}
-        <MenuItem
-          onClick={handleDeleteClick}
-          sx={{ color: "error.main" }}
-        >
-          <DeleteIcon fontSize="small" sx={{ mr: 1 }} />
+        <MenuItem onClick={handleDeleteClick} sx={{ color: 'error.main' }}>
+          <DeleteIcon fontSize='small' sx={{ mr: 1 }} />
           Xóa
         </MenuItem>
       </Menu>
@@ -210,23 +210,23 @@ const FilePreview = ({
 
   return (
     <Paper
-      variant="outlined"
+      variant='outlined'
       sx={{
         p: 2,
-        height: "calc(100vh - 220px)",
-        position: "sticky",
-        top: "100px",
-        display: "flex",
-        flexDirection: "column",
+        height: 'calc(100vh - 220px)',
+        position: 'sticky',
+        top: '100px',
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
       <Stack
-        direction="row"
-        justifyContent="space-between"
-        alignItems="center"
+        direction='row'
+        justifyContent='space-between'
+        alignItems='center'
         sx={{ mb: 2 }}
       >
-        <Typography variant="h6" fontWeight={600} noWrap>
+        <Typography variant='h6' fontWeight={600} noWrap>
           {attachment.originalName}
         </Typography>
         <IconButton onClick={onClose}>
@@ -239,11 +239,11 @@ const FilePreview = ({
         <Box
           sx={{
             flexGrow: 1,
-            overflow: "hidden",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            bgcolor: "grey.100",
+            overflow: 'hidden',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            bgcolor: 'grey.100',
             borderRadius: 1,
           }}
         >
@@ -252,9 +252,9 @@ const FilePreview = ({
               src={fileUrl}
               alt={attachment.originalName}
               style={{
-                maxWidth: "100%",
-                maxHeight: "100%",
-                objectFit: "contain",
+                maxWidth: '100%',
+                maxHeight: '100%',
+                objectFit: 'contain',
               }}
             />
           )}
@@ -262,9 +262,9 @@ const FilePreview = ({
             <iframe
               src={fileUrl}
               title={attachment.originalName}
-              width="100%"
-              height="100%"
-              style={{ border: "none" }}
+              width='100%'
+              height='100%'
+              style={{ border: 'none' }}
             />
           )}
         </Box>
@@ -272,20 +272,18 @@ const FilePreview = ({
         <Box
           sx={{
             flexGrow: 1,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            textAlign: "center",
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            textAlign: 'center',
           }}
         >
-          <Typography variant="h4" sx={{ mb: 2 }}>
+          <Typography variant='h4' sx={{ mb: 2 }}>
             {getAttachmentTypeIcon(attachment.type)}
           </Typography>
-          <Typography sx={{ mb: 1 }}>
-            Không thể xem trước file này.
-          </Typography>
-          <Typography variant="caption" color="text.secondary">
+          <Typography sx={{ mb: 1 }}>Không thể xem trước file này.</Typography>
+          <Typography variant='caption' color='text.secondary'>
             Bạn có thể tải về để xem.
           </Typography>
         </Box>
@@ -294,36 +292,37 @@ const FilePreview = ({
       <Divider sx={{ my: 2 }} />
 
       <Stack spacing={1}>
-        <Typography variant="subtitle2" fontWeight={600}>
+        <Typography variant='subtitle2' fontWeight={600}>
           Chi tiết
         </Typography>
-        <Stack direction="row" justifyContent="space-between">
-          <Typography variant="body2" color="text.secondary">
+        <Stack direction='row' justifyContent='space-between'>
+          <Typography variant='body2' color='text.secondary'>
             Loại file
           </Typography>
-          <Chip label={attachment.type.toUpperCase()} size="small" />
+          <Chip label={attachment.type.toUpperCase()} size='small' />
         </Stack>
-        <Stack direction="row" justifyContent="space-between">
-          <Typography variant="body2" color="text.secondary">
+        <Stack direction='row' justifyContent='space-between'>
+          <Typography variant='body2' color='text.secondary'>
             Kích thước
           </Typography>
-          <Typography variant="body2" fontWeight={500}>
+          <Typography variant='body2' fontWeight={500}>
             {formatFileSize(attachment.size)}
           </Typography>
         </Stack>
-        <Stack direction="row" justifyContent="space-between">
-          <Typography variant="body2" color="text.secondary">
+        <Stack direction='row' justifyContent='space-between'>
+          <Typography variant='body2' color='text.secondary'>
             Người đăng
           </Typography>
-          <Typography variant="body2" fontWeight={500}>
-            {attachment.uploadedBy.displayName || attachment.uploadedBy.username}
+          <Typography variant='body2' fontWeight={500}>
+            {attachment.uploadedBy.displayName ||
+              attachment.uploadedBy.username}
           </Typography>
         </Stack>
-        <Stack direction="row" justifyContent="space-between">
-          <Typography variant="body2" color="text.secondary">
+        <Stack direction='row' justifyContent='space-between'>
+          <Typography variant='body2' color='text.secondary'>
             Ngày đăng
           </Typography>
-          <Typography variant="body2" fontWeight={500}>
+          <Typography variant='body2' fontWeight={500}>
             {new Date(attachment.createdAt as string).toLocaleString()}
           </Typography>
         </Stack>
@@ -332,9 +331,9 @@ const FilePreview = ({
       <Box sx={{ mt: 2 }}>
         <Link
           href={fileUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          underline="none"
+          target='_blank'
+          rel='noopener noreferrer'
+          underline='none'
         >
           <IconButton sx={{ mr: 1 }}>
             <GetAppIcon />
@@ -355,17 +354,17 @@ const AttachmentList = ({ attachments, mutate }: AttachmentListProps) => {
     try {
       const blob = await attachmentsApi.downloadAttachment(attachment._id);
       const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
+      const link = document.createElement('a');
       link.href = url;
       link.download = attachment.originalName;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
-      success("Tải file thành công!");
+      success('Tải file thành công!');
     } catch (err: unknown) {
       const errorMessage =
-        err instanceof Error ? err.message : "Tải file thất bại";
+        err instanceof Error ? err.message : 'Tải file thất bại';
       toastError(errorMessage);
     }
   };
@@ -376,11 +375,11 @@ const AttachmentList = ({ attachments, mutate }: AttachmentListProps) => {
         setSelectedAttachment(null);
       }
       await attachmentsApi.deleteAttachment(attachment._id);
-      success("Xóa file thành công!");
+      success('Xóa file thành công!');
       mutate();
     } catch (err: unknown) {
       const errorMessage =
-        err instanceof Error ? err.message : "Xóa file thất bại";
+        err instanceof Error ? err.message : 'Xóa file thất bại';
       toastError(errorMessage);
     }
   };
@@ -401,13 +400,13 @@ const AttachmentList = ({ attachments, mutate }: AttachmentListProps) => {
 
   return (
     <Box>
-      <Typography variant="h6" fontWeight={600} sx={{ mb: 3 }}>
+      <Typography variant='h6' fontWeight={600} sx={{ mb: 3 }}>
         Files ({attachments.length})
       </Typography>
 
       {attachments.length === 0 ? (
-        <Paper sx={{ p: 4, textAlign: "center" }}>
-          <Typography variant="body1" color="text.secondary">
+        <Paper sx={{ p: 4, textAlign: 'center' }}>
+          <Typography variant='body1' color='text.secondary'>
             Chưa có file nào được upload
           </Typography>
         </Paper>
@@ -415,7 +414,7 @@ const AttachmentList = ({ attachments, mutate }: AttachmentListProps) => {
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: selectedAttachment ? 7 : 12 }}>
             <Grid container spacing={2}>
-              {sortedAttachments.map((attachment) => (
+              {sortedAttachments.map(attachment => (
                 <Grid
                   key={attachment._id}
                   size={{ xs: 12, sm: 6, md: 4, lg: 3 }}
@@ -445,4 +444,4 @@ const AttachmentList = ({ attachments, mutate }: AttachmentListProps) => {
   );
 };
 
-export default AttachmentList; 
+export default AttachmentList;

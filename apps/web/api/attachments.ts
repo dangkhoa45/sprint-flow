@@ -1,11 +1,11 @@
-import { API_HOST } from "../config/env";
+import { API_HOST } from '../config/env';
 import {
   Attachment,
   AttachmentQueryDto,
   AttachmentStats,
   CreateAttachmentDto,
-} from "../types/attachment";
-import { fetcher } from "../utils/fetcher";
+} from '../types/attachment';
+import { fetcher } from '../utils/fetcher';
 
 export const attachmentsApi = {
   // Get all attachments with query
@@ -17,7 +17,7 @@ export const attachmentsApi = {
       limit: number;
     }>({
       path: `${API_HOST}/api/attachments`,
-      method: "GET",
+      method: 'GET',
       params: query,
     });
   },
@@ -26,7 +26,7 @@ export const attachmentsApi = {
   getAttachment: async (id: string) => {
     return fetcher<Attachment>({
       path: `${API_HOST}/api/attachments/${id}`,
-      method: "GET",
+      method: 'GET',
     });
   },
 
@@ -48,7 +48,7 @@ export const attachmentsApi = {
 
     const response = await fetcher<Attachment>({
       path: `${API_HOST}/api/attachments/${projectId}/upload`,
-      method: "POST",
+      method: 'POST',
       body: formData,
       headers: {
         // Don't set Content-Type, let browser set it with boundary
@@ -63,7 +63,7 @@ export const attachmentsApi = {
   deleteAttachment: async (id: string) => {
     return fetcher<{ message: string }>({
       path: `${API_HOST}/api/attachments/${id}`,
-      method: "DELETE",
+      method: 'DELETE',
     });
   },
 
@@ -71,7 +71,7 @@ export const attachmentsApi = {
   getProjectAttachments: async (projectId: string) => {
     return fetcher<Attachment[]>({
       path: `${API_HOST}/api/attachments/project/${projectId}`,
-      method: "GET",
+      method: 'GET',
     });
   },
 
@@ -79,7 +79,7 @@ export const attachmentsApi = {
   getAttachmentStats: async (projectId?: string) => {
     return fetcher<AttachmentStats>({
       path: `${API_HOST}/api/attachments/stats`,
-      method: "GET",
+      method: 'GET',
       params: projectId ? { projectId } : undefined,
     });
   },
@@ -88,7 +88,7 @@ export const attachmentsApi = {
   downloadAttachment: async (id: string) => {
     return fetcher<Blob>({
       path: `${API_HOST}/api/attachments/${id}/download`,
-      method: "GET",
+      method: 'GET',
       responseType: 'blob',
     });
   },
@@ -97,4 +97,4 @@ export const attachmentsApi = {
   getFileUrl: (attachment: Attachment) => {
     return `${API_HOST}/uploads/attachments/${attachment.filename}`;
   },
-}; 
+};

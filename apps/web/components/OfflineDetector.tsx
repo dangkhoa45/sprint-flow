@@ -70,26 +70,26 @@ export default function OfflineDetector({ children }: OfflineDetectorProps) {
             mb: 2,
           }}
         />
-        
+
         <Typography
-          variant="h5"
-          component="h1"
+          variant='h5'
+          component='h1'
           gutterBottom
           sx={{ fontWeight: 'bold' }}
         >
           Không có kết nối mạng
         </Typography>
-        
+
         <Typography
-          variant="body1"
-          color="text.secondary"
+          variant='body1'
+          color='text.secondary'
           sx={{ mb: 3, maxWidth: 400 }}
         >
           Vui lòng kiểm tra kết nối internet và thử lại
         </Typography>
 
         <Button
-          variant="contained"
+          variant='contained'
           onClick={handleRetry}
           startIcon={<Refresh />}
         >
@@ -117,15 +117,13 @@ export default function OfflineDetector({ children }: OfflineDetectorProps) {
             textAlign: 'center',
           }}
         >
-          <Typography variant="body2">
+          <Typography variant='body2'>
             <WifiOff sx={{ fontSize: 16, mr: 1, verticalAlign: 'middle' }} />
             Không có kết nối mạng
           </Typography>
         </Box>
       )}
-      <Box sx={{ pt: !isOnline ? 6 : 0 }}>
-        {children}
-      </Box>
+      <Box sx={{ pt: !isOnline ? 6 : 0 }}>{children}</Box>
     </>
   );
 }

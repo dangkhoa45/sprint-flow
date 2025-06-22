@@ -1,6 +1,6 @@
-import { milestonesApi } from "@/api/milestones";
-import { Milestone, MilestoneQueryDto } from "@/types/milestone";
-import useSWR from "swr";
+import { milestonesApi } from '@/api/milestones';
+import { Milestone, MilestoneQueryDto } from '@/types/milestone';
+import useSWR from 'swr';
 
 export const useMilestones = (query?: MilestoneQueryDto) => {
   const { data, error, isLoading, mutate } = useSWR(
@@ -59,4 +59,4 @@ export const useMilestoneStats = (projectId?: string) => {
     error,
     mutate,
   };
-}; 
+};

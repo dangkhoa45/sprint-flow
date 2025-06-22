@@ -1,6 +1,6 @@
 'use client';
 
-import ErrorPage from "@/components/ErrorPage";
+import ErrorPage from '@/components/ErrorPage';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
@@ -19,9 +19,9 @@ export default function DashboardNotFound() {
   };
 
   const customActions = (
-    <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
+    <Stack direction='row' spacing={2} sx={{ mt: 2 }}>
       <Button
-        variant="contained"
+        variant='contained'
         startIcon={<DashboardIcon />}
         onClick={handleGoDashboard}
         sx={{ minWidth: 120 }}
@@ -29,7 +29,7 @@ export default function DashboardNotFound() {
         Bảng điều khiển
       </Button>
       <Button
-        variant="outlined"
+        variant='outlined'
         startIcon={<HomeIcon />}
         onClick={handleGoHome}
         sx={{ minWidth: 120 }}
@@ -43,17 +43,17 @@ export default function DashboardNotFound() {
     <Box
       sx={{
         py: 4,
-        position: "relative",
-        minHeight: "calc(100vh - 180px)",
+        position: 'relative',
+        minHeight: 'calc(100vh - 180px)',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
       }}
     >
       <ErrorPage
-        type="404"
-        title="Trang không tồn tại"
-        message="Trang bạn đang tìm kiếm không tồn tại trong hệ thống dashboard."
+        type='404'
+        title='Trang không tồn tại'
+        message='Trang bạn đang tìm kiếm không tồn tại trong hệ thống dashboard.'
         customActions={customActions}
       />
     </Box>

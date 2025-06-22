@@ -1,15 +1,15 @@
-import { BaseObject, ListOptions } from "./shared";
+import { BaseObject, ListOptions } from './shared';
 
 export enum UserRole {
-  Admin = "Admin",
-  User = "User",
+  Admin = 'Admin',
+  User = 'User',
 }
 
 export enum UserStatus {
-  Pending = "Pending",
-  Active = "Active",
-  Banned = "Banned",
-  Deleted = "Deleted",
+  Pending = 'Pending',
+  Active = 'Active',
+  Banned = 'Banned',
+  Deleted = 'Deleted',
 }
 
 export interface User extends BaseObject {
@@ -65,13 +65,13 @@ export interface UserLoginResponse {
 
 export type UserCreateInput = Omit<
   User & WithPassword,
-  "_id" | "createdAt" | "createdBy" | "updatedAt" | "updatedBy"
+  '_id' | 'createdAt' | 'createdBy' | 'updatedAt' | 'updatedBy'
 >;
 
-export type UserChangePassword = {
+export interface UserChangePassword {
   currentPassword: string;
   newPassword: string;
-};
+}
 
 export type UserUpdateInput = Partial<UserCreateInput>;
 export type UserFilterParams = ListOptions<User>;

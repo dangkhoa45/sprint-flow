@@ -13,14 +13,14 @@ export enum TimelineEventType {
   DEADLINE_APPROACHING = 'deadline_approaching',
   COMMENT_ADDED = 'comment_added',
   FILE_UPLOADED = 'file_uploaded',
-  STATUS_CHANGED = 'status_changed'
+  STATUS_CHANGED = 'status_changed',
 }
 
 export enum TimelineEventPriority {
   LOW = 'low',
   MEDIUM = 'medium',
   HIGH = 'high',
-  URGENT = 'urgent'
+  URGENT = 'urgent',
 }
 
 export interface TimelineUser {

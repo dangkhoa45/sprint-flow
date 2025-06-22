@@ -30,10 +30,7 @@ export default function AppWrapper({
   showLoadingPage = false,
 }: AppWrapperProps) {
   const content = (
-    <ErrorBoundary
-      fallback={errorFallback}
-      onError={onError}
-    >
+    <ErrorBoundary fallback={errorFallback} onError={onError}>
       <Suspense
         fallback={
           <LoadingComponent

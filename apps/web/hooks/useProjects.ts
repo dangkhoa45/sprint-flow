@@ -1,11 +1,21 @@
-import useSWR from "swr";
-import { projectsApi } from "../api/projects";
-import { ProjectQueryDto } from "../types/project";
-import { ErrorResponse } from "../types/shared";
+import useSWR from 'swr';
+import { projectsApi } from '../api/projects';
+import { Project, ProjectQueryDto } from '../types/project';
+import { ErrorResponse, PaginatedResponse } from '../types/shared';
+
+interface UseProjectsReturn {
+  projects: Project[];
+  total: number;
+  page: number;
+  limit: number;
+  isLoading: boolean;
+  error?: ErrorResponse;
+  mutate: () => void;
+}
 
 // Hook để get danh sách projects
-export function useProjects(query?: ProjectQueryDto) {
-  const { data, error, mutate, isLoading } = useSWR(
+export function useProjects(query?: ProjectQueryDto): UseProjectsReturn {
+  const { data, error, mutate, isLoading } = useSWR<PaginatedResponse<Project>>(
     query ? [`/api/projects`, query] : `/api/projects`,
     () => projectsApi.getProjects(query),
     {
@@ -15,12 +25,12 @@ export function useProjects(query?: ProjectQueryDto) {
   );
 
   return {
-    projects: data?.data || [],
-    total: data?.total || 0,
-    page: data?.page || 1,
-    limit: data?.limit || 10,
+    projects: data?.data ?? [],
+    total: data?.total ?? 0,
+    page: data?.page ?? 1,
+    limit: data?.limit ?? 10,
     isLoading,
-    error: error as ErrorResponse,
+    error: error as ErrorResponse | undefined,
     mutate,
   };
 }

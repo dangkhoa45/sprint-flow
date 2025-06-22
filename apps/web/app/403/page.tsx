@@ -5,5 +5,5 @@ import { errorMetadata } from '../../utils/errorMetadata';
 export const metadata: Metadata = errorMetadata[403];
 
 export default function ForbiddenPage() {
-  return <ErrorPage type="403" />;
+  return <ErrorPage type='403' />;
 }

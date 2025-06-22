@@ -1,12 +1,12 @@
-"use client";
-import { usePathname } from "next/navigation";
-import Link from "next/link";
-import Breadcrumbs from "@mui/material/Breadcrumbs";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
-import { useTheme } from "@mui/material/styles";
-import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-import HomeIcon from "@mui/icons-material/Home";
+'use client';
+import { usePathname } from 'next/navigation';
+import Link from 'next/link';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import { useTheme } from '@mui/material/styles';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import HomeIcon from '@mui/icons-material/Home';
 
 interface BreadcrumbItem {
   label: string;
@@ -19,35 +19,38 @@ interface CustomBreadcrumbsProps {
   showHome?: boolean;
 }
 
-const CustomBreadcrumbs = ({ items, showHome = true }: CustomBreadcrumbsProps) => {
+const CustomBreadcrumbs = ({
+  items,
+  showHome = true,
+}: CustomBreadcrumbsProps) => {
   const pathname = usePathname();
   const theme = useTheme();
 
   // Auto-generate breadcrumbs from pathname if items not provided
   const generateBreadcrumbs = (): BreadcrumbItem[] => {
-    const pathSegments = pathname.split("/").filter(Boolean);
+    const pathSegments = pathname.split('/').filter(Boolean);
     const breadcrumbs: BreadcrumbItem[] = [];
 
     if (showHome) {
       breadcrumbs.push({
-        label: "Dashboard",
-        href: "/dashboard",
+        label: 'Dashboard',
+        href: '/dashboard',
         icon: <HomeIcon sx={{ fontSize: 16 }} />,
       });
     }
 
-    let currentPath = "";
+    let currentPath = '';
     pathSegments.forEach((segment, index) => {
       currentPath += `/${segment}`;
-      
+
       // Skip if it's the dashboard segment and we already added home
-      if (segment === "dashboard" && showHome) return;
+      if (segment === 'dashboard' && showHome) return;
 
       // Format segment label
       const label = segment
-        .split("-")
+        .split('-')
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ");
+        .join(' ');
 
       breadcrumbs.push({
         label,
@@ -69,7 +72,7 @@ const CustomBreadcrumbs = ({ items, showHome = true }: CustomBreadcrumbsProps) =
       <Breadcrumbs
         separator={<NavigateNextIcon sx={{ fontSize: 16 }} />}
         sx={{
-          "& .MuiBreadcrumbs-separator": {
+          '& .MuiBreadcrumbs-separator': {
             color: theme.palette.text.secondary,
           },
         }}
@@ -82,17 +85,17 @@ const CustomBreadcrumbs = ({ items, showHome = true }: CustomBreadcrumbsProps) =
               <Box
                 key={index}
                 sx={{
-                  display: "flex",
-                  alignItems: "center",
+                  display: 'flex',
+                  alignItems: 'center',
                   gap: 0.5,
                 }}
               >
                 {item.icon}
                 <Typography
-                  variant="body2"
+                  variant='body2'
                   sx={{
-                    color: isLast 
-                      ? theme.palette.text.primary 
+                    color: isLast
+                      ? theme.palette.text.primary
                       : theme.palette.text.secondary,
                     fontWeight: isLast ? 600 : 400,
                   }}
@@ -109,22 +112,22 @@ const CustomBreadcrumbs = ({ items, showHome = true }: CustomBreadcrumbsProps) =
               component={Link}
               href={item.href}
               sx={{
-                display: "flex",
-                alignItems: "center",
+                display: 'flex',
+                alignItems: 'center',
                 gap: 0.5,
-                textDecoration: "none",
+                textDecoration: 'none',
                 color: theme.palette.text.secondary,
-                transition: "color 0.2s ease",
-                "&:hover": {
+                transition: 'color 0.2s ease',
+                '&:hover': {
                   color: theme.palette.primary.main,
                 },
               }}
             >
               {item.icon}
               <Typography
-                variant="body2"
+                variant='body2'
                 sx={{
-                  fontSize: "0.875rem",
+                  fontSize: '0.875rem',
                 }}
               >
                 {item.label}

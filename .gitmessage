@@ -1,0 +1,37 @@
+# <type>(<scope>): <subject>
+# 
+# <body>
+# 
+# <footer>
+
+# Types:
+#   feat     (new feature for the user, not a new feature for build script)
+#   fix      (bug fix for the user, not a fix to a build script)
+#   docs     (changes to the documentation)
+#   style    (formatting, missing semi colons, etc; no production code change)
+#   refactor (refactoring production code, eg. renaming a variable)
+#   test     (adding missing tests, refactoring tests; no production code change)
+#   chore    (updating grunt tasks etc; no production code change)
+#   perf     (performance improvements)
+#   ci       (CI/CD changes)
+#   build    (build system changes)
+#   revert   (revert changes)
+
+# Scopes:
+#   auth, users, projects, tasks, milestones, attachments, ui, api, database, ci, deps, config, docs, test, docker, release
+
+# Examples:
+#   feat(auth): add JWT authentication system
+#   fix(tasks): resolve task assignment bug
+#   docs(api): update API documentation
+#   style(ui): format component code
+#   refactor(projects): restructure project service
+#   test(tasks): add unit tests for task service
+#   chore(deps): update dependencies
+#   ci(pipeline): add GitHub Actions workflow
+#   perf(api): optimize database queries
+#   build(docker): update Docker configuration
+
+# Issue Reference:
+#   Always include issue number in footer: Closes #123
+#   Or reference: Relates to #123 

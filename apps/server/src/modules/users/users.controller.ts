@@ -69,7 +69,7 @@ export class UsersController extends BaseController<
         },
       }),
       fileFilter: (req, file, callback) => {
-        if (!file.mimetype.match(/\/(jpg|jpeg|png)$/)) {
+        if (!/\/(jpg|jpeg|png)$/.exec(file.mimetype)) {
           return callback(
             new BadRequestException('Only JPG/JPEG files are allowed!'),
             false,

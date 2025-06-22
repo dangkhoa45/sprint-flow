@@ -51,11 +51,15 @@ async function bootstrap() {
   });
 
   app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-  app.use('/uploads/attachments', express.static(path.join(__dirname, 'uploads', 'attachments')));
+  app.use(
+    '/uploads/attachments',
+    express.static(path.join(__dirname, 'uploads', 'attachments')),
+  );
 
   const config = new DocumentBuilder()
     .setTitle('SprintFlow API')
-    .setDescription(`
+    .setDescription(
+      `
       RESTful APIs for SprintFlow Project Management System
       
       **Testing Headers:**
@@ -66,7 +70,8 @@ async function bootstrap() {
       **Authentication:**
       - Login to get access token
       - Use Bearer token for protected endpoints
-    `)
+    `,
+    )
     .setVersion('1.0')
     .addBearerAuth()
     .addServer('http://localhost:8005', 'Development Server')

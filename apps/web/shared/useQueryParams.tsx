@@ -1,9 +1,13 @@
-import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useMemo } from "react";
-import { combineQueryParams, extractQueryParams, ParamObject } from "../utils/query";
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useCallback, useMemo } from 'react';
+import {
+  combineQueryParams,
+  extractQueryParams,
+  ParamObject,
+} from '../utils/query';
 
 function useQueryParams<T = ParamObject>(
-  defaultValue?: Partial<T>,
+  defaultValue?: Partial<T>
 ): [T, (newValue: Partial<T>) => void] {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -12,7 +16,7 @@ function useQueryParams<T = ParamObject>(
   const value = useMemo(() => {
     const extractedValue = extractQueryParams(
       paramString,
-      defaultValue as Partial<ParamObject>,
+      defaultValue as Partial<ParamObject>
     );
     return {
       ...defaultValue,
@@ -27,7 +31,7 @@ function useQueryParams<T = ParamObject>(
       const params = combineQueryParams(paramString, newValue as ParamObject);
       router.push(`?${params}`);
     },
-    [router, paramString],
+    [router, paramString]
   );
 
   return [value, setValue];

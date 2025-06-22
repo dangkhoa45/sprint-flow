@@ -258,7 +258,7 @@ export class UserSessionsService extends BaseService<
   }
 
   async statisticUsersMonthly(
-    userIds: Array<string>,
+    userIds: string[],
     startTime: Date,
     endTime: Date,
   ) {

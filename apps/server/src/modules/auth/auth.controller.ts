@@ -49,8 +49,8 @@ export class AuthController {
   @ApiUserHeaders()
   signIn(
     @Body() signInDto: LoginDto,
-    @Headers('x-user-agent') ua: string = 'Swagger-Test-Client',
-    @Headers('x-forwarded-for') xIP: string = '127.0.0.1',
+    @Headers('x-user-agent') ua = 'Swagger-Test-Client',
+    @Headers('x-forwarded-for') xIP = '127.0.0.1',
   ) {
     const [ip] = (xIP || '127.0.0.1').split(',');
     return this.authService.signIn(
@@ -76,12 +76,16 @@ export class AuthController {
   @ApiUserHeaders()
   async refreshToken(
     @Body('token') token: string,
-    @Headers('x-user-agent') ua: string = 'Swagger-Test-Client',
-    @Headers('x-forwarded-for') xIP: string = '127.0.0.1',
+    @Headers('x-user-agent') ua = 'Swagger-Test-Client',
+    @Headers('x-forwarded-for') xIP = '127.0.0.1',
   ) {
     try {
       const [ip] = (xIP || '127.0.0.1').split(',');
-      return await this.authService.refreshToken(token, ip.trim(), ua || 'Swagger-Test-Client');
+      return await this.authService.refreshToken(
+        token,
+        ip.trim(),
+        ua || 'Swagger-Test-Client',
+      );
     } catch {
       throw new UnauthorizedException();
     }
@@ -137,7 +141,7 @@ export class AuthController {
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
     return this.authService.resetPassword(
       resetPasswordDto.token,
-      resetPasswordDto.newPassword
+      resetPasswordDto.newPassword,
     );
   }
 }

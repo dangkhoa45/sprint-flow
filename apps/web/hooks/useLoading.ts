@@ -2,11 +2,9 @@
 
 import { useState, useEffect } from 'react';
 
-interface LoadingState {
-  [key: string]: boolean;
-}
+type LoadingState = Record<string, boolean>;
 
-export function useLoading(initialState: boolean = false) {
+export function useLoading(initialState = false) {
   const [isLoading, setIsLoading] = useState(initialState);
   const [loadingStates, setLoadingStates] = useState<LoadingState>({});
 
@@ -14,7 +12,7 @@ export function useLoading(initialState: boolean = false) {
   const setLoading = (key: string, loading: boolean) => {
     setLoadingStates(prev => ({
       ...prev,
-      [key]: loading
+      [key]: loading,
     }));
   };
 
@@ -32,7 +30,7 @@ export function useLoading(initialState: boolean = false) {
     key?: string
   ): Promise<T> => {
     const loadingKey = key || 'default';
-    
+
     try {
       setLoading(loadingKey, true);
       const result = await operation();

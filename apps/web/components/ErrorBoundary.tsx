@@ -37,7 +37,7 @@ class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <Container maxWidth="sm">
+        <Container maxWidth='sm'>
           <Box
             sx={{
               display: 'flex',
@@ -56,10 +56,10 @@ class ErrorBoundary extends Component<Props, State> {
                 mb: 2,
               }}
             />
-            
+
             <Typography
-              variant="h5"
-              component="h2"
+              variant='h5'
+              component='h2'
               gutterBottom
               sx={{
                 fontWeight: 'bold',
@@ -68,32 +68,34 @@ class ErrorBoundary extends Component<Props, State> {
             >
               Có lỗi xảy ra
             </Typography>
-            
+
             <Typography
-              variant="body1"
-              color="text.secondary"
+              variant='body1'
+              color='text.secondary'
               sx={{ mb: 3, maxWidth: 400 }}
             >
               Thành phần này đã gặp lỗi. Vui lòng thử lại.
             </Typography>
 
-            <Stack direction="row" spacing={2}>
+            <Stack direction='row' spacing={2}>
               <Button
-                variant="contained"
-                color="primary"
-                onClick={() => this.setState({ hasError: false, error: undefined })}
+                variant='contained'
+                color='primary'
+                onClick={() =>
+                  this.setState({ hasError: false, error: undefined })
+                }
                 startIcon={<Refresh />}
-                size="small"
+                size='small'
               >
                 Thử lại
               </Button>
-              
+
               <Button
-                variant="outlined"
-                color="primary"
-                onClick={() => window.location.href = '/'}
+                variant='outlined'
+                color='primary'
+                onClick={() => (window.location.href = '/')}
                 startIcon={<Home />}
-                size="small"
+                size='small'
               >
                 Về trang chủ
               </Button>
@@ -113,8 +115,8 @@ class ErrorBoundary extends Component<Props, State> {
                 }}
               >
                 <Typography
-                  variant="caption"
-                  color="text.secondary"
+                  variant='caption'
+                  color='text.secondary'
                   sx={{ fontFamily: 'monospace' }}
                 >
                   {this.state.error.message}

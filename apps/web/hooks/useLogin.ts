@@ -1,14 +1,14 @@
-"use client";
-import useAxios from "axios-hooks";
-import { ErrorResponse, LoginPayload, LoginResponse } from "../types/login";
+'use client';
+import useAxios from 'axios-hooks';
+import { ErrorResponse, LoginPayload, LoginResponse } from '../types/login';
 
 function useLogin() {
   return useAxios<LoginResponse, LoginPayload, ErrorResponse>(
     {
-      url: "http://localhost:8005/api/auth/login",
-      method: "POST",
+      url: 'http://localhost:8005/api/auth/login',
+      method: 'POST',
     },
-    { manual: true },
+    { manual: true }
   );
 }
 

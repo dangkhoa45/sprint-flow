@@ -12,27 +12,27 @@ export const getPeriodTime = (startTime: Date, endTime: Date) => {
 
 export const formatDateTime = (value: string | number) => {
   const date = new Date(value);
-  return date.toLocaleTimeString("vi-VN", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
+  return date.toLocaleTimeString('vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 };
 
 export const formatDateVN = (value: string | number) => {
   const date = new Date(value);
-  return date.toLocaleDateString("vi-VN", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
+  return date.toLocaleDateString('vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
   });
 };
 
 // format date yyyy - mm - dd
 export const formatDate = (dateString: string | number | Date) => {
-  if (!dateString) return "";
+  if (!dateString) return '';
   const date = new Date(dateString);
-  return date.toLocaleDateString("en-CA");
+  return date.toLocaleDateString('en-CA');
 };

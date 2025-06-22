@@ -1,7 +1,16 @@
 'use client';
 
 import { Box, Button, Container, Typography, Stack } from '@mui/material';
-import { ErrorOutline, Warning, Block, CloudOff, Search, Home, Refresh, ArrowBack } from '@mui/icons-material';
+import {
+  ErrorOutline,
+  Warning,
+  Block,
+  CloudOff,
+  Search,
+  Home,
+  Refresh,
+  ArrowBack,
+} from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 
 export type ErrorType = '404' | '403' | '500' | 'offline' | 'general';
@@ -20,37 +29,38 @@ const errorConfig = {
     icon: Search,
     color: 'warning.main',
     defaultTitle: 'Không tìm thấy trang',
-    defaultMessage: 'Trang bạn đang tìm kiếm có thể đã được di chuyển, xóa hoặc không tồn tại.',
-    code: '404'
+    defaultMessage:
+      'Trang bạn đang tìm kiếm có thể đã được di chuyển, xóa hoặc không tồn tại.',
+    code: '404',
   },
   '403': {
     icon: Block,
     color: 'error.main',
     defaultTitle: 'Truy cập bị từ chối',
     defaultMessage: 'Bạn không có quyền truy cập vào trang này.',
-    code: '403'
+    code: '403',
   },
   '500': {
     icon: ErrorOutline,
     color: 'error.main',
     defaultTitle: 'Lỗi máy chủ nội bộ',
     defaultMessage: 'Máy chủ đã gặp phải một lỗi không mong muốn.',
-    code: '500'
+    code: '500',
   },
   offline: {
     icon: CloudOff,
     color: 'grey.500',
     defaultTitle: 'Không có kết nối mạng',
     defaultMessage: 'Bạn hiện không có kết nối internet.',
-    code: null
+    code: null,
   },
   general: {
     icon: Warning,
     color: 'warning.main',
     defaultTitle: 'Có lỗi xảy ra',
     defaultMessage: 'Đã xảy ra lỗi không mong muốn.',
-    code: null
-  }
+    code: null,
+  },
 };
 
 export default function ErrorPage({
@@ -59,7 +69,7 @@ export default function ErrorPage({
   message,
   showBackButton = true,
   showRefreshButton = true,
-  customActions
+  customActions,
 }: ErrorPageProps) {
   const router = useRouter();
   const config = errorConfig[type];
@@ -78,7 +88,7 @@ export default function ErrorPage({
   };
 
   return (
-    <Container maxWidth="md">
+    <Container maxWidth='md'>
       <Box
         sx={{
           display: 'flex',
@@ -97,11 +107,11 @@ export default function ErrorPage({
             mb: 3,
           }}
         />
-        
+
         {config.code && (
           <Typography
-            variant="h1"
-            component="h1"
+            variant='h1'
+            component='h1'
             sx={{
               fontSize: { xs: '4rem', md: '6rem' },
               fontWeight: 'bold',
@@ -112,10 +122,10 @@ export default function ErrorPage({
             {config.code}
           </Typography>
         )}
-        
+
         <Typography
-          variant="h4"
-          component={config.code ? "h2" : "h1"}
+          variant='h4'
+          component={config.code ? 'h2' : 'h1'}
           gutterBottom
           sx={{
             fontWeight: 'bold',
@@ -125,10 +135,10 @@ export default function ErrorPage({
         >
           {title || config.defaultTitle}
         </Typography>
-        
+
         <Typography
-          variant="h6"
-          color="text.secondary"
+          variant='h6'
+          color='text.secondary'
           sx={{ mb: 4, maxWidth: 600 }}
         >
           {message || config.defaultMessage}
@@ -138,33 +148,33 @@ export default function ErrorPage({
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
             <Button
               onClick={handleGoHome}
-              variant="contained"
-              color="primary"
+              variant='contained'
+              color='primary'
               startIcon={<Home />}
-              size="large"
+              size='large'
             >
               Về trang chủ
             </Button>
-            
+
             {showRefreshButton && (
               <Button
                 onClick={handleRefresh}
-                variant="outlined"
-                color="primary"
+                variant='outlined'
+                color='primary'
                 startIcon={<Refresh />}
-                size="large"
+                size='large'
               >
                 Tải lại
               </Button>
             )}
-            
+
             {showBackButton && (
               <Button
                 onClick={handleGoBack}
-                variant="text"
-                color="primary"
+                variant='text'
+                color='primary'
                 startIcon={<ArrowBack />}
-                size="large"
+                size='large'
               >
                 Quay lại
               </Button>

@@ -4,28 +4,31 @@
 
 export function parseCookies(cookieString?: string): Record<string, string> {
   if (!cookieString) return {};
-  
+
   return cookieString
     .split(';')
     .map(cookie => cookie.trim())
-    .reduce((acc, cookie) => {
-      const [key, value] = cookie.split('=');
-      if (key && value) {
-        try {
-          acc[key] = decodeURIComponent(value);
-        } catch {
-          // If decoding fails, use the raw value
-          acc[key] = value;
+    .reduce(
+      (acc, cookie) => {
+        const [key, value] = cookie.split('=');
+        if (key && value) {
+          try {
+            acc[key] = decodeURIComponent(value);
+          } catch {
+            // If decoding fails, use the raw value
+            acc[key] = value;
+          }
         }
-      }
-      return acc;
-    }, {} as Record<string, string>);
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
 }
 
 export function getAccessTokenFromRequest(request: any): string | undefined {
   const host = request.headers?.host;
   const userAgent = request.headers?.['user-agent'];
-  
+
   console.log('🔍 AuthGuard: Extracting token from request');
   console.log('🌐 Host:', host);
   console.log('🖥️ User-Agent:', userAgent?.substring(0, 50) + '...');
@@ -50,22 +53,22 @@ export function getAccessTokenFromRequest(request: any): string | undefined {
     console.log('🍪 Raw cookies:', request.headers.cookie);
     const cookies = parseCookies(request.headers.cookie);
     console.log('🍪 Parsed cookies keys:', Object.keys(cookies));
-    
+
     // Try different cookie key formats
     const possibleKeys = [
       `${host}:at`,
       `localhost:8000:at`,
       'localhost:8000:at',
-      'at'
+      'at',
     ];
-    
+
     for (const key of possibleKeys) {
       if (cookies[key]) {
         console.log('✅ Found access token with key:', key);
         return cookies[key];
       }
     }
-    
+
     console.log('❌ No access token found in cookies');
     console.log('🔍 Tried keys:', possibleKeys);
   } else {

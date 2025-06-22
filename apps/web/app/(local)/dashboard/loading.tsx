@@ -12,32 +12,32 @@ export default function DashboardLoading() {
     <Box
       sx={{
         py: 4,
-        position: "relative",
-        minHeight: "calc(100vh - 180px)",
+        position: 'relative',
+        minHeight: 'calc(100vh - 180px)',
       }}
     >
       <Container
-        maxWidth="xl"
+        maxWidth='xl'
         sx={{
-          height: "calc(100vh - 180px)",
-          width: "100vw",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
+          height: 'calc(100vh - 180px)',
+          width: '100vw',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
       >
         {/* Header Skeleton */}
-        <Stack alignItems="center" spacing={2} sx={{ mb: 5 }}>
-          <Skeleton 
-            variant="text" 
-            width={200} 
+        <Stack alignItems='center' spacing={2} sx={{ mb: 5 }}>
+          <Skeleton
+            variant='text'
+            width={200}
             height={60}
             sx={{ fontSize: '2rem' }}
           />
-          <Skeleton 
-            variant="text" 
-            width={400} 
+          <Skeleton
+            variant='text'
+            width={400}
             height={30}
             sx={{ fontSize: '1.25rem' }}
           />
@@ -59,32 +59,32 @@ export default function DashboardLoading() {
           }}
         >
           {[...Array(8)].map((_, index) => (
-            <Card 
+            <Card
               key={index}
-              sx={{ 
+              sx={{
                 p: 3,
                 height: 200,
                 display: 'flex',
                 flexDirection: 'column',
-                justifyContent: 'space-between'
+                justifyContent: 'space-between',
               }}
             >
               <Stack spacing={2}>
-                <Skeleton variant="circular" width={48} height={48} />
-                <Skeleton variant="text" width="80%" height={24} />
-                <Skeleton variant="text" width="60%" height={20} />
+                <Skeleton variant='circular' width={48} height={48} />
+                <Skeleton variant='text' width='80%' height={24} />
+                <Skeleton variant='text' width='60%' height={20} />
               </Stack>
-              <Skeleton variant="rectangular" width="100%" height={32} />
+              <Skeleton variant='rectangular' width='100%' height={32} />
             </Card>
           ))}
         </Box>
 
         {/* Loading indicator */}
         <Box sx={{ mt: 4 }}>
-          <LoadingComponent 
-            variant="circular" 
-            message="Đang tải dashboard..." 
-            size="medium"
+          <LoadingComponent
+            variant='circular'
+            message='Đang tải dashboard...'
+            size='medium'
           />
         </Box>
       </Container>

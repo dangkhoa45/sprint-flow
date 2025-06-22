@@ -1,12 +1,14 @@
 {
   "name": "web",
   "version": "0.1.0",
+  "description": "Next.js frontend for SprintFlow project management platform",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint --ignore-path ./.eslintignore",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@date-io/date-fns": "^3.2.1",

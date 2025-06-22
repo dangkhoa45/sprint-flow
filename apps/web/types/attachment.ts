@@ -1,14 +1,14 @@
-import { BaseObject } from "./shared";
-import { User } from "./user";
+import { BaseObject } from './shared';
+import { User } from './user';
 
 export enum AttachmentType {
-  DOCUMENT = "document",
-  IMAGE = "image",
-  VIDEO = "video",
-  AUDIO = "audio",
-  ARCHIVE = "archive",
-  PDF = "pdf",
-  OTHER = "other"
+  DOCUMENT = 'document',
+  IMAGE = 'image',
+  VIDEO = 'video',
+  AUDIO = 'audio',
+  ARCHIVE = 'archive',
+  PDF = 'pdf',
+  OTHER = 'other',
 }
 
 export interface Attachment extends BaseObject {
@@ -55,4 +55,4 @@ export interface FileUploadProgress {
   total: number;
   percentage: number;
   filename: string;
-} 
+}

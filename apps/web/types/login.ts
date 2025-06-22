@@ -1,25 +1,27 @@
-import { User } from "./user";
+import { User } from './user';
 
-export type LoginPayload = {
+export interface LoginPayload {
   username: string;
   password: string;
-};
+}
 
-export type LoginResponse = {
-  user: Pick<User, "_id" | "username" | "displayName" | "tel">;
+export interface LoginResponse {
+  user: Pick<User, '_id' | 'username' | 'displayName' | 'tel'>;
   token: string;
-};
+}
 
-export type LoginApiResponse = {
-  success: true;
-  user: User;
-  accessToken: string;
-} | {
-  success: false;
-  error: string;
-};
+export type LoginApiResponse =
+  | {
+      success: true;
+      user: User;
+      accessToken: string;
+    }
+  | {
+      success: false;
+      error: string;
+    };
 
-export type ErrorResponse = {
+export interface ErrorResponse {
   message: string;
   statusCode: number;
-};
+}

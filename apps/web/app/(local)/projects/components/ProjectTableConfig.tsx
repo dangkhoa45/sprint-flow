@@ -1,27 +1,27 @@
-"use client";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import Avatar from "@mui/material/Avatar";
-import AvatarGroup from "@mui/material/AvatarGroup";
-import Box from "@mui/material/Box";
-import Chip from "@mui/material/Chip";
-import LinearProgress from "@mui/material/LinearProgress";
-import { Theme } from "@mui/material/styles";
-import Typography from "@mui/material/Typography";
+'use client';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import Avatar from '@mui/material/Avatar';
+import AvatarGroup from '@mui/material/AvatarGroup';
+import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
+import LinearProgress from '@mui/material/LinearProgress';
+import { Theme } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
 import {
   GridActionsCellItem,
   GridColDef,
   GridRowsProp,
-} from "@mui/x-data-grid";
-import { Project } from "@/types/project";
+} from '@mui/x-data-grid';
+import { Project } from '@/types/project';
 import {
   getStatusColor,
   getStatusText,
   getPriorityColor,
   getPriorityText,
-} from "@/utils/projectHelpers";
-import { formatDateVN } from "@/utils/time";
+} from '@/utils/projectHelpers';
+import { formatDateVN } from '@/utils/time';
 
 interface ProjectTableConfigProps {
   theme: Theme;
@@ -38,19 +38,19 @@ export const useProjectTableConfig = ({
 }: ProjectTableConfigProps) => {
   const columns: GridColDef[] = [
     {
-      field: "name",
-      headerName: "Tên dự án",
+      field: 'name',
+      headerName: 'Tên dự án',
       flex: 2,
       minWidth: 250,
-      renderCell: (params) => (
+      renderCell: params => (
         <Box>
-          <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 0.5 }}>
+          <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 0.5 }}>
             {params.row.name}
           </Typography>
           <Typography
-            variant="body2"
-            color="text.secondary"
-            sx={{ fontSize: "0.875rem" }}
+            variant='body2'
+            color='text.secondary'
+            sx={{ fontSize: '0.875rem' }}
           >
             {params.row.description}
           </Typography>
@@ -58,14 +58,14 @@ export const useProjectTableConfig = ({
       ),
     },
     {
-      field: "status",
-      headerName: "Trạng thái",
+      field: 'status',
+      headerName: 'Trạng thái',
       flex: 0.8,
       minWidth: 140,
-      renderCell: (params) => (
+      renderCell: params => (
         <Chip
           label={getStatusText(params.value)}
-          size="small"
+          size='small'
           sx={{
             backgroundColor: `${getStatusColor(params.value)}15`,
             color: getStatusColor(params.value),
@@ -75,14 +75,14 @@ export const useProjectTableConfig = ({
       ),
     },
     {
-      field: "priority",
-      headerName: "Độ ưu tiên",
+      field: 'priority',
+      headerName: 'Độ ưu tiên',
       flex: 0.7,
       minWidth: 130,
-      renderCell: (params) => (
+      renderCell: params => (
         <Chip
           label={getPriorityText(params.value)}
-          size="small"
+          size='small'
           sx={{
             backgroundColor: `${getPriorityColor(params.value)}15`,
             color: getPriorityColor(params.value),
@@ -92,61 +92,61 @@ export const useProjectTableConfig = ({
       ),
     },
     {
-      field: "progress",
-      headerName: "Tiến độ",
+      field: 'progress',
+      headerName: 'Tiến độ',
       flex: 1,
       minWidth: 150,
-      renderCell: (params) => (
+      renderCell: params => (
         <Box
-          sx={{ display: "flex", alignItems: "center", gap: 1, width: "100%" }}
+          sx={{ display: 'flex', alignItems: 'center', gap: 1, width: '100%' }}
         >
           <LinearProgress
-            variant="determinate"
+            variant='determinate'
             value={params.value}
             sx={{
               flex: 1,
               height: 6,
               borderRadius: 3,
               backgroundColor: `${getStatusColor(params.row.status)}15`,
-              "& .MuiLinearProgress-bar": {
+              '& .MuiLinearProgress-bar': {
                 backgroundColor: getStatusColor(params.row.status),
                 borderRadius: 3,
               },
             }}
           />
-          <Typography variant="body2" sx={{ fontWeight: 500, minWidth: 35 }}>
+          <Typography variant='body2' sx={{ fontWeight: 500, minWidth: 35 }}>
             {params.value}%
           </Typography>
         </Box>
       ),
     },
     {
-      field: "owner",
-      headerName: "Chủ sở hữu",
+      field: 'owner',
+      headerName: 'Chủ sở hữu',
       flex: 1.2,
       minWidth: 180,
-      renderCell: (params) => (
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+      renderCell: params => (
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Avatar src={params.value.avatar} sx={{ width: 32, height: 32 }}>
             {params.value.displayName.charAt(0)}
           </Avatar>
-          <Typography variant="body2">{params.value.displayName}</Typography>
+          <Typography variant='body2'>{params.value.displayName}</Typography>
         </Box>
       ),
     },
     {
-      field: "members",
-      headerName: "Thành viên",
+      field: 'members',
+      headerName: 'Thành viên',
       flex: 0.8,
       minWidth: 120,
-      renderCell: (params) => (
+      renderCell: params => (
         <AvatarGroup
           max={3}
           sx={{
-            "& .MuiAvatar-root": {
+            '& .MuiAvatar-root': {
               width: 28,
               height: 28,
-              fontSize: "0.75rem",
+              fontSize: '0.75rem',
               border: `2px solid ${theme.palette.background.paper}`,
             },
           }}
@@ -164,39 +164,39 @@ export const useProjectTableConfig = ({
       ),
     },
     {
-      field: "endDate",
-      headerName: "Ngày kết thúc",
+      field: 'endDate',
+      headerName: 'Ngày kết thúc',
       flex: 0.8,
       minWidth: 130,
-      renderCell: (params) => (
-        <Typography variant="body2">
-          {params.value ? formatDateVN(params.value) : "-"}
+      renderCell: params => (
+        <Typography variant='body2'>
+          {params.value ? formatDateVN(params.value) : '-'}
         </Typography>
       ),
     },
     {
-      field: "actions",
-      type: "actions",
-      headerName: "Thao tác",
+      field: 'actions',
+      type: 'actions',
+      headerName: 'Thao tác',
       flex: 0.8,
       minWidth: 120,
-      getActions: (params) => [
+      getActions: params => [
         <GridActionsCellItem
-          key="view"
+          key='view'
           icon={<VisibilityIcon />}
-          label="Xem chi tiết"
+          label='Xem chi tiết'
           onClick={() => onViewAction(params.id as string)}
         />,
         <GridActionsCellItem
-          key="edit"
+          key='edit'
           icon={<EditIcon />}
-          label="Chỉnh sửa"
+          label='Chỉnh sửa'
           onClick={() => onEditAction(params.id as string)}
         />,
         <GridActionsCellItem
-          key="delete"
+          key='delete'
           icon={<DeleteIcon />}
-          label="Xóa"
+          label='Xóa'
           onClick={() => onDeleteAction(params.id as string)}
         />,
       ],
@@ -204,7 +204,7 @@ export const useProjectTableConfig = ({
   ];
 
   const mapProjectsToRows = (projects: Project[]): GridRowsProp => {
-    return projects.map((project) => ({
+    return projects.map(project => ({
       id: project._id,
       name: project.name,
       description: project.description,

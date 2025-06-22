@@ -1,10 +1,10 @@
-"use client";
+'use client';
 import { ToastContainer as ReactToastifyContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 export const ToastContainer = () => (
   <ReactToastifyContainer
-    position="top-right"
+    position='top-right'
     autoClose={3000}
     hideProgressBar={false}
     newestOnTop={false}
@@ -13,6 +13,6 @@ export const ToastContainer = () => (
     pauseOnFocusLoss
     draggable
     pauseOnHover
-    theme="colored"
+    theme='colored'
   />
 );

@@ -1,38 +1,38 @@
-import { AttachmentType } from "../types/attachment";
+import { AttachmentType } from '../types/attachment';
 
 export const getAttachmentTypeColor = (type: AttachmentType): string => {
   switch (type) {
     case AttachmentType.DOCUMENT:
-      return "#3b82f6";
+      return '#3b82f6';
     case AttachmentType.IMAGE:
-      return "#10b981";
+      return '#10b981';
     case AttachmentType.VIDEO:
-      return "#8b5cf6";
+      return '#8b5cf6';
     case AttachmentType.AUDIO:
-      return "#f59e0b";
+      return '#f59e0b';
     case AttachmentType.ARCHIVE:
-      return "#f97316";
+      return '#f97316';
     case AttachmentType.OTHER:
-      return "#64748b";
+      return '#64748b';
     default:
-      return "#64748b";
+      return '#64748b';
   }
 };
 
 export const getAttachmentTypeText = (type: AttachmentType): string => {
   switch (type) {
     case AttachmentType.DOCUMENT:
-      return "Tài liệu";
+      return 'Tài liệu';
     case AttachmentType.IMAGE:
-      return "Hình ảnh";
+      return 'Hình ảnh';
     case AttachmentType.VIDEO:
-      return "Video";
+      return 'Video';
     case AttachmentType.AUDIO:
-      return "Âm thanh";
+      return 'Âm thanh';
     case AttachmentType.ARCHIVE:
-      return "Nén";
+      return 'Nén';
     case AttachmentType.OTHER:
-      return "Khác";
+      return 'Khác';
     default:
       return type;
   }
@@ -41,19 +41,19 @@ export const getAttachmentTypeText = (type: AttachmentType): string => {
 export const getAttachmentTypeIcon = (type: AttachmentType): string => {
   switch (type) {
     case AttachmentType.DOCUMENT:
-      return "📄";
+      return '📄';
     case AttachmentType.IMAGE:
-      return "🖼️";
+      return '🖼️';
     case AttachmentType.VIDEO:
-      return "🎥";
+      return '🎥';
     case AttachmentType.AUDIO:
-      return "🎵";
+      return '🎵';
     case AttachmentType.ARCHIVE:
-      return "📦";
+      return '📦';
     case AttachmentType.OTHER:
-      return "📎";
+      return '📎';
     default:
-      return "📎";
+      return '📎';
   }
 };
 
@@ -83,10 +83,22 @@ export const isArchiveFile = (filename: string): boolean => {
 
 export const isDocumentFile = (filename: string): boolean => {
   const ext = getFileExtension(filename);
-  return ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'rtf'].includes(ext);
+  return [
+    'pdf',
+    'doc',
+    'docx',
+    'xls',
+    'xlsx',
+    'ppt',
+    'pptx',
+    'txt',
+    'rtf',
+  ].includes(ext);
 };
 
-export const getAttachmentTypeFromFilename = (filename: string): AttachmentType => {
+export const getAttachmentTypeFromFilename = (
+  filename: string
+): AttachmentType => {
   if (isImageFile(filename)) return AttachmentType.IMAGE;
   if (isVideoFile(filename)) return AttachmentType.VIDEO;
   if (isAudioFile(filename)) return AttachmentType.AUDIO;
@@ -96,9 +108,9 @@ export const getAttachmentTypeFromFilename = (filename: string): AttachmentType 
 };
 
 export const formatFileSize = (bytes: number): string => {
-  if (bytes === 0) return "0 Bytes";
+  if (bytes === 0) return '0 Bytes';
   const k = 1024;
-  const sizes = ["Bytes", "KB", "MB", "GB"];
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
-}; 
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+};

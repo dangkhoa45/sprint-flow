@@ -1,5 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsOptional, IsEnum, IsDateString, IsNumber, IsArray, Min, IsMongoId } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsEnum,
+  IsDateString,
+  IsNumber,
+  IsArray,
+  Min,
+  IsMongoId,
+} from 'class-validator';
 import { TaskStatus, TaskPriority } from '../entities/task.entity';
 
 export class CreateTaskDto {
@@ -16,12 +25,20 @@ export class CreateTaskDto {
   @IsMongoId()
   projectId: string;
 
-  @ApiProperty({ description: 'Task status', enum: TaskStatus, default: TaskStatus.TODO })
+  @ApiProperty({
+    description: 'Task status',
+    enum: TaskStatus,
+    default: TaskStatus.TODO,
+  })
   @IsOptional()
   @IsEnum(TaskStatus)
   status?: TaskStatus;
 
-  @ApiProperty({ description: 'Task priority', enum: TaskPriority, default: TaskPriority.MEDIUM })
+  @ApiProperty({
+    description: 'Task priority',
+    enum: TaskPriority,
+    default: TaskPriority.MEDIUM,
+  })
   @IsOptional()
   @IsEnum(TaskPriority)
   priority?: TaskPriority;
@@ -47,4 +64,4 @@ export class CreateTaskDto {
   @IsArray()
   @IsString({ each: true })
   tags?: string[];
-} 
+}

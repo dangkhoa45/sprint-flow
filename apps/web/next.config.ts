@@ -1,4 +1,4 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   experimental: {
@@ -8,11 +8,11 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
 
-  distDir: ".next",
+  distDir: '.next',
   cleanDistDir: true,
   poweredByHeader: false,
   trailingSlash: false,
-  output: "standalone",
+  output: 'standalone',
 };
 
 export default nextConfig;

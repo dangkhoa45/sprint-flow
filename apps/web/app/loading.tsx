@@ -29,7 +29,7 @@ export default function Loading() {
           height: 3,
         }}
       />
-      
+
       {/* Main loading content */}
       <CircularProgress
         size={60}
@@ -39,10 +39,10 @@ export default function Loading() {
           mb: 3,
         }}
       />
-      
+
       <Typography
-        variant="h6"
-        color="text.primary"
+        variant='h6'
+        color='text.primary'
         sx={{
           mb: 1,
           fontWeight: 500,
@@ -50,10 +50,10 @@ export default function Loading() {
       >
         Đang tải...
       </Typography>
-      
+
       <Typography
-        variant="body2"
-        color="text.secondary"
+        variant='body2'
+        color='text.secondary'
         sx={{
           textAlign: 'center',
           maxWidth: 300,

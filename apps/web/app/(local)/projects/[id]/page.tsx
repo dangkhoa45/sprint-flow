@@ -1,19 +1,19 @@
-"use client";
-import { attachmentsApi } from "@/api/attachments";
-import { milestonesApi } from "@/api/milestones";
-import { projectsApi } from "@/api/projects";
-import { useToast } from "@/hooks/useToast";
-import { Attachment } from "@/types/attachment";
-import { Milestone } from "@/types/milestone";
-import { Project } from "@/types/project";
-import { useParams, useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
-import ProjectDetailWrapper from "../components/ProjectDetailWrapper";
-import ProjectError from "../components/ProjectError";
-import ProjectFormDialog from "../components/ProjectFormDialog";
-import ProjectHeader from "../components/ProjectHeader";
-import ProjectLoading from "../components/ProjectLoading";
-import ProjectTabs from "../components/ProjectTabs";
+'use client';
+import { attachmentsApi } from '@/api/attachments';
+import { milestonesApi } from '@/api/milestones';
+import { projectsApi } from '@/api/projects';
+import { useToast } from '@/hooks/useToast';
+import { Attachment } from '@/types/attachment';
+import { Milestone } from '@/types/milestone';
+import { Project } from '@/types/project';
+import { useParams, useRouter } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
+import ProjectDetailWrapper from '../components/ProjectDetailWrapper';
+import ProjectError from '../components/ProjectError';
+import ProjectFormDialog from '../components/ProjectFormDialog';
+import ProjectHeader from '../components/ProjectHeader';
+import ProjectLoading from '../components/ProjectLoading';
+import ProjectTabs from '../components/ProjectTabs';
 
 export default function ProjectDetailPage() {
   const params = useParams();
@@ -44,9 +44,9 @@ export default function ProjectDetailPage() {
       setMilestones(milestonesData);
       setAttachments(attachmentsData);
     } catch (err: unknown) {
-      console.error("Error fetching project data:", err);
+      console.error('Error fetching project data:', err);
       const errorMessage =
-        err instanceof Error ? err.message : "Không thể tải thông tin project";
+        err instanceof Error ? err.message : 'Không thể tải thông tin project';
       setError(errorMessage);
       toastError(errorMessage);
     } finally {
@@ -74,17 +74,14 @@ export default function ProjectDetailPage() {
       {loading ? (
         <ProjectLoading />
       ) : error || !project ? (
-        <ProjectError 
-          message={error || "Không tìm thấy project"} 
+        <ProjectError
+          message={error || 'Không tìm thấy project'}
           onRetry={fetchProjectData}
         />
       ) : (
         <>
-          <ProjectHeader 
-            project={project} 
-            onEdit={handleEditProject} 
-          />
-          
+          <ProjectHeader project={project} onEdit={handleEditProject} />
+
           <ProjectTabs
             project={project}
             milestones={milestones}
@@ -98,7 +95,7 @@ export default function ProjectDetailPage() {
             <ProjectFormDialog
               open={editDialogOpen}
               onClose={() => setEditDialogOpen(false)}
-              mode="edit"
+              mode='edit'
               project={project}
               mutate={handleEditSuccess}
             />

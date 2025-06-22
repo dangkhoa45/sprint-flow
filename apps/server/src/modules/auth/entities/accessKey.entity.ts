@@ -22,7 +22,7 @@ export class AccessKey extends BaseEntity {
 
   @Prop({ type: [String] })
   @ApiProperty()
-  maskDF?: Array<string>;
+  maskDF?: string[];
 
   @Prop()
   @ApiProperty()

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
@@ -24,23 +24,23 @@ export default function ThemeToggle() {
     setAnchorEl(null);
   };
 
-  const handleThemeSelect = (theme: "light" | "dark" | "system") => {
+  const handleThemeSelect = (theme: 'light' | 'dark' | 'system') => {
     setTheme(theme);
     handleClose();
   };
 
   const getIcon = () => {
-    if (mode === "system") {
+    if (mode === 'system') {
       return <SettingsBrightnessIcon />;
     }
-    return resolvedTheme === "dark" ? <Brightness4Icon /> : <Brightness7Icon />;
+    return resolvedTheme === 'dark' ? <Brightness4Icon /> : <Brightness7Icon />;
   };
 
   const getTooltip = () => {
-    if (mode === "system") {
+    if (mode === 'system') {
       return `System theme (${resolvedTheme})`;
     }
-    return `${resolvedTheme === "dark" ? "Dark" : "Light"} theme`;
+    return `${resolvedTheme === 'dark' ? 'Dark' : 'Light'} theme`;
   };
 
   return (
@@ -48,13 +48,13 @@ export default function ThemeToggle() {
       <Tooltip title={getTooltip()}>
         <IconButton
           onClick={handleClick}
-          color="inherit"
-          aria-label="theme toggle"
+          color='inherit'
+          aria-label='theme toggle'
           sx={{
             borderRadius: 2,
-            transition: "all 0.2s ease",
-            "&:hover": {
-              transform: "scale(1.05)",
+            transition: 'all 0.2s ease',
+            '&:hover': {
+              transform: 'scale(1.05)',
             },
           }}
         >
@@ -74,23 +74,23 @@ export default function ThemeToggle() {
           horizontal: 'right',
         }}
       >
-        <MenuItem 
-          onClick={() => handleThemeSelect("light")}
-          selected={mode === "light"}
+        <MenuItem
+          onClick={() => handleThemeSelect('light')}
+          selected={mode === 'light'}
         >
           <Brightness7Icon sx={{ mr: 1 }} />
           <Typography>Light</Typography>
         </MenuItem>
-        <MenuItem 
-          onClick={() => handleThemeSelect("dark")}
-          selected={mode === "dark"}
+        <MenuItem
+          onClick={() => handleThemeSelect('dark')}
+          selected={mode === 'dark'}
         >
           <Brightness4Icon sx={{ mr: 1 }} />
           <Typography>Dark</Typography>
         </MenuItem>
-        <MenuItem 
-          onClick={() => handleThemeSelect("system")}
-          selected={mode === "system"}
+        <MenuItem
+          onClick={() => handleThemeSelect('system')}
+          selected={mode === 'system'}
         >
           <SettingsBrightnessIcon sx={{ mr: 1 }} />
           <Typography>System</Typography>

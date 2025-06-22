@@ -1,7 +1,7 @@
-import useSWR from "swr";
-import { tasksApi } from "../api/tasks";
-import { TaskQueryDto } from "../types/task";
-import { ErrorResponse } from "../types/shared";
+import useSWR from 'swr';
+import { tasksApi } from '../api/tasks';
+import { TaskQueryDto } from '../types/task';
+import { ErrorResponse } from '../types/shared';
 
 // Hook để get danh sách tasks
 export function useTasks(query?: TaskQueryDto) {
@@ -96,4 +96,4 @@ export function useProjectTasks(projectId: string | null) {
     error: error as ErrorResponse,
     mutate,
   };
-} 
+}

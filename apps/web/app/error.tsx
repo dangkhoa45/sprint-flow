@@ -33,7 +33,7 @@ export default function Error({ error, reset }: ErrorProps) {
   };
 
   return (
-    <Container maxWidth="md">
+    <Container maxWidth='md'>
       <Box
         sx={{
           display: 'flex',
@@ -52,10 +52,10 @@ export default function Error({ error, reset }: ErrorProps) {
             mb: 3,
           }}
         />
-        
+
         <Typography
-          variant="h3"
-          component="h1"
+          variant='h3'
+          component='h1'
           gutterBottom
           sx={{
             fontWeight: 'bold',
@@ -64,14 +64,14 @@ export default function Error({ error, reset }: ErrorProps) {
         >
           Oops! Có lỗi xảy ra
         </Typography>
-        
+
         <Typography
-          variant="h6"
-          color="text.secondary"
+          variant='h6'
+          color='text.secondary'
           sx={{ mb: 4, maxWidth: 600 }}
         >
-          Ứng dụng đã gặp phải một lỗi không mong muốn. 
-          Vui lòng thử lại hoặc quay về trang chủ.
+          Ứng dụng đã gặp phải một lỗi không mong muốn. Vui lòng thử lại hoặc
+          quay về trang chủ.
         </Typography>
 
         {process.env.NODE_ENV === 'development' && (
@@ -88,8 +88,8 @@ export default function Error({ error, reset }: ErrorProps) {
             }}
           >
             <Typography
-              variant="caption"
-              color="text.secondary"
+              variant='caption'
+              color='text.secondary'
               sx={{ fontFamily: 'monospace' }}
             >
               {error.message}
@@ -97,32 +97,32 @@ export default function Error({ error, reset }: ErrorProps) {
           </Box>
         )}
 
-        <Stack direction="row" spacing={2}>
+        <Stack direction='row' spacing={2}>
           <Button
-            variant="contained"
-            color="primary"
+            variant='contained'
+            color='primary'
             onClick={reset}
             startIcon={<RefreshIcon />}
-            size="large"
+            size='large'
           >
             Thử lại
           </Button>
-          
+
           <Button
-            variant="outlined"
-            color="primary"
+            variant='outlined'
+            color='primary'
             onClick={handleGoHome}
             startIcon={<HomeIcon />}
-            size="large"
+            size='large'
           >
             Về trang chủ
           </Button>
-          
+
           <Button
-            variant="text"
-            color="primary"
+            variant='text'
+            color='primary'
             onClick={handleRefresh}
-            size="large"
+            size='large'
           >
             Tải lại trang
           </Button>

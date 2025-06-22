@@ -1,12 +1,12 @@
-import { BaseObject } from "./shared";
-import { User } from "./user";
+import { BaseObject } from './shared';
+import { User } from './user';
 
 export enum MilestoneStatus {
-  Pending = "Pending",
-  InProgress = "InProgress", 
-  Completed = "Completed",
-  Delayed = "Delayed",
-  Cancelled = "Cancelled",
+  Pending = 'Pending',
+  InProgress = 'InProgress',
+  Completed = 'Completed',
+  Delayed = 'Delayed',
+  Cancelled = 'Cancelled',
 }
 
 export interface Milestone extends BaseObject {
@@ -61,4 +61,4 @@ export interface MilestoneStats {
   overdue: number;
   dueThisWeek: number;
   dueNextWeek: number;
-} 
+}

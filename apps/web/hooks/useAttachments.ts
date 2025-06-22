@@ -1,6 +1,6 @@
-import { attachmentsApi } from "@/api/attachments";
-import { Attachment, AttachmentQueryDto } from "@/types/attachment";
-import useSWR from "swr";
+import { attachmentsApi } from '@/api/attachments';
+import { Attachment, AttachmentQueryDto } from '@/types/attachment';
+import useSWR from 'swr';
 
 export const useAttachments = (query?: AttachmentQueryDto) => {
   const { data, error, isLoading, mutate } = useSWR(
@@ -59,4 +59,4 @@ export const useAttachmentStats = (projectId?: string) => {
     error,
     mutate,
   };
-}; 
+};

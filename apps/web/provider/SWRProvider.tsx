@@ -1,12 +1,12 @@
-"use client";
-import { ReactNode } from "react";
-import { SWRConfig } from "swr";
-import { ErrorResponse } from "../types/shared";
-import { fetcher } from "../utils/fetcher";
+'use client';
+import { ReactNode } from 'react';
+import { SWRConfig } from 'swr';
+import { ErrorResponse } from '../types/shared';
+import { fetcher } from '../utils/fetcher';
 
-type Props = {
+interface Props {
   children: ReactNode;
-};
+}
 
 function SWRProvider({ children }: Props) {
   return (

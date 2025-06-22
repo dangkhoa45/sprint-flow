@@ -1,7 +1,7 @@
-import axios, { AxiosError, AxiosResponse } from "axios";
-import { ErrorResponse, FetchOptions } from "../types/shared";
-import { buildQueryString } from "./query";
-import axiosInstance from "./axiosConfig";
+import axios, { AxiosError, AxiosResponse } from 'axios';
+import { ErrorResponse, FetchOptions } from '../types/shared';
+import { buildQueryString } from './query';
+import axiosInstance from './axiosConfig';
 
 export async function fetcher<T = unknown>(options: FetchOptions): Promise<T> {
   let url = options.path;
@@ -13,23 +13,32 @@ export async function fetcher<T = unknown>(options: FetchOptions): Promise<T> {
 
   // Log URL, method, params
   if (typeof window !== 'undefined') {
-    console.log('[API CALL]', options.method || 'GET', url, options.params || '');
+    console.log(
+      '[API CALL]',
+      options.method || 'GET',
+      url,
+      options.params || ''
+    );
   }
 
   try {
     const response: AxiosResponse<T> = await axiosInstance({
       url,
-      method: options.method || "GET",
+      method: options.method || 'GET',
       timeout: options.timeout || 10000,
-      responseType: options.responseType || "json",
+      responseType: options.responseType || 'json',
       data: options.body,
       headers: options.headers,
-      onUploadProgress: options.onUploadProgress ? (progressEvent) => {
-        if (progressEvent.total) {
-          const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-          options.onUploadProgress!(progress);
-        }
-      } : undefined,
+      onUploadProgress: options.onUploadProgress
+        ? progressEvent => {
+            if (progressEvent.total) {
+              const progress = Math.round(
+                (progressEvent.loaded * 100) / progressEvent.total
+              );
+              options.onUploadProgress!(progress);
+            }
+          }
+        : undefined,
     });
 
     return response.data;
@@ -37,9 +46,9 @@ export async function fetcher<T = unknown>(options: FetchOptions): Promise<T> {
     if (axios.isAxiosError(error)) {
       const axiosError = error as AxiosError<ErrorResponse>;
       throw new Error(
-        (axiosError.response?.data.message as string) || "An error occurred"
+        (axiosError.response?.data.message as string) || 'An error occurred'
       );
     }
-    throw new Error("Unknown error occurred");
+    throw new Error('Unknown error occurred');
   }
 }

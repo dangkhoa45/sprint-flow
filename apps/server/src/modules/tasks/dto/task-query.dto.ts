@@ -1,19 +1,38 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsEnum, IsString, IsMongoId, IsDateString, IsNumber, Min } from 'class-validator';
+import {
+  IsOptional,
+  IsEnum,
+  IsString,
+  IsMongoId,
+  IsDateString,
+  IsNumber,
+  Min,
+} from 'class-validator';
 import { TaskStatus, TaskPriority } from '../entities/task.entity';
 
 export class TaskQueryDto {
-  @ApiProperty({ description: 'Search term for title and description', required: false })
+  @ApiProperty({
+    description: 'Search term for title and description',
+    required: false,
+  })
   @IsOptional()
   @IsString()
   search?: string;
 
-  @ApiProperty({ description: 'Task status filter', enum: TaskStatus, required: false })
+  @ApiProperty({
+    description: 'Task status filter',
+    enum: TaskStatus,
+    required: false,
+  })
   @IsOptional()
   @IsEnum(TaskStatus)
   status?: TaskStatus;
 
-  @ApiProperty({ description: 'Task priority filter', enum: TaskPriority, required: false })
+  @ApiProperty({
+    description: 'Task priority filter',
+    enum: TaskPriority,
+    required: false,
+  })
   @IsOptional()
   @IsEnum(TaskPriority)
   priority?: TaskPriority;
@@ -55,7 +74,11 @@ export class TaskQueryDto {
   @Min(1)
   limit?: number = 10;
 
-  @ApiProperty({ description: 'Sort field', required: false, default: 'createdAt' })
+  @ApiProperty({
+    description: 'Sort field',
+    required: false,
+    default: 'createdAt',
+  })
   @IsOptional()
   @IsString()
   sortBy?: string = 'createdAt';
@@ -64,4 +87,4 @@ export class TaskQueryDto {
   @IsOptional()
   @IsString()
   sortOrder?: 'asc' | 'desc' = 'desc';
-} 
+}

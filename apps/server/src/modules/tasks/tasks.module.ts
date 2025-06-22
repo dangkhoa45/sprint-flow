@@ -8,9 +8,7 @@ import { ProjectsModule } from '../projects/projects.module';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([
-      { name: Task.name, schema: TaskSchema },
-    ]),
+    MongooseModule.forFeature([{ name: Task.name, schema: TaskSchema }]),
     UsersModule,
     ProjectsModule,
   ],
@@ -18,4 +16,4 @@ import { ProjectsModule } from '../projects/projects.module';
   providers: [TasksService],
   exports: [TasksService],
 })
-export class TasksModule {} 
+export class TasksModule {}

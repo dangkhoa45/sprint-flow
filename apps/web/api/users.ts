@@ -1,9 +1,9 @@
-import { fetcher } from "@/utils/fetcher";
-import { User } from "@/types/user";
+import { fetcher } from '@/utils/fetcher';
+import { User } from '@/types/user';
 
 export const usersApi = {
   getUsers: async (): Promise<User[]> => {
-    return fetcher({ path: "/users" });
+    return fetcher({ path: '/users' });
   },
 
   getUserById: async (id: string): Promise<User> => {
@@ -13,7 +13,7 @@ export const usersApi = {
   updateUser: async (id: string, data: Partial<User>): Promise<User> => {
     return fetcher({
       path: `/users/${id}`,
-      method: "PUT",
+      method: 'PUT',
       body: JSON.stringify(data),
     });
   },
@@ -21,7 +21,7 @@ export const usersApi = {
   deleteUser: async (id: string): Promise<void> => {
     return fetcher({
       path: `/users/${id}`,
-      method: "DELETE",
+      method: 'DELETE',
     });
   },
-}; 
+};

@@ -1,6 +1,6 @@
-import { useRouter } from "next/navigation";
-import { useCallback, useState } from "react";
-import { useToast } from "./useToast";
+import { useRouter } from 'next/navigation';
+import { useCallback, useState } from 'react';
+import { useToast } from './useToast';
 
 interface UseLoadingStateOptions {
   onSuccess?: () => void;
@@ -27,7 +27,7 @@ export function useLoadingState(options: UseLoadingStateOptions = {}) {
   const execute = useCallback(
     async <T>(
       asyncFunction: () => Promise<T>,
-      successMessage = "Thao tác thành công"
+      successMessage = 'Thao tác thành công'
     ): Promise<T | null> => {
       try {
         setIsLoading(true);
@@ -48,11 +48,11 @@ export function useLoadingState(options: UseLoadingStateOptions = {}) {
         return result;
       } catch (err) {
         const error =
-          err instanceof Error ? err : new Error("Đã có lỗi xảy ra");
+          err instanceof Error ? err : new Error('Đã có lỗi xảy ra');
         setError(error);
 
         if (showErrorToast) {
-          toastError(error.message || "Đã có lỗi xảy ra");
+          toastError(error.message || 'Đã có lỗi xảy ra');
         }
 
         onError?.(error);

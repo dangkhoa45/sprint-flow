@@ -1,37 +1,37 @@
-"use client";
-import AppBar from "@mui/material/AppBar";
-import Avatar from "@mui/material/Avatar";
-import Badge from "@mui/material/Badge";
-import Box from "@mui/material/Box";
-import CircularProgress from "@mui/material/CircularProgress";
-import Divider from "@mui/material/Divider";
-import IconButton from "@mui/material/IconButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import { useTheme } from "@mui/material/styles";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
-import { useState } from "react";
-import { apiLogout } from "@/actions/apiLogout";
-import LogoutConfirmDialog from "@/components/LogoutConfirmDialog";
-import ThemeToggle from "@/components/ThemeToggle";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
-import { useThemeMode } from "@/provider/ThemeContext";
+'use client';
+import AppBar from '@mui/material/AppBar';
+import Avatar from '@mui/material/Avatar';
+import Badge from '@mui/material/Badge';
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import { useTheme } from '@mui/material/styles';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
+import { useState } from 'react';
+import { apiLogout } from '@/actions/apiLogout';
+import LogoutConfirmDialog from '@/components/LogoutConfirmDialog';
+import ThemeToggle from '@/components/ThemeToggle';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { useThemeMode } from '@/provider/ThemeContext';
 
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import ChatIcon from "@mui/icons-material/Chat";
-import LogoutIcon from "@mui/icons-material/Logout";
-import MenuIcon from "@mui/icons-material/Menu";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import PersonIcon from "@mui/icons-material/Person";
-import SecurityIcon from "@mui/icons-material/Security";
-import SettingsIcon from "@mui/icons-material/Settings";
-import DashboardIcon from "@mui/icons-material/Dashboard";
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import ChatIcon from '@mui/icons-material/Chat';
+import LogoutIcon from '@mui/icons-material/Logout';
+import MenuIcon from '@mui/icons-material/Menu';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import PersonIcon from '@mui/icons-material/Person';
+import SecurityIcon from '@mui/icons-material/Security';
+import SettingsIcon from '@mui/icons-material/Settings';
+import DashboardIcon from '@mui/icons-material/Dashboard';
 
 interface DashboardHeaderProps {
   onMenuClick?: () => void;
@@ -39,17 +39,21 @@ interface DashboardHeaderProps {
   isSidebarCollapsed?: boolean;
 }
 
-const DashboardHeader = ({ onMenuClick, onToggleSidebarCollapse, isSidebarCollapsed }: DashboardHeaderProps) => {
+const DashboardHeader = ({
+  onMenuClick,
+  onToggleSidebarCollapse,
+  isSidebarCollapsed,
+}: DashboardHeaderProps) => {
   const router = useRouter();
   const { user } = useCurrentUser();
   const theme = useTheme();
   const { resolvedTheme } = useThemeMode();
-  const isMobile = useMediaQuery(theme.breakpoints.down("lg"));
+  const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
-  const isDark = resolvedTheme === "dark";
+  const isDark = resolvedTheme === 'dark';
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -71,13 +75,13 @@ const DashboardHeader = ({ onMenuClick, onToggleSidebarCollapse, isSidebarCollap
 
       await apiLogout();
 
-      toast.success("Đăng xuất thành công!", { autoClose: 1000 });
+      toast.success('Đăng xuất thành công!', { autoClose: 1000 });
     } catch (error) {
-      console.error("Logout error:", error);
+      console.error('Logout error:', error);
       setIsLoggingOut(false);
 
       setTimeout(() => {
-        router.push("/login");
+        router.push('/login');
       }, 2000);
     }
   };
@@ -88,41 +92,46 @@ const DashboardHeader = ({ onMenuClick, onToggleSidebarCollapse, isSidebarCollap
 
   const handleProfileClick = () => {
     handleMenuClose();
-    router.push("/dashboard/profile");
+    router.push('/dashboard/profile');
   };
 
   const handleSettingsClick = () => {
     handleMenuClose();
-    router.push("/dashboard/settings");
+    router.push('/dashboard/settings');
   };
 
   const handleSecurityClick = () => {
     handleMenuClose();
-    router.push("/dashboard/security");
+    router.push('/dashboard/security');
   };
 
   return (
     <AppBar
-      position="sticky"
+      position='sticky'
       elevation={0}
       sx={{
         backgroundColor: theme.palette.background.paper,
         borderBottom: `1px solid ${theme.palette.divider}`,
-        boxShadow: "none",
+        boxShadow: 'none',
         zIndex: theme.zIndex.drawer + 1,
       }}
     >
       <Toolbar
-        sx={{ justifyContent: "space-between", py: 0.5, px: { xs: 1, md: 2 }, minHeight: 48 }}
+        sx={{
+          justifyContent: 'space-between',
+          py: 0.5,
+          px: { xs: 1, md: 2 },
+          minHeight: 48,
+        }}
       >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1.2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.2 }}>
           {isMobile && onMenuClick && (
             <IconButton
-              edge="start"
+              edge='start'
               onClick={onMenuClick}
               sx={{
                 color: theme.palette.text.primary,
-                "&:hover": {
+                '&:hover': {
                   backgroundColor: theme.palette.action.hover,
                 },
               }}
@@ -134,26 +143,30 @@ const DashboardHeader = ({ onMenuClick, onToggleSidebarCollapse, isSidebarCollap
           {/* Sidebar Collapse Toggle Icon (only on desktop) */}
           {!isMobile && onToggleSidebarCollapse && (
             <IconButton
-              edge="start"
+              edge='start'
               onClick={onToggleSidebarCollapse}
               sx={{
                 mx: 0.02,
                 color: theme.palette.text.primary,
-                "&:hover": {
+                '&:hover': {
                   backgroundColor: theme.palette.action.hover,
                 },
               }}
             >
-              <MenuIcon fontSize="small"/>
+              <MenuIcon fontSize='small' />
             </IconButton>
           )}
 
           {/* Logo và tên ứng dụng */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.7, ml: -0.5 }}>
-            <DashboardIcon sx={{ fontSize: 20, color: theme.palette.primary.main }} />
+          <Box
+            sx={{ display: 'flex', alignItems: 'center', gap: 0.7, ml: -0.5 }}
+          >
+            <DashboardIcon
+              sx={{ fontSize: 20, color: theme.palette.primary.main }}
+            />
             <Typography
-              variant="h6"
-              component="div"
+              variant='h6'
+              component='div'
               sx={{
                 fontWeight: 700,
                 color: theme.palette.text.primary,
@@ -167,7 +180,7 @@ const DashboardHeader = ({ onMenuClick, onToggleSidebarCollapse, isSidebarCollap
           </Box>
         </Box>
 
-        <Box sx={{ display: "flex", alignItems: "center", gap: 0.7 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.7 }}>
           <ThemeToggle />
 
           {/* <IconButton
@@ -238,11 +251,11 @@ const DashboardHeader = ({ onMenuClick, onToggleSidebarCollapse, isSidebarCollap
               p: 0.5,
               border: `1px solid ${theme.palette.divider}`,
               borderRadius: 2,
-              "&:hover": {
+              '&:hover': {
                 backgroundColor: theme.palette.action.hover,
                 borderColor: theme.palette.primary.main,
               },
-              transition: "all 0.2s ease",
+              transition: 'all 0.2s ease',
             }}
           >
             <Avatar
@@ -250,14 +263,14 @@ const DashboardHeader = ({ onMenuClick, onToggleSidebarCollapse, isSidebarCollap
                 width: 32,
                 height: 32,
                 backgroundColor: theme.palette.primary.main,
-                color: "white",
-                fontSize: "0.875rem",
+                color: 'white',
+                fontSize: '0.875rem',
                 fontWeight: 600,
               }}
               src={user?.avatar}
             >
               {user?.displayName?.charAt(0)?.toUpperCase() || (
-                <AccountCircleIcon fontSize="small" />
+                <AccountCircleIcon fontSize='small' />
               )}
             </Avatar>
           </IconButton>
@@ -266,8 +279,8 @@ const DashboardHeader = ({ onMenuClick, onToggleSidebarCollapse, isSidebarCollap
             anchorEl={anchorEl}
             open={Boolean(anchorEl)}
             onClose={handleMenuClose}
-            transformOrigin={{ horizontal: "right", vertical: "top" }}
-            anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             PaperProps={{
               sx: {
                 mt: 1,
@@ -275,12 +288,12 @@ const DashboardHeader = ({ onMenuClick, onToggleSidebarCollapse, isSidebarCollap
                 backgroundColor: theme.palette.background.paper,
                 border: `1px solid ${theme.palette.divider}`,
                 borderRadius: 2,
-                boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
-                "& .MuiMenuItem-root": {
+                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+                '& .MuiMenuItem-root': {
                   py: 1.5,
                   px: 2,
-                  fontSize: "0.875rem",
-                  "&:hover": {
+                  fontSize: '0.875rem',
+                  '&:hover': {
                     backgroundColor: theme.palette.action.hover,
                   },
                 },
@@ -289,21 +302,21 @@ const DashboardHeader = ({ onMenuClick, onToggleSidebarCollapse, isSidebarCollap
           >
             <MenuItem onClick={handleProfileClick}>
               <ListItemIcon sx={{ minWidth: 36 }}>
-                <PersonIcon sx={{ color: "#1976d2", fontSize: 20 }} />
+                <PersonIcon sx={{ color: '#1976d2', fontSize: 20 }} />
               </ListItemIcon>
-              <ListItemText primary="Hồ sơ cá nhân" />
+              <ListItemText primary='Hồ sơ cá nhân' />
             </MenuItem>
             <MenuItem onClick={handleSettingsClick}>
               <ListItemIcon sx={{ minWidth: 36 }}>
-                <SettingsIcon sx={{ color: "#616161", fontSize: 20 }} />
+                <SettingsIcon sx={{ color: '#616161', fontSize: 20 }} />
               </ListItemIcon>
-              <ListItemText primary="Cài đặt" />
+              <ListItemText primary='Cài đặt' />
             </MenuItem>
             <MenuItem onClick={handleSecurityClick}>
               <ListItemIcon sx={{ minWidth: 36 }}>
-                <SecurityIcon sx={{ color: "#2e7d32", fontSize: 20 }} />
+                <SecurityIcon sx={{ color: '#2e7d32', fontSize: 20 }} />
               </ListItemIcon>
-              <ListItemText primary="Bảo mật" />
+              <ListItemText primary='Bảo mật' />
             </MenuItem>
             <Divider sx={{ my: 0.5 }} />
             <MenuItem
@@ -311,7 +324,7 @@ const DashboardHeader = ({ onMenuClick, onToggleSidebarCollapse, isSidebarCollap
               disabled={isLoggingOut}
               sx={{
                 color: theme.palette.error.main,
-                "&:hover": {
+                '&:hover': {
                   backgroundColor: `${theme.palette.error.main}08`,
                 },
               }}
@@ -329,7 +342,7 @@ const DashboardHeader = ({ onMenuClick, onToggleSidebarCollapse, isSidebarCollap
                 )}
               </ListItemIcon>
               <ListItemText
-                primary={isLoggingOut ? "Đang đăng xuất..." : "Đăng xuất"}
+                primary={isLoggingOut ? 'Đang đăng xuất...' : 'Đăng xuất'}
               />
             </MenuItem>
           </Menu>
