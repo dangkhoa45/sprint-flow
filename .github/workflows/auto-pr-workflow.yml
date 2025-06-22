@@ -1,76 +1,36 @@
 name: Auto PR Creation & Issue Tracking
 
 on:
-  push:
-    branches: [main, develop]
-  issues:
-    types: [opened, edited, closed]
   issue_comment:
-    types: [created, edited]
+    types: [created]
 
 jobs:
-  # Job 1: Analyze commits and track progress
   track-progress:
     runs-on: ubuntu-latest
     name: Track Issue Progress
+    if: github.event.issue.pull_request == null && contains(github.event.comment.body, '/track')
     
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          
+        
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm'
           
       - name: Install dependencies
         run: |
           npm install @octokit/rest @actions/core
           
-      - name: Analyze recent commits
-        id: analyze-commits
+      - name: Run issue tracking script
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
         run: |
-          echo "Analyzing recent commits for issue references..."
-          
-          # Get commits from last 24 hours
-          COMMITS=$(git log --oneline --since="24 hours ago")
-          echo "Recent commits:"
-          echo "$COMMITS"
-          
-          # Extract issue numbers
-          ISSUE_NUMBERS=$(echo "$COMMITS" | grep -o '#[0-9]*' | sort -u | sed 's/#//' | tr '\n' ',' | sed 's/,$//')
-          
-          if [ -n "$ISSUE_NUMBERS" ]; then
-            echo "Found issue numbers: $ISSUE_NUMBERS"
-            echo "issue_numbers=$ISSUE_NUMBERS" >> $GITHUB_OUTPUT
-          else
-            echo "No issue numbers found"
-            echo "issue_numbers=" >> $GITHUB_OUTPUT
-          fi
-          
-      - name: Process each issue
-        if: steps.analyze-commits.outputs.issue_numbers != ''
-        run: |
-          echo "Processing issues: ${{ steps.analyze-commits.outputs.issue_numbers }}"
-          
-          # Split issue numbers and process each one
-          IFS=',' read -ra ISSUE_ARRAY <<< "${{ steps.analyze-commits.outputs.issue_numbers }}"
-          
-          for issue_num in "${ISSUE_ARRAY[@]}"; do
-            if [ -n "$issue_num" ]; then
-              echo "Processing issue #$issue_num"
-              
-              # Run the auto PR creator script
-              node scripts/auto-pr-creator.js \
-                --token "${{ secrets.GITHUB_TOKEN }}" \
-                --issue-number "$issue_num" \
-                --owner "${{ github.repository_owner }}" \
-                --repo "${{ github.event.repository.name }}"
-            fi
-          done
+          node scripts/auto-pr-creator.js
 
   # Job 2: Check issue completion and create PRs
   check-completion:

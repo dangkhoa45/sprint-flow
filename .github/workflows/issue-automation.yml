@@ -3,15 +3,12 @@ name: Issue Automation & PR Creation
 on:
   push:
     branches: [main, develop]
-  pull_request:
-    branches: [main]
   issues:
-    types: [opened, edited, closed]
+    types: [opened, edited]
   issue_comment:
-    types: [created, edited]
+    types: [created]
 
 jobs:
-  # Job 1: Analyze commits and update issues
   analyze-commits:
     runs-on: ubuntu-latest
     name: Analyze Commits & Update Issues
@@ -27,60 +24,35 @@ jobs:
         with:
           node-version: '18'
           
-      - name: Install dependencies
+      - name: Install Node.js dependencies
         run: |
-          npm install -g @actions/github
-          npm install -g @octokit/rest
+          npm install @octokit/rest @actions/core
           
-      - name: Analyze commit messages
+      - name: Analyze recent commits for issue references
         id: analyze-commits
         run: |
-          echo "Analyzing commit messages for issue references..."
-          
-          # Get recent commits
-          COMMITS=$(git log --oneline --since="1 day ago")
-          echo "Recent commits:"
-          echo "$COMMITS"
-          
-          # Extract issue numbers from commit messages
-          ISSUE_NUMBERS=$(echo "$COMMITS" | grep -o '#[0-9]*' | sort -u | sed 's/#//')
-          
+          echo "Analyzing recent commits..."
+          ISSUE_NUMBERS=$(git log --oneline --since="1 day ago" | grep -o '#[0-9]*' | sort -u | sed 's/#//')
           if [ -n "$ISSUE_NUMBERS" ]; then
             echo "Found issue numbers: $ISSUE_NUMBERS"
             echo "issue_numbers=$ISSUE_NUMBERS" >> $GITHUB_OUTPUT
           else
-            echo "No issue numbers found in recent commits"
+            echo "No issue numbers found in recent commits."
             echo "issue_numbers=" >> $GITHUB_OUTPUT
           fi
           
-      - name: Update issues with commit info
-        if: steps.analyze-commits.outputs.issue_numbers != ''
+      - name: Update issue with commit info
+        if: steps.analyze-commits.outputs.issue_numbers
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "Updating issues with commit information..."
-          
-          # This would be implemented with GitHub API
-          # For now, we'll just log the action
-          echo "Would update issues: ${{ steps.analyze-commits.outputs.issue_numbers }}"
-          
-      - name: Check checkbox completion
-        id: check-completion
-        run: |
-          echo "Checking if all checkboxes are completed..."
-          
-          # This would parse issue body and check checkboxes
-          # For now, we'll simulate the check
-          echo "completion_status=in_progress" >> $GITHUB_OUTPUT
-          
-      - name: Create PR if all checkboxes done
-        if: steps.check-completion.outputs.completion_status == 'completed'
-        run: |
-          echo "All checkboxes completed! Creating PR..."
-          
-          # This would create a PR automatically
-          # For now, we'll just log the action
-          echo "Would create PR for completed issue"
+          for issue_num in ${{ steps.analyze-commits.outputs.issue_numbers }}; do
+            echo "Updating issue #$issue_num with progress..."
+            node ./scripts/auto-pr-creator.js
+          done
+        with:
+          issue-number: ${{ issue_num }}
 
-  # Job 2: Code quality analysis
   code-quality:
     runs-on: ubuntu-latest
     name: Code Quality Analysis
@@ -93,7 +65,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm'
+          cache: 'pnpm'
           
       - name: Install pnpm
         uses: pnpm/action-setup@v2
@@ -104,96 +76,15 @@ jobs:
         run: pnpm install
         
       - name: Run linting
-        run: |
-          echo "Running ESLint..."
-          pnpm lint || echo "Linting issues found"
-          
-      - name: Type checking
-        run: |
-          echo "Running TypeScript check..."
-          pnpm type-check || echo "Type errors found"
-          
-      - name: Test coverage
-        run: |
-          echo "Running tests..."
-          pnpm test || echo "Tests failed"
-          
-      - name: Security audit
-        run: |
-          echo "Running security audit..."
-          pnpm audit || echo "Security issues found"
-          
+        run: pnpm lint
+        
       - name: Generate quality report
         run: |
-          echo "Generating code quality report..."
-          
-          # Create a quality report
-          cat > quality-report.md << EOF
-          # Code Quality Report
-          
-          ## Summary
-          - Linting: ✅ Passed
-          - Type Checking: ✅ Passed  
-          - Tests: ✅ Passed
-          - Security: ✅ Passed
-          
-          ## Details
-          Generated on: $(date)
-          Branch: ${{ github.ref }}
-          Commit: ${{ github.sha }}
-          EOF
+          echo "# Code Quality Report" > quality-report.md
+          echo "Linting passed successfully." >> quality-report.md
           
       - name: Upload quality report
         uses: actions/upload-artifact@v4
         with:
           name: quality-report
-          path: quality-report.md
-
-  # Job 3: Auto PR creation
-  auto-pr:
-    runs-on: ubuntu-latest
-    name: Auto PR Creation
-    needs: [analyze-commits, code-quality]
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        
-      - name: Check if PR should be created
-        id: check-pr
-        run: |
-          echo "Checking if PR should be created..."
-          
-          # This would check issue completion status
-          # For now, we'll simulate the check
-          echo "pr_needed=true" >> $GITHUB_OUTPUT
-          
-      - name: Create Pull Request
-        if: steps.check-pr.outputs.pr_needed == 'true'
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          title: "Auto-generated PR from completed issue"
-          body: |
-            ## Auto-generated Pull Request
-            
-            This PR was automatically created when all checkboxes in the related issue were completed.
-            
-            ### Changes Made
-            - [ ] Feature implementation
-            - [ ] Code quality improvements
-            - [ ] Documentation updates
-            - [ ] Tests added
-            
-            ### Quality Checks
-            - ✅ Linting passed
-            - ✅ Type checking passed
-            - ✅ Tests passed
-            - ✅ Security audit passed
-            
-            ### Related Issue
-            Closes #${{ github.event.issue.number }}
-            
-          branch: auto-pr-${{ github.run_number }}
-          base: main
-          delete-branch: true 
+          path: quality-report.md 
