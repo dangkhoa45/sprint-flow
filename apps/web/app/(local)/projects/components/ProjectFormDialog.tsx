@@ -77,8 +77,7 @@ const ProjectFormDialog = ({
       try {
         const users = await usersApi.getUsers();
         setAvailableMembers(users);
-      } catch (error) {
-        console.error(error);
+      } catch {
         toastError('Không thể tải danh sách thành viên');
       }
     };
@@ -153,6 +152,7 @@ const ProjectFormDialog = ({
     }));
   };
 
+
   const handleSubmit = async () => {
     if (!formData.name.trim()) {
       setFormError('Tên dự án là bắt buộc.');
@@ -195,10 +195,10 @@ const ProjectFormDialog = ({
       if (mutate) mutate();
       onClose();
     } catch (err) {
-      const error = err as ErrorResponse;
-      const message = Array.isArray(error.message) 
-        ? error.message.join(', ') 
-        : error.message || 'Đã có lỗi xảy ra. Vui lòng thử lại.';
+      const errorMessage = (err as ErrorResponse).message;
+      const message = Array.isArray(errorMessage)
+        ? errorMessage.join(', ')
+        : errorMessage || 'Đã có lỗi xảy ra. Vui lòng thử lại.';
       toastError(message);
       setFormError(message);
     } finally {
@@ -397,15 +397,6 @@ const ProjectFormDialog = ({
                     placeholder='Chọn thành viên'
                   />
                 )}
-                renderTags={(value, getTagProps) =>
-                  value.map((option, index) => (
-                    <Chip
-                      variant='outlined'
-                      label={option.displayName || option.email}
-                      {...getTagProps({ index })}
-                    />
-                  ))
-                }
                 isOptionEqualToValue={(option, value) =>
                   option._id === value._id
                 }
