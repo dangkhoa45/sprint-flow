@@ -5,6 +5,11 @@ import tseslint from 'typescript-eslint';
 import globals from 'globals';
 import reactHooks from 'eslint-plugin-react-hooks';
 import prettierPlugin from 'eslint-plugin-prettier';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export default tseslint.config(
   {
@@ -27,13 +32,16 @@ export default tseslint.config(
       ...tseslint.configs.stylisticTypeChecked,
     ],
     languageOptions: {
+      globals: {
+        ...globals.node,
+      },
       parserOptions: {
         project: [
           './tsconfig.json',
           './apps/server/tsconfig.json',
           './apps/web/tsconfig.json',
         ],
-        tsconfigRootDir: import.meta.dirname,
+        tsconfigRootDir: __dirname,
       },
     },
     rules: {
