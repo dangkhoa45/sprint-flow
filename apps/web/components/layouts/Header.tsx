@@ -1,59 +1,56 @@
 'use client';
-import AppBar from '@mui/material/AppBar';
-import Avatar from '@mui/material/Avatar';
-import Badge from '@mui/material/Badge';
-import Box from '@mui/material/Box';
-import CircularProgress from '@mui/material/CircularProgress';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
+import {
+  AppBar,
+  Avatar,
+  Box,
+  CircularProgress,
+  Divider,
+  IconButton,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
+  Toolbar,
+  Typography,
+  useMediaQuery,
+} from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import useMediaQuery from '@mui/material/useMediaQuery';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import LogoutIcon from '@mui/icons-material/Logout';
+import MenuIcon from '@mui/icons-material/Menu';
+import PersonIcon from '@mui/icons-material/Person';
+import SecurityIcon from '@mui/icons-material/Security';
+import SettingsIcon from '@mui/icons-material/Settings';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
-import { useState } from 'react';
 import { apiLogout } from '@/actions/apiLogout';
 import LogoutConfirmDialog from '@/components/LogoutConfirmDialog';
 import ThemeToggle from '@/components/ThemeToggle';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { useThemeMode } from '@/provider/ThemeContext';
-
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import ChatIcon from '@mui/icons-material/Chat';
-import LogoutIcon from '@mui/icons-material/Logout';
-import MenuIcon from '@mui/icons-material/Menu';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import PersonIcon from '@mui/icons-material/Person';
-import SecurityIcon from '@mui/icons-material/Security';
-import SettingsIcon from '@mui/icons-material/Settings';
-import DashboardIcon from '@mui/icons-material/Dashboard';
+import { log } from '@/utils/logger';
 
 interface DashboardHeaderProps {
   onMenuClick?: () => void;
   onToggleSidebarCollapse?: () => void;
-  isSidebarCollapsed?: boolean;
+  _isSidebarCollapsed?: boolean;
 }
 
 const DashboardHeader = ({
   onMenuClick,
   onToggleSidebarCollapse,
-  isSidebarCollapsed,
+  _isSidebarCollapsed,
 }: DashboardHeaderProps) => {
   const router = useRouter();
   const { user } = useCurrentUser();
   const theme = useTheme();
-  const { resolvedTheme } = useThemeMode();
+  const { resolvedTheme: _resolvedTheme } = useThemeMode();
   const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
-
-  const isDark = resolvedTheme === 'dark';
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -77,7 +74,10 @@ const DashboardHeader = ({
 
       toast.success('Đăng xuất thành công!', { autoClose: 1000 });
     } catch (error) {
-      console.error('Logout error:', error);
+      log(
+        'Logout error: ' +
+          (error instanceof Error ? error.message : String(error))
+      );
       setIsLoggingOut(false);
 
       setTimeout(() => {

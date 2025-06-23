@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { INTERNAL_API_HOST } from '../../../../config/env';
+import { log } from '@/utils/logger';
 
 export async function POST(request: NextRequest) {
   try {
@@ -36,7 +37,7 @@ export async function POST(request: NextRequest) {
       message: 'Password has been reset successfully.',
     });
   } catch (error) {
-    console.error('Reset password error:', error);
+    log('Reset password error:', error);
     return NextResponse.json(
       { message: 'Internal server error' },
       { status: 500 }

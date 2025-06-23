@@ -13,7 +13,7 @@ export enum SortOrder {
   Asc = 'asc',
 }
 
-export class BaseQuery<T = any> {
+export class BaseQuery<T> {
   @ApiProperty({ required: false })
   status?: string;
 
@@ -39,7 +39,7 @@ export class BaseQuery<T = any> {
   sortOrder?: SortOrder;
 }
 
-export class TimeFrameQuery<T = any> extends BaseQuery<T> {
+export class TimeFrameQuery<T> extends BaseQuery<T> {
   @ApiProperty({ required: false })
   startTime?: string;
 
@@ -52,3 +52,7 @@ export class TimeFrameQuery<T = any> extends BaseQuery<T> {
   @ApiProperty({ required: false })
   timeUnit?: 'year' | 'month' | 'week' | 'day' | 'hour' | 'minute';
 }
+
+// Type aliases for backward compatibility
+export type BaseQueryAny = BaseQuery<Record<string, unknown>>;
+export type TimeFrameQueryAny = TimeFrameQuery<Record<string, unknown>>;

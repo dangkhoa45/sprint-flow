@@ -10,18 +10,32 @@ export async function apiLogin(formData: FormData): Promise<LoginApiResponse> {
   const forwardIP = (await headers()).get('x-forwarded-for');
   const ua = (await headers()).get('user-agent');
   const host = (await headers()).get('host');
-  const isRemember = formData.get('remember');
 
-  const expiresDate = !isRemember
-    ? undefined
-    : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  // Safely extract and convert FormData values
+  const isRememberValue = formData.get('remember');
+  const usernameValue = formData.get('username');
+  const passwordValue = formData.get('password');
+
+  const isRememberStr =
+    isRememberValue instanceof File
+      ? 'false'
+      : String(isRememberValue || 'false');
+  const usernameStr =
+    usernameValue instanceof File ? '' : String(usernameValue || '');
+  const passwordStr =
+    passwordValue instanceof File ? '' : String(passwordValue || '');
+
+  const expiresDate =
+    isRememberStr === 'true'
+      ? new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+      : undefined;
 
   try {
     const response = await fetch(`${INTERNAL_API_HOST}/api/auth/login`, {
       method: 'POST',
       body: JSON.stringify({
-        username: formData.get('username'),
-        password: formData.get('password'),
+        username: usernameStr,
+        password: passwordStr,
       }),
       headers: {
         'content-type': 'application/json',
@@ -31,23 +45,22 @@ export async function apiLogin(formData: FormData): Promise<LoginApiResponse> {
       cache: 'no-cache',
     });
 
-    log(
-      `LOGIN >> ${formData.get('username')}: ${response.status} ${response.statusText}`
-    );
+    log(`LOGIN >> ${usernameStr}: ${response.status} ${response.statusText}`);
 
     const json = await response.json();
 
     if (response.ok && json.accessToken) {
       const cookieStore = cookies();
 
-      console.log('🍪 Setting cookies for host:', host);
-      console.log(
-        '🔑 Access token:',
-        json.accessToken.substring(0, 20) + '...'
+      log('🍪 Setting cookies for host: ' + (host || 'unknown'));
+      log(
+        '🔑 Access token: ' +
+          (json.accessToken as string).substring(0, 20) +
+          '...'
       );
 
-      if (isRemember) {
-        (await cookieStore).set(`${host}:re`, `${isRemember}`, {
+      if (isRememberStr === 'true') {
+        (await cookieStore).set(`${host}:re`, isRememberStr, {
           httpOnly: true,
           expires: expiresDate,
         });
@@ -65,7 +78,7 @@ export async function apiLogin(formData: FormData): Promise<LoginApiResponse> {
         expires: expiresDate,
       });
 
-      console.log('✅ Cookies set successfully');
+      log('✅ Cookies set successfully');
 
       // Return user data instead of redirecting
       return {
@@ -80,7 +93,10 @@ export async function apiLogin(formData: FormData): Promise<LoginApiResponse> {
       };
     }
   } catch (error) {
-    console.error('Login API error:', error);
+    log(
+      'Login API error: ' +
+        (error instanceof Error ? error.message : String(error))
+    );
     return {
       success: false,
       error: 'Không thể kết nối đến server. Vui lòng thử lại sau.',

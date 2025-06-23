@@ -50,9 +50,13 @@ export default function AppLayout({ children }: AppLayoutProps) {
   return (
     <>
       <DashboardHeader
-        onMenuClick={handleDrawerToggle}
-        onToggleSidebarCollapse={handleSidebarToggle}
-        isSidebarCollapsed={isSidebarCollapsed}
+        onMenuClick={() => {
+          // Mobile menu toggle functionality
+        }}
+        onToggleSidebarCollapse={() => {
+          // Sidebar collapse toggle functionality
+        }}
+        _isSidebarCollapsed={isSidebarCollapsed}
       />
       <Box sx={{ display: 'flex', minHeight: '100vh' }}>
         {/* Sidebar Navigation */}

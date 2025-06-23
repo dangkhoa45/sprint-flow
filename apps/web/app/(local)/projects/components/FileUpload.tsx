@@ -3,14 +3,15 @@ import { attachmentsApi } from '@/api/attachments';
 import { CreateAttachmentDto } from '@/types/attachment';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Chip from '@mui/material/Chip';
-import CircularProgress from '@mui/material/CircularProgress';
-import LinearProgress from '@mui/material/LinearProgress';
-import Paper from '@mui/material/Paper';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
+import {
+  Box,
+  Button,
+  CircularProgress,
+  LinearProgress,
+  Paper,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { useState } from 'react';
 import { useToast } from '@/hooks/useToast';
 import { formatFileSize } from '@/utils/attachmentHelpers';
