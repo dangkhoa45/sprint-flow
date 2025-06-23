@@ -1,13 +1,14 @@
-import { Prop } from '@nestjs/mongoose';
+import { Prop, Schema } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { Types } from 'mongoose';
-import { User } from 'src/modules/users/entities/user.entity';
 
 export enum BaseStatus {
   Normal = 'Normal',
   Deleted = 'Deleted',
   Failed = 'Failed',
 }
+
+@Schema()
 export abstract class BaseEntity {
   @ApiProperty()
   _id: Types.ObjectId;
@@ -29,9 +30,9 @@ export abstract class BaseEntity {
 
   @Prop({ type: Types.ObjectId, ref: 'User' })
   @ApiProperty()
-  updatedBy?: string | User;
+  updatedBy?: Types.ObjectId;
 
   @Prop({ type: Types.ObjectId, ref: 'User' })
   @ApiProperty()
-  createdBy?: string | User;
+  createdBy?: Types.ObjectId;
 }
