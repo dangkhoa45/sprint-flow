@@ -18,11 +18,12 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { useTheme } from '@mui/material/styles';
 import { useRouter } from 'next/navigation';
-import { toast } from 'react-toastify';
 import { useState } from 'react';
 import { apiLogin } from '../actions/apiLogin';
 import { useCurrentUser } from '../hooks/useCurrentUser';
 import { useThemeMode } from '../provider/ThemeContext';
+import { log } from '@/utils/logger';
+import { toast } from 'react-toastify';
 
 interface LoginFormProps {
   error?: string;
@@ -62,12 +63,11 @@ export default function LoginForm({ error }: LoginFormProps) {
           autoClose: 4000,
         });
       }
-    } catch (error) {
-      console.error('Đăng nhập thất bại:', error);
-      setLoginError('Có lỗi xảy ra khi đăng nhập. Vui lòng thử lại.');
-      toast.error('Có lỗi xảy ra khi đăng nhập. Vui lòng thử lại.', {
-        autoClose: 4000,
-      });
+    } catch (err: unknown) {
+      log('Login error:', err);
+      const errorMessage =
+        err instanceof Error ? err.message : 'Đăng nhập thất bại';
+      toast.error(errorMessage, { autoClose: 4000 });
     } finally {
       setIsLoading(false);
     }

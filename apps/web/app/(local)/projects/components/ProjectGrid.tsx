@@ -78,19 +78,20 @@ const ProjectGrid = ({
     handleMenuClose();
   };
 
-  const handleDeleteProject = async () => {
-    if (!selectedProject) return;
-
+  const handleDelete = async (project: Project) => {
     try {
-      await projectsApi.deleteProject(selectedProject._id);
+      await projectsApi.deleteProject(project._id);
       success('Xóa project thành công!');
       mutate?.();
     } catch (err: unknown) {
       const errorMessage =
-        err instanceof Error ? err.message : 'Không thể xóa project';
+        err instanceof Error ? err.message : 'Xóa project thất bại';
       toastError(errorMessage);
     }
-    handleMenuClose();
+  };
+
+  const handleDeleteWrapper = (project: Project) => {
+    void handleDelete(project);
   };
 
   const handleCardClick = (project: Project) => {
@@ -377,7 +378,11 @@ const ProjectGrid = ({
           </ListItemIcon>
           <ListItemText primary='Xem chi tiết' />
         </MenuItem>
-        <MenuItem onClick={handleDeleteProject}>
+        <MenuItem
+          onClick={() =>
+            selectedProject && handleDeleteWrapper(selectedProject)
+          }
+        >
           <ListItemIcon>
             <DeleteIcon fontSize='small' />
           </ListItemIcon>

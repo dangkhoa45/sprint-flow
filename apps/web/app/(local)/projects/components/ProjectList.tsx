@@ -42,20 +42,24 @@ const ProjectList = ({
   const handleDelete = async (id: string) => {
     try {
       await projectsApi.deleteProject(id);
-      success('Xóa dự án thành công!');
+      success('Xóa project thành công!');
       mutate();
     } catch (err: unknown) {
       const errorMessage =
-        err instanceof Error ? err.message : 'Xóa dự án thất bại';
+        err instanceof Error ? err.message : 'Xóa project thất bại';
       toastError(errorMessage);
     }
+  };
+
+  const handleDeleteWrapper = (id: string) => {
+    void handleDelete(id);
   };
 
   const { columns, mapProjectsToRows } = useProjectTableConfig({
     theme,
     onViewAction: handleView,
     onEditAction: handleEdit,
-    onDeleteAction: handleDelete,
+    onDeleteAction: handleDeleteWrapper,
   });
 
   const rows = mapProjectsToRows(projects);

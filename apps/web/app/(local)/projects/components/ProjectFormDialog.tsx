@@ -154,8 +154,8 @@ const ProjectFormDialog = ({
     }));
   };
 
-  const handleSubmit = async () => {
-    if (!formData.name.trim()) {
+  const handleSubmit = async (values: typeof formData) => {
+    if (!values.name.trim()) {
       setFormError('Tên dự án là bắt buộc.');
       return;
     }
@@ -164,25 +164,25 @@ const ProjectFormDialog = ({
 
     try {
       const basePayload = {
-        name: formData.name.trim(),
-        description: formData.description.trim() || undefined,
-        priority: formData.priority,
-        members: formData.members.length > 0 ? formData.members : undefined,
-        startDate: formData.startDate?.toISOString(),
-        endDate: formData.endDate?.toISOString(),
-        estimatedHours: formData.estimatedHours
-          ? Number(formData.estimatedHours)
+        name: values.name.trim(),
+        description: values.description.trim() || undefined,
+        priority: values.priority,
+        members: values.members.length > 0 ? values.members : undefined,
+        startDate: values.startDate?.toISOString(),
+        endDate: values.endDate?.toISOString(),
+        estimatedHours: values.estimatedHours
+          ? Number(values.estimatedHours)
           : undefined,
-        tags: formData.tags.length > 0 ? formData.tags : undefined,
+        tags: values.tags.length > 0 ? values.tags : undefined,
       };
 
       if (mode === 'edit' && project?._id) {
         const payload: UpdateProjectDto = {
           ...basePayload,
-          status: formData.status,
-          progress: formData.progress,
-          actualHours: formData.actualHours
-            ? Number(formData.actualHours)
+          status: values.status,
+          progress: values.progress,
+          actualHours: values.actualHours
+            ? Number(values.actualHours)
             : undefined,
         };
         await projectsApi.updateProject(project._id, payload);
@@ -205,6 +205,10 @@ const ProjectFormDialog = ({
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSubmitWrapper = (values: typeof formData) => {
+    void handleSubmit(values);
   };
 
   return (
@@ -441,7 +445,7 @@ const ProjectFormDialog = ({
       <DialogActions sx={{ p: '16px 24px' }}>
         <Button onClick={onClose}>Hủy</Button>
         <Button
-          onClick={handleSubmit}
+          onClick={() => handleSubmitWrapper(formData)}
           variant='contained'
           startIcon={<SaveIcon />}
           disabled={loading}

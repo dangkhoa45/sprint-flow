@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { ErrorType } from '../components/ErrorPage';
+import { log } from '@/utils/logger';
 
 interface ErrorState {
   hasError: boolean;
@@ -27,7 +28,7 @@ export function useErrorHandler() {
       });
 
       // Log error for debugging
-      console.error('Error handled:', errorObj);
+      log('Error handled:', errorObj);
 
       // You can add error reporting service here
       // Example: reportError(errorObj, type);
