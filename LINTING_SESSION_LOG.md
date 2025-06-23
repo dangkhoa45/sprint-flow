@@ -120,8 +120,10 @@
 - ✅ **Review Process:** Using standardized checklists
 
 ### Review Checklists Created
-- **General Code Review:** `docs/CODE_REVIEW_CHECKLIST.md`
-- **Linting-Specific Review:** `docs/LINTING_REVIEW_CHECKLIST.md`
+- **General Code Review:** `docs/reviews/templates/CODE_REVIEW_CHECKLIST.md`
+- **Linting-Specific Review:** `docs/reviews/templates/LINTING_REVIEW_CHECKLIST.md`
+- **Review System:** `docs/reviews/README.md` - Complete review management system
+- **Session Review:** `docs/reviews/sessions/2025-06-23-linting-phase-2.md` - Detailed review for this session
 - **Purpose:** Standardize review process for all future sessions
 
 ## Next Steps
