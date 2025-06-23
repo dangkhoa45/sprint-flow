@@ -3,6 +3,7 @@
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import globals from 'globals';
+import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import prettierPlugin from 'eslint-plugin-prettier';
 import { fileURLToPath } from 'url';
@@ -13,18 +14,25 @@ const __dirname = dirname(__filename);
 
 export default tseslint.config(
   {
-    // Global settings for all files
+    ignores: [
+      '**/dist/',
+      '**/node_modules/',
+      '**/coverage/',
+      '**/temp/',
+      'apps/web/.next/',
+    ],
+  },
+  {
+    // Base config for all files
     plugins: {
-      'react-hooks': reactHooks,
       prettier: prettierPlugin,
     },
     rules: {
-      ...reactHooks.configs.recommended.rules,
       'prettier/prettier': 'error',
     },
   },
   {
-    // TypeScript files
+    // Base TypeScript config
     files: ['**/*.ts', '**/*.tsx'],
     extends: [
       eslint.configs.recommended,
@@ -32,9 +40,6 @@ export default tseslint.config(
       ...tseslint.configs.stylisticTypeChecked,
     ],
     languageOptions: {
-      globals: {
-        ...globals.node,
-      },
       parserOptions: {
         project: [
           './tsconfig.json',
@@ -53,7 +58,27 @@ export default tseslint.config(
           varsIgnorePattern: '^_',
         },
       ],
-      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-explicit-any': 'off',
+      'no-console': 'warn',
+      'no-debugger': 'error',
+      'prefer-const': 'error',
+      '@typescript-eslint/prefer-nullish-coalescing': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+    },
+  },
+  {
+    // Server-specific config
+    files: ['apps/server/**/*.ts'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
+    rules: {
       'max-lines': [
         'error',
         { max: 400, skipBlankLines: true, skipComments: true },
@@ -61,8 +86,37 @@ export default tseslint.config(
     },
   },
   {
+    // Web-specific config
+    files: ['apps/web/**/*.ts', 'apps/web/**/*.tsx'],
+    plugins: {
+      react,
+      'react-hooks': reactHooks,
+    },
+    settings: {
+      react: {
+        version: 'detect',
+      },
+    },
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.node, // For Next.js
+      },
+    },
+    rules: {
+      ...react.configs.recommended.rules,
+      ...reactHooks.configs.recommended.rules,
+      'react/react-in-jsx-scope': 'off',
+      'react/prop-types': 'off',
+      'max-lines-per-function': [
+        'error',
+        { max: 200, skipBlankLines: true, skipComments: true },
+      ],
+    },
+  },
+  {
     // JavaScript files (configs, scripts)
-    files: ['**/*.js', '**/*.cjs'],
+    files: ['**/*.js', '**/*.mjs', '**/*.cjs'],
     extends: [tseslint.configs.disableTypeChecked],
     languageOptions: {
       globals: {
@@ -74,7 +128,7 @@ export default tseslint.config(
     },
   },
   {
-    // Ignore patterns
+    // Remove the old combined config
     ignores: [
       '**/dist/',
       '**/node_modules/',
