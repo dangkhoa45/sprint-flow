@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { Box, Button, Container, Typography, Stack } from '@mui/material';
 import { Warning, Home, Refresh } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
+import { log } from '@/utils/logger';
 
 interface GlobalErrorProps {
   error: Error & { digest?: string };
@@ -15,7 +16,7 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
 
   useEffect(() => {
     // Log the error to an error reporting service
-    console.error('Global Error:', error);
+    log('Global Error:', error);
   }, [error]);
 
   const handleGoHome = () => {

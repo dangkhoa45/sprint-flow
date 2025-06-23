@@ -65,16 +65,20 @@ const MilestoneList = ({
     setDialogOpen(true);
   };
 
-  const handleDeleteMilestone = async (milestone: Milestone) => {
+  const handleDelete = async (milestone: Milestone) => {
     try {
       await milestonesApi.deleteMilestone(milestone._id);
-      success('Xóa mốc công việc thành công!');
+      success('Xóa milestone thành công!');
       mutate();
     } catch (err: unknown) {
       const errorMessage =
-        err instanceof Error ? err.message : 'Xóa mốc công việc thất bại';
+        err instanceof Error ? err.message : 'Xóa milestone thất bại';
       toastError(errorMessage);
     }
+  };
+
+  const handleDeleteClick = (milestone: Milestone) => {
+    void handleDelete(milestone);
   };
 
   const handleMenuOpen = (
@@ -96,7 +100,7 @@ const MilestoneList = ({
     if (action === 'edit') {
       handleEditMilestone(selectedMilestoneForMenu);
     } else if (action === 'delete') {
-      handleDeleteMilestone(selectedMilestoneForMenu);
+      handleDeleteClick(selectedMilestoneForMenu);
     }
     handleMenuClose();
   };

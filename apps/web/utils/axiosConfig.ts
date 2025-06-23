@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { log } from './logger';
 
 const axiosInstance = axios.create({
   withCredentials: true,
@@ -6,6 +7,7 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   config => {
+    log(`Request: ${config.method?.toUpperCase()} ${config.url}`);
     if (typeof window !== 'undefined') {
       const cookies = document.cookie.split(';').reduce(
         (acc, cookie) => {
@@ -30,13 +32,18 @@ axiosInstance.interceptors.request.use(
     return config;
   },
   error => {
-    return Promise.reject(error);
+    log('Request error:', error);
+    return Promise.reject(new Error(error.message || 'Request failed'));
   }
 );
 
 axiosInstance.interceptors.response.use(
-  response => response,
+  response => {
+    log(`Response: ${response.status} ${response.config.url}`);
+    return response;
+  },
   error => {
+    log('Response error:', error);
     if (error.response?.status === 401) {
       console.log('🚨 401 Unauthorized - redirecting to login');
 
@@ -49,7 +56,7 @@ axiosInstance.interceptors.response.use(
         window.location.href = '/login';
       }
     }
-    return Promise.reject(error);
+    return Promise.reject(new Error(error.message || 'Response failed'));
   }
 );
 

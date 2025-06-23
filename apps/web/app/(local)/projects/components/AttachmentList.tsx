@@ -335,7 +335,7 @@ const FilePreview = ({
           rel='noopener noreferrer'
           underline='none'
         >
-          <IconButton sx={{ mr: 1 }}>
+          <IconButton sx={{ mr: 1 }} onClick={() => onDownload(attachment)}>
             <GetAppIcon />
           </IconButton>
           Tải xuống
@@ -392,6 +392,10 @@ const AttachmentList = ({ attachments, mutate }: AttachmentListProps) => {
     setSelectedAttachment(null);
   };
 
+  const handleDownloadWrapper = (attachment: Attachment) => {
+    void handleDownload(attachment);
+  };
+
   const sortedAttachments = [...attachments].sort(
     (a, b) =>
       new Date(b.createdAt as string).getTime() -
@@ -434,7 +438,7 @@ const AttachmentList = ({ attachments, mutate }: AttachmentListProps) => {
               <FilePreview
                 attachment={selectedAttachment}
                 onClose={handleClosePreview}
-                onDownload={handleDownload}
+                onDownload={handleDownloadWrapper}
               />
             </Grid>
           )}

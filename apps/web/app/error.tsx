@@ -10,6 +10,7 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import HomeIcon from '@mui/icons-material/Home';
 import { useRouter } from 'next/navigation';
+import { log } from '@/utils/logger';
 
 interface ErrorProps {
   error: Error & { digest?: string };
@@ -21,7 +22,7 @@ export default function Error({ error, reset }: ErrorProps) {
 
   useEffect(() => {
     // Log the error to an error reporting service
-    console.error('Application Error:', error);
+    log('Application Error:', error);
   }, [error]);
 
   const handleGoHome = () => {

@@ -2,6 +2,7 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 import { ErrorResponse, FetchOptions } from '../types/shared';
 import { buildQueryString } from './query';
 import axiosInstance from './axiosConfig';
+import { log } from './logger';
 
 export async function fetcher<T = unknown>(options: FetchOptions): Promise<T> {
   let url = options.path;
@@ -49,6 +50,7 @@ export async function fetcher<T = unknown>(options: FetchOptions): Promise<T> {
         (axiosError.response?.data.message as string) || 'An error occurred'
       );
     }
+    log('Unknown error occurred', error);
     throw new Error('Unknown error occurred');
   }
 }

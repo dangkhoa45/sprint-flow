@@ -21,15 +21,15 @@ export default function TasksPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
-    status: '' as TaskStatus | '',
-    priority: '' as TaskPriority | '',
+    status: '' as string,
+    priority: '' as string,
     projectId: '',
   });
 
   const { tasks, isLoading, error } = useTasks({
     search: searchQuery || undefined,
-    status: filters.status || undefined,
-    priority: filters.priority || undefined,
+    status: (filters.status as TaskStatus) || undefined,
+    priority: (filters.priority as TaskPriority) || undefined,
     projectId: filters.projectId || undefined,
   });
   const { stats } = useTaskStats();
