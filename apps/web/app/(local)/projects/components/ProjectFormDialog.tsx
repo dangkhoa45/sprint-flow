@@ -348,7 +348,7 @@ const ProjectFormDialog = ({
                 <Slider
                   value={formData.progress}
                   onChange={(_, value) =>
-                    setFormData(p => ({ ...p, progress: value as number }))
+                    setFormData(p => ({ ...p, progress: value }))
                   }
                   aria-labelledby='input-slider'
                   valueLabelDisplay='auto'

@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model } from 'mongoose';
 import { BaseService } from '../../shared/base.service';
-import { CreateSessionDto, UpdateSessionDto } from './dto';
+import { CreateSessionDto } from './dto/create-session';
+import { UpdateSessionDto } from './dto/update-session.dto';
 import { UserSession } from './entities/userSession.entity';
 
 @Injectable()

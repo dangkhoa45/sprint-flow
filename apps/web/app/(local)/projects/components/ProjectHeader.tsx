@@ -98,7 +98,7 @@ export default function ProjectHeader({ project, onEdit }: ProjectHeaderProps) {
       )}
 
       <Grid container spacing={2} sx={{ mb: 3 }}>
-        <Grid size={{ xs: 12, md: 'auto' }}>
+        <Grid size={{ xs: 12, md: 12 }}>
           <Chip
             label={`Trạng thái: ${getStatusText(project.status)}`}
             size='small'
@@ -114,7 +114,7 @@ export default function ProjectHeader({ project, onEdit }: ProjectHeaderProps) {
             }}
           />
         </Grid>
-        <Grid size={{ xs: 12, md: 'auto' }}>
+        <Grid size={{ xs: 12, md: 12 }}>
           <Chip
             label={`Độ ưu tiên: ${getProjectPriorityText(project.priority)}`}
             icon={<FlagIcon />}

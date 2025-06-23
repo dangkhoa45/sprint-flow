@@ -4,3 +4,6 @@ build
 .env
 .env.local
 apps/server/uploads/
+.cursor-rules
+WORKFLOW.md
+flow.sh

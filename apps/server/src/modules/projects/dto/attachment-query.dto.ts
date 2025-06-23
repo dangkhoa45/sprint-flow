@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsOptional, IsString } from 'class-validator';
 import { BaseQuery } from 'src/shared/base.input';
-import { AttachmentType } from '../entities/attachment.entity';
+import { AttachmentType, Attachment } from '../entities/attachment.entity';
 
-export class AttachmentQueryDto extends BaseQuery {
+export class AttachmentQueryDto extends BaseQuery<Attachment> {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()

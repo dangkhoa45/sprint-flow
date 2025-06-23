@@ -36,7 +36,7 @@ export class BaseController<
   }
 
   @Get()
-  @ApiQuery({ type: BaseQuery })
+  @ApiQuery({ type: BaseQuery<any> })
   @ApiOkResponse({ type: ListDataResponse<Data> })
   @ApiBadRequestResponse({ type: BadRequestResponse })
   async findAll(@Query() query: Data & BaseQuery<Data>) {
@@ -51,7 +51,7 @@ export class BaseController<
   }
 
   @Get('count')
-  @ApiQuery({ type: BaseQuery })
+  @ApiQuery({ type: BaseQuery<any> })
   @ApiOkResponse({ type: ListDataResponse<Data> })
   @ApiBadRequestResponse({ type: BadRequestResponse })
   countAll(@Query() query: Data & BaseQuery<Data>) {

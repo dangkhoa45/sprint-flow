@@ -61,15 +61,6 @@ const AttachmentCard = ({
     setAnchorEl(null);
   };
 
-  const _handleDownloadClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    // This is a placeholder. The actual download is handled by the preview component.
-    // We can't directly download here easily because the download logic is in the parent.
-    // For now, let's just log it. Or we can pass down the download handler.
-    // Let's defer this decision.
-    handleMenuClose();
-  };
-
   const handleDeleteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     onDelete(attachment);
@@ -416,10 +407,13 @@ const AttachmentList = ({ attachments, mutate }: AttachmentListProps) => {
         </Paper>
       ) : (
         <Grid container spacing={3}>
-          <Grid xs={12} md={selectedAttachment ? 8 : 12}>
+          <Grid size={{ xs: 12, md: selectedAttachment ? 8 : 12 }}>
             <Grid container spacing={2}>
               {sortedAttachments.map(attachment => (
-                <Grid key={attachment._id} xs={12} sm={6} md={4} lg={3}>
+                <Grid
+                  size={{ xs: 12, sm: 6, md: 4, lg: 3 }}
+                  key={attachment._id}
+                >
                   <AttachmentCard
                     attachment={attachment}
                     onPreview={handlePreview}
@@ -431,7 +425,7 @@ const AttachmentList = ({ attachments, mutate }: AttachmentListProps) => {
             </Grid>
           </Grid>
           {selectedAttachment && (
-            <Grid xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <FilePreview
                 attachment={selectedAttachment}
                 onClose={handleClosePreview}

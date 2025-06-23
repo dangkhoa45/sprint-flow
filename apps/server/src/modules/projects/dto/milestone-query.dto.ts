@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsOptional, IsString } from 'class-validator';
 import { BaseQuery } from 'src/shared/base.input';
-import { MilestoneStatus } from '../entities/milestone.entity';
+import { MilestoneStatus, Milestone } from '../entities/milestone.entity';
 
-export class MilestoneQueryDto extends BaseQuery {
+export class MilestoneQueryDto extends BaseQuery<Milestone> {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()

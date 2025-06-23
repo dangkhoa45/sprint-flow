@@ -133,7 +133,7 @@ export default function ProjectTabs({
 
       <TabPanel value={tabValue} index={3}>
         <Grid container spacing={4}>
-          <Grid xs={12}>
+          <Grid size={{ xs: 12 }}>
             <FileUpload
               projectId={projectId}
               onUploadSuccess={onDataRefresh}
@@ -141,7 +141,7 @@ export default function ProjectTabs({
               acceptedTypes={['*/*']}
             />
           </Grid>
-          <Grid xs={12}>
+          <Grid size={{ xs: 12 }}>
             <AttachmentList attachments={attachments} mutate={onDataRefresh} />
           </Grid>
         </Grid>

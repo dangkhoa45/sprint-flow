@@ -62,7 +62,6 @@ const InfoRow = ({
 
 export default function ProjectOverview({
   project,
-  _milestones,
   attachments,
 }: ProjectOverviewProps) {
   const formatDate = (dateString?: string) => {
@@ -83,7 +82,7 @@ export default function ProjectOverview({
   return (
     <Grid container spacing={3}>
       {/* Effort Info */}
-      <Grid xs={12} md={4}>
+      <Grid size={{ xs: 12, md: 4 }}>
         <InfoCard title='Thời gian'>
           <InfoRow
             label='Giờ dự kiến'
@@ -101,7 +100,7 @@ export default function ProjectOverview({
       </Grid>
 
       {/* Schedule Info */}
-      <Grid xs={12} md={4}>
+      <Grid size={{ xs: 12, md: 4 }}>
         <InfoCard title='Lịch trình'>
           <InfoRow label='Ngày bắt đầu' value={formatDate(project.startDate)} />
           <InfoRow label='Ngày kết thúc' value={formatDate(project.endDate)} />
@@ -110,7 +109,7 @@ export default function ProjectOverview({
       </Grid>
 
       {/* General Info */}
-      <Grid xs={12} md={4}>
+      <Grid size={{ xs: 12, md: 4 }}>
         <InfoCard title='Thông tin chung'>
           <InfoRow
             label='Chủ sở hữu'
@@ -126,7 +125,7 @@ export default function ProjectOverview({
 
       {/* Tags */}
       {project.tags && project.tags.length > 0 && (
-        <Grid xs={12}>
+        <Grid size={{ xs: 12 }}>
           <InfoCard title='Tags'>
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
               {project.tags.map(tag => (
