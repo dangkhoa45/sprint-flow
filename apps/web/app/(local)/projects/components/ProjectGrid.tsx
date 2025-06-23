@@ -82,7 +82,7 @@ const ProjectGrid = ({
     try {
       await projectsApi.deleteProject(project._id);
       success('Xóa project thành công!');
-      mutate();
+      mutate?.();
     } catch (err: unknown) {
       const errorMessage =
         err instanceof Error ? err.message : 'Xóa project thất bại';

@@ -3,6 +3,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './entities/user.entity';
 import { UserSession, UserSessionSchema } from './entities/userSession.entity';
 import { UserSessionsService } from './user-sessions.service';
+import { SessionStatisticsService } from './session-statistics.service';
+import { SessionAggregationService } from './session-aggregation.service';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 
@@ -14,7 +16,18 @@ import { UsersService } from './users.service';
     ]),
   ],
   controllers: [UsersController],
-  providers: [UsersService, UserSessionsService],
-  exports: [UsersService, UserSessionsService, MongooseModule],
+  providers: [
+    UsersService,
+    UserSessionsService,
+    SessionStatisticsService,
+    SessionAggregationService,
+  ],
+  exports: [
+    UsersService,
+    UserSessionsService,
+    SessionStatisticsService,
+    SessionAggregationService,
+    MongooseModule,
+  ],
 })
 export class UsersModule {}

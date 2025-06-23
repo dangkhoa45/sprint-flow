@@ -44,7 +44,6 @@ export default function ProjectDetailPage() {
       setMilestones(milestonesData);
       setAttachments(attachmentsData);
     } catch (err: unknown) {
-      console.error('Error fetching project data:', err);
       const errorMessage =
         err instanceof Error ? err.message : 'Không thể tải thông tin project';
       setError(errorMessage);

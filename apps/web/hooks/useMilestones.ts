@@ -1,5 +1,5 @@
 import { milestonesApi } from '@/api/milestones';
-import { Milestone, MilestoneQueryDto } from '@/types/milestone';
+import { MilestoneQueryDto } from '@/types/milestone';
 import useSWR from 'swr';
 
 export const useMilestones = (query?: MilestoneQueryDto) => {

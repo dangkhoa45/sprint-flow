@@ -263,12 +263,12 @@ export const createAppTheme = (mode: PaletteMode) =>
       // Modern Card Component
       MuiCard: {
         styleOverrides: {
-          root: ({ theme }) => ({
+          root: ({ theme: _theme }) => ({
             boxShadow:
               mode === 'light'
                 ? '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)'
                 : '0 1px 3px 0 rgba(255, 255, 255, 0.1), 0 1px 2px 0 rgba(255, 255, 255, 0.06)',
-            border: `1px solid ${theme.palette.divider}`,
+            border: `1px solid ${_theme.palette.divider}`,
             borderRadius: 12,
             transition: 'all 0.2s ease-in-out',
             '&:hover': {

@@ -61,7 +61,7 @@ const AttachmentCard = ({
     setAnchorEl(null);
   };
 
-  const handleDownloadClick = (e: React.MouseEvent) => {
+  const _handleDownloadClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     // This is a placeholder. The actual download is handled by the preview component.
     // We can't directly download here easily because the download logic is in the parent.
@@ -180,7 +180,7 @@ const AttachmentCard = ({
         }}
       >
         {/* The download logic will be on the preview pane */}
-        {/* <MenuItem onClick={handleDownloadClick}>
+        {/* <MenuItem onClick={_handleDownloadClick}>
           <GetAppIcon fontSize="small" sx={{ mr: 1 }} />
           Tải xuống
         </MenuItem> */}
@@ -196,7 +196,7 @@ const AttachmentCard = ({
 const FilePreview = ({
   attachment,
   onClose,
-  onDownload,
+  onDownload: _onDownload,
 }: {
   attachment: Attachment;
   onClose: () => void;
@@ -335,7 +335,7 @@ const FilePreview = ({
           rel='noopener noreferrer'
           underline='none'
         >
-          <IconButton sx={{ mr: 1 }} onClick={() => onDownload(attachment)}>
+          <IconButton sx={{ mr: 1 }} onClick={() => _onDownload(attachment)}>
             <GetAppIcon />
           </IconButton>
           Tải xuống
@@ -350,7 +350,7 @@ const AttachmentList = ({ attachments, mutate }: AttachmentListProps) => {
   const [selectedAttachment, setSelectedAttachment] =
     useState<Attachment | null>(null);
 
-  const handleDownload = async (attachment: Attachment) => {
+  const _handleDownloadClick = async (attachment: Attachment) => {
     try {
       const blob = await attachmentsApi.downloadAttachment(attachment._id);
       const url = window.URL.createObjectURL(blob);
@@ -393,7 +393,7 @@ const AttachmentList = ({ attachments, mutate }: AttachmentListProps) => {
   };
 
   const handleDownloadWrapper = (attachment: Attachment) => {
-    void handleDownload(attachment);
+    void _handleDownloadClick(attachment);
   };
 
   const sortedAttachments = [...attachments].sort(
@@ -416,13 +416,10 @@ const AttachmentList = ({ attachments, mutate }: AttachmentListProps) => {
         </Paper>
       ) : (
         <Grid container spacing={3}>
-          <Grid size={{ xs: 12, md: selectedAttachment ? 7 : 12 }}>
+          <Grid xs={12} md={selectedAttachment ? 8 : 12}>
             <Grid container spacing={2}>
               {sortedAttachments.map(attachment => (
-                <Grid
-                  key={attachment._id}
-                  size={{ xs: 12, sm: 6, md: 4, lg: 3 }}
-                >
+                <Grid key={attachment._id} xs={12} sm={6} md={4} lg={3}>
                   <AttachmentCard
                     attachment={attachment}
                     onPreview={handlePreview}
@@ -434,7 +431,7 @@ const AttachmentList = ({ attachments, mutate }: AttachmentListProps) => {
             </Grid>
           </Grid>
           {selectedAttachment && (
-            <Grid size={{ xs: 12, md: 5 }}>
+            <Grid xs={12} md={4}>
               <FilePreview
                 attachment={selectedAttachment}
                 onClose={handleClosePreview}

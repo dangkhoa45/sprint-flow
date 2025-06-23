@@ -18,12 +18,12 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { useTheme } from '@mui/material/styles';
 import { useRouter } from 'next/navigation';
-import { toast } from 'react-toastify';
 import { useState } from 'react';
 import { apiLogin } from '../actions/apiLogin';
 import { useCurrentUser } from '../hooks/useCurrentUser';
 import { useThemeMode } from '../provider/ThemeContext';
 import { log } from '@/utils/logger';
+import { toast } from 'react-toastify';
 
 interface LoginFormProps {
   error?: string;

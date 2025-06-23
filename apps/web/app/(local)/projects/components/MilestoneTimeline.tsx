@@ -2,7 +2,6 @@
 import { Milestone, MilestoneStatus } from '@/types/milestone';
 import {
   getMilestoneStatusColor,
-  getMilestoneStatusIcon,
   getMilestoneStatusText,
   isMilestoneOverdue,
 } from '@/utils/milestoneHelpers';
@@ -10,26 +9,33 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CircleIcon from '@mui/icons-material/Circle';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import PersonIcon from '@mui/icons-material/Person';
-import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Chip from '@mui/material/Chip';
-import Divider from '@mui/material/Divider';
-import LinearProgress from '@mui/material/LinearProgress';
-import Paper from '@mui/material/Paper';
-import Typography from '@mui/material/Typography';
+import {
+  Box,
+  Card,
+  CardContent,
+  Chip,
+  LinearProgress,
+  Paper,
+  Typography,
+} from '@mui/material';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
+import { IconButton, Stack } from '@mui/material';
+import WarningIcon from '@mui/icons-material/Warning';
 
 interface MilestoneTimelineProps {
   milestones: Milestone[];
+  onMilestoneClick?: (_milestone: Milestone) => void;
 }
 
-const CustomChip = ({ onClick, ...props }: any) => {
+const CustomChip = ({ _onClick, ...props }: any) => {
   return <Chip {...props} />;
 };
 
-const MilestoneTimeline = ({ milestones }: MilestoneTimelineProps) => {
+const MilestoneTimeline = ({
+  milestones,
+  onMilestoneClick: _onMilestoneClick,
+}: MilestoneTimelineProps) => {
   const formatDate = (dateString: string) => {
     try {
       return format(new Date(dateString), 'dd/MM/yyyy', { locale: vi });
@@ -83,7 +89,7 @@ const MilestoneTimeline = ({ milestones }: MilestoneTimelineProps) => {
           }}
         />
 
-        {sortedMilestones.map((milestone, index) => (
+        {sortedMilestones.map((milestone, _index) => (
           <Box key={milestone._id} sx={{ position: 'relative', mb: 3 }}>
             {/* Timeline dot */}
             <Box

@@ -8,6 +8,8 @@ import Stack from '@mui/material/Stack';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import ErrorPage from '@/components/ErrorPage';
+import { log } from '@/utils/logger';
+
 interface DashboardErrorProps {
   error: Error & { digest?: string };
   reset: () => void;
@@ -17,7 +19,7 @@ export default function DashboardError({ error, reset }: DashboardErrorProps) {
   const router = useRouter();
 
   useEffect(() => {
-    console.error('Dashboard Error:', error);
+    log('Dashboard Error:', error);
   }, [error]);
 
   const handleGoHome = () => {

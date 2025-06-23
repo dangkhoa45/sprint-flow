@@ -3,9 +3,4 @@ dist
 build
 .env
 .env.local
-generate_issues.sh
-issues.json
-ROADMAP.md
 apps/server/uploads/
-testing/
-docs/

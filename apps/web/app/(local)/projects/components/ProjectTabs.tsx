@@ -8,7 +8,7 @@ import Card from '@mui/material/Card';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode } from 'react';
 import AttachmentList from './AttachmentList';
 import FileUpload from './FileUpload';
 import MilestoneList from './MilestoneList';
@@ -114,7 +114,7 @@ export default function ProjectTabs({
       <TabPanel value={tabValue} index={0}>
         <ProjectOverview
           project={project}
-          milestones={milestones}
+          _milestones={milestones}
           attachments={attachments}
         />
       </TabPanel>
@@ -133,7 +133,7 @@ export default function ProjectTabs({
 
       <TabPanel value={tabValue} index={3}>
         <Grid container spacing={4}>
-          <Grid size={{ xs: 12 }}>
+          <Grid xs={12}>
             <FileUpload
               projectId={projectId}
               onUploadSuccess={onDataRefresh}
@@ -141,7 +141,7 @@ export default function ProjectTabs({
               acceptedTypes={['*/*']}
             />
           </Grid>
-          <Grid size={{ xs: 12 }}>
+          <Grid xs={12}>
             <AttachmentList attachments={attachments} mutate={onDataRefresh} />
           </Grid>
         </Grid>

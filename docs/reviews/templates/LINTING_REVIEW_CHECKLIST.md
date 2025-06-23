@@ -221,4 +221,4 @@
 **Template Version:** 1.0  
 **Last Updated:** June 23, 2025
 
-- [ ] **Không được xóa bất kỳ file có đuôi .md** (tài liệu quan trọng, chỉ được cập nhật hoặc thêm mới khi cần thiết) 
+- [ ] **Không được xóa bất kỳ file có đuôi .md** (tài liệu quan trọng, chỉ được cập nhật hoặc thêm mới khi cần thiết)

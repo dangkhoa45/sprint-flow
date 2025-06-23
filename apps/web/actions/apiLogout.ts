@@ -3,6 +3,7 @@
 import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { INTERNAL_API_HOST } from '../config/env';
+import { log } from '../utils/logger';
 
 export async function apiLogout() {
   try {
@@ -29,12 +30,14 @@ export async function apiLogout() {
         });
 
         if (!response.ok) {
-          console.warn('Server logout failed with status:', response.status);
+          log('Server logout failed with status: ' + response.status);
         }
       } catch (serverError) {
-        console.warn(
-          'Server logout failed, continuing with client logout:',
-          serverError
+        log(
+          'Server logout failed, continuing with client logout: ' +
+            (serverError instanceof Error
+              ? serverError.message
+              : String(serverError))
         );
       }
     }
@@ -48,9 +51,12 @@ export async function apiLogout() {
     // Clear any other session-related cookies
     cookieStore.delete(`${host}:session`);
 
-    console.log('User logged out successfully');
+    log('User logged out successfully');
   } catch (error) {
-    console.error('Logout error:', error);
+    log(
+      'Logout error: ' +
+        (error instanceof Error ? error.message : String(error))
+    );
     // Even if there's an error, we should still try to clear cookies
     try {
       const host = (await headers()).get('host');
@@ -63,7 +69,12 @@ export async function apiLogout() {
         cookieStore.delete(`${host}:session`);
       }
     } catch (cleanupError) {
-      console.error('Cookie cleanup error:', cleanupError);
+      log(
+        'Cookie cleanup error: ' +
+          (cleanupError instanceof Error
+            ? cleanupError.message
+            : String(cleanupError))
+      );
     }
     throw error; // Re-throw to let the caller handle it
   }
