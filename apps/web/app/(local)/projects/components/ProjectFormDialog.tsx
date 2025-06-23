@@ -9,14 +9,14 @@ import {
   ProjectStatus,
   UpdateProjectDto,
 } from '@/types/project';
-import { User } from '@/types/user';
 import { ErrorResponse } from '@/types/shared';
+import { User } from '@/types/user';
 import {
   getProjectPriorityText,
   getProjectStatusText,
 } from '@/utils/projectHelpers';
 import SaveIcon from '@mui/icons-material/Save';
-import { Autocomplete, FormHelperText, Grid } from '@mui/material';
+import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
@@ -25,6 +25,8 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import FormControl from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText';
+import Grid from '@mui/material/Grid';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
@@ -152,7 +154,6 @@ const ProjectFormDialog = ({
     }));
   };
 
-
   const handleSubmit = async () => {
     if (!formData.name.trim()) {
       setFormError('Tên dự án là bắt buộc.');
@@ -213,7 +214,7 @@ const ProjectFormDialog = ({
       </DialogTitle>
       <DialogContent>
         <Grid container spacing={3} sx={{ pt: 1 }}>
-          <Grid size={{ xs: 12 }}>
+          <Grid item xs={12}>
             <TextField
               required
               fullWidth
@@ -225,7 +226,7 @@ const ProjectFormDialog = ({
             />
           </Grid>
 
-          <Grid size={{ xs: 12 }}>
+          <Grid item xs={12}>
             <TextField
               fullWidth
               label='Mô tả'
@@ -237,7 +238,7 @@ const ProjectFormDialog = ({
           </Grid>
 
           {mode === 'edit' && (
-            <Grid size={{ xs: 12, sm: 6 }}>
+            <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
                 <InputLabel id='status-select-label'>Trạng thái</InputLabel>
                 <Select
@@ -256,7 +257,7 @@ const ProjectFormDialog = ({
             </Grid>
           )}
 
-          <Grid size={{ xs: 12, sm: mode === 'edit' ? 6 : 12 }}>
+          <Grid item xs={12} sm={mode === 'edit' ? 6 : 12}>
             <FormControl fullWidth>
               <InputLabel id='priority-select-label'>Độ ưu tiên</InputLabel>
               <Select
@@ -281,7 +282,7 @@ const ProjectFormDialog = ({
             </FormControl>
           </Grid>
 
-          <Grid size={{ xs: 12, sm: 6 }}>
+          <Grid item xs={12} sm={6}>
             <LocalizationProvider
               dateAdapter={AdapterDateFns}
               adapterLocale={vi}
@@ -294,7 +295,7 @@ const ProjectFormDialog = ({
               />
             </LocalizationProvider>
           </Grid>
-          <Grid size={{ xs: 12, sm: 6 }}>
+          <Grid item xs={12} sm={6}>
             <LocalizationProvider
               dateAdapter={AdapterDateFns}
               adapterLocale={vi}
@@ -309,7 +310,7 @@ const ProjectFormDialog = ({
             </LocalizationProvider>
           </Grid>
 
-          <Grid size={{ xs: 12, sm: 6 }}>
+          <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               label='Ước tính giờ làm việc'
@@ -321,7 +322,7 @@ const ProjectFormDialog = ({
           </Grid>
           {mode === 'edit' && (
             <>
-              <Grid size={{ xs: 12, sm: 6 }}>
+              <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
                   label='Số giờ thực tế'
@@ -335,7 +336,7 @@ const ProjectFormDialog = ({
           )}
 
           {mode === 'edit' && (
-            <Grid size={{ xs: 12 }}>
+            <Grid item xs={12}>
               <Typography gutterBottom>
                 Tiến độ ({formData.progress}%)
               </Typography>
@@ -343,7 +344,7 @@ const ProjectFormDialog = ({
                 <Slider
                   value={formData.progress}
                   onChange={(_, value) =>
-                    setFormData(p => ({ ...p, progress: value }))
+                    setFormData(p => ({ ...p, progress: value as number }))
                   }
                   aria-labelledby='input-slider'
                   valueLabelDisplay='auto'
@@ -372,7 +373,7 @@ const ProjectFormDialog = ({
             </Grid>
           )}
 
-          <Grid size={{ xs: 12 }}>
+          <Grid item xs={12}>
             <FormControl fullWidth>
               <Autocomplete
                 multiple
@@ -403,7 +404,7 @@ const ProjectFormDialog = ({
               />
             </FormControl>
           </Grid>
-          <Grid size={{ xs: 12 }}>
+          <Grid item xs={12}>
             <Typography gutterBottom>Tags</Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
               <TextField
@@ -431,7 +432,7 @@ const ProjectFormDialog = ({
           </Grid>
 
           {formError && (
-            <Grid size={{ xs: 12 }}>
+            <Grid item xs={12}>
               <FormHelperText error>{formError}</FormHelperText>
             </Grid>
           )}
