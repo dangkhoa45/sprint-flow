@@ -1,4 +1,3 @@
-import { User } from '@api/modules/users/entities/user.entity';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { HydratedDocument, Types } from 'mongoose';
@@ -26,7 +25,11 @@ export class Milestone extends BaseEntity {
   @ApiProperty()
   projectId: Types.ObjectId;
 
-  @Prop({ type: String, enum: MilestoneStatus, default: MilestoneStatus.Pending })
+  @Prop({
+    type: String,
+    enum: MilestoneStatus,
+    default: MilestoneStatus.Pending,
+  })
   @ApiProperty({ enum: MilestoneStatus })
   status: MilestoneStatus;
 
@@ -49,14 +52,6 @@ export class Milestone extends BaseEntity {
   @Prop({ type: Object })
   @ApiProperty()
   metadata?: Record<string, any>;
-
-  @Prop({ type: Types.ObjectId, ref: 'User' })
-  @ApiProperty()
-  createdBy?: string | User;
-
-  @Prop({ type: Types.ObjectId, ref: 'User' })
-  @ApiProperty()
-  updatedBy?: string | User;
 }
 
 export type MilestoneDocument = HydratedDocument<Milestone>;
@@ -67,4 +62,4 @@ MilestoneSchema.index({ projectId: 1 });
 MilestoneSchema.index({ status: 1 });
 MilestoneSchema.index({ dueDate: 1 });
 MilestoneSchema.index({ assignedTo: 1 });
-MilestoneSchema.index({ createdAt: -1 }); 
+MilestoneSchema.index({ createdAt: -1 });

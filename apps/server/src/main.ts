@@ -2,12 +2,11 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import MongoStore from 'connect-mongo';
 import * as express from 'express';
 import * as session from 'express-session';
 import * as path from 'path';
 import { AppModule } from './app.module';
-
-const MongoStore = require('connect-mongo');
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -101,4 +100,7 @@ async function bootstrap() {
   await app.listen(8005);
 }
 
-bootstrap();
+bootstrap().catch(err => {
+  console.error('Error bootstrapping application:', err);
+  process.exit(1);
+});

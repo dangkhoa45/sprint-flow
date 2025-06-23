@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 export function jsonForm<T extends Record<string, unknown>>(
   form: HTMLFormElement
 ) {

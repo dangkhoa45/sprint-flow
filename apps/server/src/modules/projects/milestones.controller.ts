@@ -21,12 +21,9 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { CurrentUser } from 'src/decorators/current-user.decor';
-import { Roles } from 'src/decorators/roles.decor';
 import { BadRequestResponse } from 'src/shared/base.dto';
-import { TokenPayload } from '../auth/dto/tokenPayload';
 import { AuthGuard } from '../auth/auth.guard';
-import { RolesGuard } from '../auth/roles.guard';
-import { UserRole } from '../users/entities/user.entity';
+import { TokenPayload } from '../auth/dto/tokenPayload';
 import { CreateMilestoneDto } from './dto/create-milestone.dto';
 import { MilestoneQueryDto } from './dto/milestone-query.dto';
 import { UpdateMilestoneDto } from './dto/update-milestone.dto';
@@ -51,7 +48,11 @@ export class MilestonesController {
     @Body() createMilestoneDto: CreateMilestoneDto,
     @CurrentUser() user: TokenPayload,
   ): Promise<Milestone> {
-    return this.milestonesService.createMilestone(createMilestoneDto, projectId, user.sub);
+    return this.milestonesService.createMilestone(
+      createMilestoneDto,
+      projectId,
+      user.sub,
+    );
   }
 
   @Get()
@@ -94,11 +95,12 @@ export class MilestonesController {
   @ApiOkResponse({ type: Milestone })
   @ApiNotFoundResponse({ description: 'Milestone not found' })
   @ApiForbiddenResponse({ description: 'Access denied' })
-  async findOne(
-    @Param('id') id: string,
-    @CurrentUser() user: TokenPayload,
-  ): Promise<Milestone> {
-    return this.milestonesService.findById(id, ['assignedTo', 'createdBy', 'updatedBy']);
+  async findOne(@Param('id') id: string): Promise<Milestone> {
+    return await this.milestonesService.findById(id, [
+      'assignedTo',
+      'createdBy',
+      'updatedBy',
+    ]);
   }
 
   @Patch(':id')
@@ -112,7 +114,11 @@ export class MilestonesController {
     @Body() updateMilestoneDto: UpdateMilestoneDto,
     @CurrentUser() user: TokenPayload,
   ): Promise<Milestone> {
-    return this.milestonesService.updateWithAccess(id, updateMilestoneDto, user.sub, user.rol);
+    return this.milestonesService.updateWithAccess(
+      id,
+      updateMilestoneDto,
+      user.sub,
+    );
   }
 
   @Delete(':id')
@@ -138,7 +144,10 @@ export class MilestonesController {
     @CurrentUser() user: TokenPayload,
   ): Promise<Milestone[]> {
     const query: MilestoneQueryDto = { projectId };
-    const result = await this.milestonesService.findAllWithQuery(query, user.sub);
+    const result = await this.milestonesService.findAllWithQuery(
+      query,
+      user.sub,
+    );
     return result.data;
   }
-} 
+}

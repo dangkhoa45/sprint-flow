@@ -6,11 +6,11 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, Types } from 'mongoose';
 import { BaseService } from 'src/shared/base.service';
+import { User, UserRole } from '../users/entities/user.entity';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { ProjectQueryDto, ProjectStatsDto } from './dto/project-query.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
-import { Project, ProjectStatus, ProjectDocument } from './entities/project.entity';
-import { User, UserRole } from '../users/entities/user.entity';
+import { Project, ProjectStatus } from './entities/project.entity';
 
 @Injectable()
 export class ProjectsService extends BaseService<
@@ -36,7 +36,7 @@ export class ProjectsService extends BaseService<
       createdBy: new Types.ObjectId(userId),
       members: input.members?.map(id => new Types.ObjectId(id)) || [],
     };
-    return super.create(projectData as any);
+    return await super.create(projectData as any);
   }
 
   async findAllWithQuery(query: ProjectQueryDto, userId: string) {
@@ -108,7 +108,7 @@ export class ProjectsService extends BaseService<
     if (query.sortField && query.sortOrder) {
       sortOptions[query.sortField] = query.sortOrder === 'desc' ? -1 : 1;
     } else {
-      sortOptions['createdAt'] = -1;
+      sortOptions.createdAt = -1;
     }
 
     const aggregation: any = [
@@ -116,11 +116,39 @@ export class ProjectsService extends BaseService<
       { $sort: sortOptions },
       { $skip: query.offset || 0 },
       { $limit: query.limit || 10 },
-      { $lookup: { from: 'milestones', localField: '_id', foreignField: 'projectId', as: 'milestones' } },
-      { $lookup: { from: 'attachments', localField: '_id', foreignField: 'projectId', as: 'attachments' } },
-      { $lookup: { from: 'users', localField: 'owner', foreignField: '_id', as: 'owner' } },
+      {
+        $lookup: {
+          from: 'milestones',
+          localField: '_id',
+          foreignField: 'projectId',
+          as: 'milestones',
+        },
+      },
+      {
+        $lookup: {
+          from: 'attachments',
+          localField: '_id',
+          foreignField: 'projectId',
+          as: 'attachments',
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'owner',
+          foreignField: '_id',
+          as: 'owner',
+        },
+      },
       { $unwind: { path: '$owner', preserveNullAndEmptyArrays: true } },
-      { $lookup: { from: 'users', localField: 'members', foreignField: '_id', as: 'members' } },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'members',
+          foreignField: '_id',
+          as: 'members',
+        },
+      },
       {
         $addFields: {
           milestoneCount: { $size: '$milestones' },
@@ -140,17 +168,63 @@ export class ProjectsService extends BaseService<
     return { data, total };
   }
 
-  async findByIdWithAccess(id: string, userId: string, userRole?: UserRole): Promise<Project> {
+  async findByIdWithAccess(
+    id: string,
+    userId: string,
+    userRole?: UserRole,
+  ): Promise<Project> {
     const results = await this.projectModel.aggregate([
       { $match: { _id: new Types.ObjectId(id) } },
-      { $lookup: { from: 'milestones', localField: '_id', foreignField: 'projectId', as: 'milestones' } },
-      { $lookup: { from: 'attachments', localField: '_id', foreignField: 'projectId', as: 'attachments' } },
-      { $lookup: { from: 'users', localField: 'owner', foreignField: '_id', as: 'owner' } },
+      {
+        $lookup: {
+          from: 'milestones',
+          localField: '_id',
+          foreignField: 'projectId',
+          as: 'milestones',
+        },
+      },
+      {
+        $lookup: {
+          from: 'attachments',
+          localField: '_id',
+          foreignField: 'projectId',
+          as: 'attachments',
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'owner',
+          foreignField: '_id',
+          as: 'owner',
+        },
+      },
       { $unwind: { path: '$owner', preserveNullAndEmptyArrays: true } },
-      { $lookup: { from: 'users', localField: 'members', foreignField: '_id', as: 'members' } },
-      { $lookup: { from: 'users', localField: 'createdBy', foreignField: '_id', as: 'createdBy' } },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'members',
+          foreignField: '_id',
+          as: 'members',
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'createdBy',
+          foreignField: '_id',
+          as: 'createdBy',
+        },
+      },
       { $unwind: { path: '$createdBy', preserveNullAndEmptyArrays: true } },
-      { $lookup: { from: 'users', localField: 'updatedBy', foreignField: '_id', as: 'updatedBy' } },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'updatedBy',
+          foreignField: '_id',
+          as: 'updatedBy',
+        },
+      },
       { $unwind: { path: '$updatedBy', preserveNullAndEmptyArrays: true } },
       {
         $addFields: {
@@ -169,7 +243,9 @@ export class ProjectsService extends BaseService<
 
     const hasAccess =
       project.owner._id.toString() === userId ||
-      project.members.some((member: User) => member._id.toString() === userId) ||
+      project.members.some(
+        (member: User) => member._id.toString() === userId,
+      ) ||
       userRole === UserRole.Admin;
 
     if (!hasAccess) {

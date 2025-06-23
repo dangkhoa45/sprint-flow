@@ -1,4 +1,3 @@
-import { User } from '@api/modules/users/entities/user.entity';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { HydratedDocument, Types } from 'mongoose';
@@ -19,14 +18,14 @@ export enum TimelineEventType {
   DEADLINE_APPROACHING = 'deadline_approaching',
   COMMENT_ADDED = 'comment_added',
   FILE_UPLOADED = 'file_uploaded',
-  STATUS_CHANGED = 'status_changed'
+  STATUS_CHANGED = 'status_changed',
 }
 
 export enum TimelineEventPriority {
   LOW = 'low',
   MEDIUM = 'medium',
   HIGH = 'high',
-  URGENT = 'urgent'
+  URGENT = 'urgent',
 }
 
 @Schema({ timestamps: true })
@@ -43,7 +42,11 @@ export class TimelineEvent extends BaseEntity {
   @ApiProperty({ enum: TimelineEventType })
   type: TimelineEventType;
 
-  @Prop({ type: String, enum: TimelineEventPriority, default: TimelineEventPriority.MEDIUM })
+  @Prop({
+    type: String,
+    enum: TimelineEventPriority,
+    default: TimelineEventPriority.MEDIUM,
+  })
   @ApiProperty({ enum: TimelineEventPriority })
   priority: TimelineEventPriority;
 
@@ -70,14 +73,6 @@ export class TimelineEvent extends BaseEntity {
   @Prop({ type: Object })
   @ApiProperty()
   metadata?: Record<string, any>;
-
-  @Prop({ type: Types.ObjectId, ref: 'User' })
-  @ApiProperty()
-  createdBy?: string | User;
-
-  @Prop({ type: Types.ObjectId, ref: 'User' })
-  @ApiProperty()
-  updatedBy?: string | User;
 }
 
 export type TimelineEventDocument = HydratedDocument<TimelineEvent>;
@@ -88,4 +83,4 @@ TimelineEventSchema.index({ projectId: 1 });
 TimelineEventSchema.index({ type: 1 });
 TimelineEventSchema.index({ priority: 1 });
 TimelineEventSchema.index({ userId: 1 });
-TimelineEventSchema.index({ createdAt: -1 }); 
+TimelineEventSchema.index({ createdAt: -1 });

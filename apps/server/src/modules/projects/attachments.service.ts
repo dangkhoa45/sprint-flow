@@ -10,14 +10,9 @@ import { AttachmentQueryDto } from './dto/attachment-query.dto';
 import { Attachment, AttachmentType } from './entities/attachment.entity';
 import { Project } from './entities/project.entity';
 import { TimelineEvent, TimelineEventType } from './entities/timeline.entity';
-import { UserRole } from '../users/entities/user.entity';
 
 @Injectable()
-export class AttachmentsService extends BaseService<
-  Attachment,
-  any,
-  any
-> {
+export class AttachmentsService extends BaseService<Attachment, any, any> {
   constructor(
     @InjectModel(Attachment.name)
     private readonly attachmentModel: Model<Attachment>,
@@ -42,7 +37,10 @@ export class AttachmentsService extends BaseService<
       throw new NotFoundException('Project not found');
     }
 
-    if (project.owner.toString() !== userId && !project.members.includes(new Types.ObjectId(userId))) {
+    if (
+      project.owner.toString() !== userId &&
+      !project.members.includes(new Types.ObjectId(userId))
+    ) {
       throw new ForbiddenException('Access denied to this project');
     }
 
@@ -105,13 +103,15 @@ export class AttachmentsService extends BaseService<
 
     // User access control - only show attachments from projects where user is owner or member
     if (!query.projectId) {
-      const userProjects = await this.projectModel.find({
-        $or: [
-          { owner: new Types.ObjectId(userId) },
-          { members: { $in: [new Types.ObjectId(userId)] } },
-        ],
-      }).select('_id');
-      
+      const userProjects = await this.projectModel
+        .find({
+          $or: [
+            { owner: new Types.ObjectId(userId) },
+            { members: { $in: [new Types.ObjectId(userId)] } },
+          ],
+        })
+        .select('_id');
+
       filter.projectId = { $in: userProjects.map(p => p._id) };
     }
 
@@ -135,7 +135,11 @@ export class AttachmentsService extends BaseService<
   }
 
   async deleteWithAccess(id: string, userId: string): Promise<void> {
-    const attachment = await this.findById(id, ['projectId', 'originalName', 'path']);
+    const attachment = await this.findById(id, [
+      'projectId',
+      'originalName',
+      'path',
+    ]);
     if (!attachment) {
       throw new NotFoundException('Attachment not found');
     }
@@ -146,7 +150,10 @@ export class AttachmentsService extends BaseService<
       throw new NotFoundException('Project not found');
     }
 
-    if (project.owner.toString() !== userId && !project.members.includes(new Types.ObjectId(userId))) {
+    if (
+      project.owner.toString() !== userId &&
+      !project.members.includes(new Types.ObjectId(userId))
+    ) {
       throw new ForbiddenException('Access denied to this attachment');
     }
 
@@ -166,7 +173,11 @@ export class AttachmentsService extends BaseService<
     id: string,
     userId: string,
   ): Promise<Attachment> {
-    const attachment = await this.findById(id, ['projectId', 'originalName', 'path']);
+    const attachment = await this.findById(id, [
+      'projectId',
+      'originalName',
+      'path',
+    ]);
     if (!attachment) {
       throw new NotFoundException('Attachment not found');
     }
@@ -181,7 +192,9 @@ export class AttachmentsService extends BaseService<
       project.owner.toString() !== userId &&
       !project.members.includes(new Types.ObjectId(userId))
     ) {
-      throw new ForbiddenException('You do not have access to this attachment.');
+      throw new ForbiddenException(
+        'You do not have access to this attachment.',
+      );
     }
 
     return attachment;
@@ -194,9 +207,17 @@ export class AttachmentsService extends BaseService<
       return AttachmentType.VIDEO;
     } else if (mimeType.startsWith('audio/')) {
       return AttachmentType.AUDIO;
-    } else if (mimeType.includes('zip') || mimeType.includes('rar') || mimeType.includes('tar')) {
+    } else if (
+      mimeType.includes('zip') ||
+      mimeType.includes('rar') ||
+      mimeType.includes('tar')
+    ) {
       return AttachmentType.ARCHIVE;
-    } else if (mimeType.includes('pdf') || mimeType.includes('document') || mimeType.includes('text')) {
+    } else if (
+      mimeType.includes('pdf') ||
+      mimeType.includes('document') ||
+      mimeType.includes('text')
+    ) {
       return AttachmentType.DOCUMENT;
     } else {
       return AttachmentType.OTHER;
@@ -215,4 +236,4 @@ export class AttachmentsService extends BaseService<
       createdBy: eventData.userId,
     });
   }
-} 
+}

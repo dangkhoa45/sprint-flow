@@ -1,4 +1,3 @@
-import { User } from '@api/modules/users/entities/user.entity';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { HydratedDocument, Types } from 'mongoose';
@@ -10,7 +9,7 @@ export enum AttachmentType {
   VIDEO = 'video',
   AUDIO = 'audio',
   ARCHIVE = 'archive',
-  OTHER = 'other'
+  OTHER = 'other',
 }
 
 @Schema({ timestamps: true })
@@ -54,14 +53,6 @@ export class Attachment extends BaseEntity {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   @ApiProperty()
   uploadedBy: Types.ObjectId;
-
-  @Prop({ type: Types.ObjectId, ref: 'User' })
-  @ApiProperty()
-  createdBy?: string | User;
-
-  @Prop({ type: Types.ObjectId, ref: 'User' })
-  @ApiProperty()
-  updatedBy?: string | User;
 }
 
 export type AttachmentDocument = HydratedDocument<Attachment>;
@@ -71,4 +62,4 @@ export const AttachmentSchema = SchemaFactory.createForClass(Attachment);
 AttachmentSchema.index({ projectId: 1 });
 AttachmentSchema.index({ type: 1 });
 AttachmentSchema.index({ uploadedBy: 1 });
-AttachmentSchema.index({ createdAt: -1 }); 
+AttachmentSchema.index({ createdAt: -1 });

@@ -1,5 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsEnum, IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
+import {
+  IsDateString,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+} from 'class-validator';
 import { MilestoneStatus } from '../entities/milestone.entity';
 
 export class CreateMilestoneDto {
@@ -36,4 +44,4 @@ export class CreateMilestoneDto {
   @ApiProperty({ type: [String], required: false })
   @IsOptional()
   tags?: string[];
-} 
+}

@@ -1,4 +1,4 @@
-import { Prop, Schema } from '@nestjs/mongoose';
+import { Prop } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { Types } from 'mongoose';
 
@@ -8,7 +8,6 @@ export enum BaseStatus {
   Failed = 'Failed',
 }
 
-@Schema()
 export abstract class BaseEntity {
   @ApiProperty()
   _id: Types.ObjectId;

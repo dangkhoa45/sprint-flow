@@ -32,7 +32,7 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const isAuthenticated = await compareSync(pass, user.password);
+    const isAuthenticated = compareSync(pass, user.password);
     if (!isAuthenticated) {
       throw new UnauthorizedException();
     }
@@ -120,7 +120,7 @@ export class AuthService {
       throw new BadRequestException('Username already exists.');
     }
 
-    const hashedPassword = await hashSync(password, 10);
+    const hashedPassword = hashSync(password, 10);
 
     const createdUser = await this.usersService.create({
       username,

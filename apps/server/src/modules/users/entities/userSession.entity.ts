@@ -2,7 +2,6 @@ import { Prop, Schema, SchemaFactory, raw } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { HydratedDocument, Types } from 'mongoose';
 import { BaseEntity } from 'src/shared/base.entity';
-import { User } from './user.entity';
 import { IBrowser, ICPU, IDevice, IEngine, IOS } from 'ua-parser-js';
 
 @Schema({ timestamps: true, collection: 'user-sessions' })
@@ -62,7 +61,7 @@ export class UserSession extends BaseEntity {
 
   @Prop({ type: Types.ObjectId, ref: 'User', index: true })
   @ApiProperty()
-  user?: Types.ObjectId | User;
+  user?: Types.ObjectId;
 
   docCount?: number;
 }

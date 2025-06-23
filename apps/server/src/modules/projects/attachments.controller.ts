@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  Body,
   Controller,
   Delete,
   Get,
@@ -27,18 +26,18 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
+import { Request, Response } from 'express';
 import { diskStorage } from 'multer';
-import { v4 as uuidv4 } from 'uuid';
 import * as path from 'path';
 import { CurrentUser } from 'src/decorators/current-user.decor';
 import { BadRequestResponse } from 'src/shared/base.dto';
-import { TokenPayload } from '../auth/dto/tokenPayload';
+import { v4 as uuidv4 } from 'uuid';
 import { AuthGuard } from '../auth/auth.guard';
-import { AttachmentQueryDto } from './dto/attachment-query.dto';
-import { Attachment } from './entities/attachment.entity';
+import { TokenPayload } from '../auth/dto/tokenPayload';
 import { AttachmentsService } from './attachments.service';
+import { AttachmentQueryDto } from './dto/attachment-query.dto';
 import { UploadAttachmentDto } from './dto/upload-attachment.dto';
-import { Request, Response } from 'express';
+import { Attachment } from './entities/attachment.entity';
 
 @ApiTags('Attachments')
 @ApiBearerAuth()
@@ -55,7 +54,7 @@ export class AttachmentsController {
       storage: diskStorage({
         destination: './uploads/attachments',
         filename: (req, file, callback) => {
-          if (!file || !file.originalname) {
+          if (!file?.originalname) {
             return callback(
               new BadRequestException('File is invalid or missing a name.'),
               null,
@@ -98,7 +97,7 @@ export class AttachmentsController {
         callback(null, true);
       },
       limits: {
-        fileSize: 100 * 1024 * 1024, 
+        fileSize: 100 * 1024 * 1024,
       },
     }),
   )
@@ -137,7 +136,7 @@ export class AttachmentsController {
     }
 
     const { description, tags } = req.body as UploadAttachmentDto;
-    const tagsArray = tags ? tags.split(',').map((tag) => tag.trim()) : [];
+    const tagsArray = tags ? tags.split(',').map(tag => tag.trim()) : [];
 
     return this.attachmentsService.uploadAttachment(
       file,
@@ -149,7 +148,9 @@ export class AttachmentsController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all attachments with filtering and pagination' })
+  @ApiOperation({
+    summary: 'Get all attachments with filtering and pagination',
+  })
   @ApiOkResponse({
     schema: {
       type: 'object',
@@ -186,11 +187,12 @@ export class AttachmentsController {
   @ApiOkResponse({ type: Attachment })
   @ApiNotFoundResponse({ description: 'Attachment not found' })
   @ApiForbiddenResponse({ description: 'Access denied' })
-  async findOne(
-    @Param('id') id: string,
-    @CurrentUser() user: TokenPayload,
-  ): Promise<Attachment> {
-    return this.attachmentsService.findById(id, ['uploadedBy', 'createdBy', 'updatedBy']);
+  async findOne(@Param('id') id: string): Promise<Attachment> {
+    return await this.attachmentsService.findById(id, [
+      'uploadedBy',
+      'createdBy',
+      'updatedBy',
+    ]);
   }
 
   @Delete(':id')
@@ -226,10 +228,8 @@ export class AttachmentsController {
     @CurrentUser() user: TokenPayload,
     @Res() res: Response,
   ) {
-    const attachment = await this.attachmentsService.getAttachmentAndCheckAccess(
-      id,
-      user.sub,
-    );
+    const attachment =
+      await this.attachmentsService.getAttachmentAndCheckAccess(id, user.sub);
 
     return res.download(attachment.path, attachment.originalName);
   }
@@ -244,7 +244,10 @@ export class AttachmentsController {
     @CurrentUser() user: TokenPayload,
   ): Promise<Attachment[]> {
     const query: AttachmentQueryDto = { projectId };
-    const result = await this.attachmentsService.findAllWithQuery(query, user.sub);
+    const result = await this.attachmentsService.findAllWithQuery(
+      query,
+      user.sub,
+    );
     return result.data;
   }
-} 
+}

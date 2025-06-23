@@ -1,4 +1,3 @@
-import { User } from '@api/modules/users/entities/user.entity';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { HydratedDocument, Types } from 'mongoose';
@@ -76,14 +75,6 @@ export class Project extends BaseEntity {
   @Prop({ type: Object })
   @ApiProperty()
   metadata?: Record<string, any>;
-
-  @Prop({ type: Types.ObjectId, ref: 'User' })
-  @ApiProperty()
-  createdBy?: string | User;
-
-  @Prop({ type: Types.ObjectId, ref: 'User' })
-  @ApiProperty()
-  updatedBy?: string | User;
 }
 
 export type ProjectDocument = HydratedDocument<Project>;
