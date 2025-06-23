@@ -5,9 +5,6 @@ export default {
   // Format other files
   '*.{json,md,yml,yaml}': ['prettier --write'],
 
-  // Type check TypeScript files
-  '*.{ts,tsx}': ['pnpm run type-check'],
-
   // Run tests for changed files (if they have tests)
   '*.{js,jsx,ts,tsx}': [
     filenames => {
@@ -28,4 +25,6 @@ export default {
       return 'echo "No test files found"';
     },
   ],
+  // Thêm hook chạy type-check toàn bộ workspace sau khi lint xong
+  'package.json': () => 'pnpm --filter web type-check',
 };

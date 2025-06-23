@@ -218,7 +218,7 @@ const ProjectFormDialog = ({
       </DialogTitle>
       <DialogContent>
         <Grid container spacing={3} sx={{ pt: 1 }}>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <TextField
               required
               fullWidth
@@ -230,7 +230,7 @@ const ProjectFormDialog = ({
             />
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid size={12}>
             <TextField
               fullWidth
               label='Mô tả'
@@ -242,7 +242,7 @@ const ProjectFormDialog = ({
           </Grid>
 
           {mode === 'edit' && (
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <FormControl fullWidth>
                 <InputLabel id='status-select-label'>Trạng thái</InputLabel>
                 <Select
@@ -261,7 +261,7 @@ const ProjectFormDialog = ({
             </Grid>
           )}
 
-          <Grid item xs={12} sm={mode === 'edit' ? 6 : 12}>
+          <Grid size={{ xs: 12, sm: mode === 'edit' ? 6 : 12 }}>
             <FormControl fullWidth>
               <InputLabel id='priority-select-label'>Độ ưu tiên</InputLabel>
               <Select
@@ -286,7 +286,7 @@ const ProjectFormDialog = ({
             </FormControl>
           </Grid>
 
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <LocalizationProvider
               dateAdapter={AdapterDateFns}
               adapterLocale={vi}
@@ -299,7 +299,7 @@ const ProjectFormDialog = ({
               />
             </LocalizationProvider>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <LocalizationProvider
               dateAdapter={AdapterDateFns}
               adapterLocale={vi}
@@ -314,7 +314,7 @@ const ProjectFormDialog = ({
             </LocalizationProvider>
           </Grid>
 
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <TextField
               fullWidth
               label='Ước tính giờ làm việc'
@@ -326,7 +326,7 @@ const ProjectFormDialog = ({
           </Grid>
           {mode === 'edit' && (
             <>
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <TextField
                   fullWidth
                   label='Số giờ thực tế'
@@ -340,7 +340,7 @@ const ProjectFormDialog = ({
           )}
 
           {mode === 'edit' && (
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <Typography gutterBottom>
                 Tiến độ ({formData.progress}%)
               </Typography>
@@ -377,7 +377,7 @@ const ProjectFormDialog = ({
             </Grid>
           )}
 
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <FormControl fullWidth>
               <Autocomplete
                 multiple
@@ -408,7 +408,7 @@ const ProjectFormDialog = ({
               />
             </FormControl>
           </Grid>
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <Typography gutterBottom>Tags</Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
               <TextField
@@ -436,7 +436,7 @@ const ProjectFormDialog = ({
           </Grid>
 
           {formError && (
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <FormHelperText error>{formError}</FormHelperText>
             </Grid>
           )}

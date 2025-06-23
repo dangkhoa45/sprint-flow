@@ -1,7 +1,9 @@
 # SprintFlow Development Roadmap
 
 ## Tổng quan dự án
+
 SprintFlow là một ứng dụng quản lý dự án và sprint với kiến trúc full-stack:
+
 - **Backend**: NestJS 11.0.1 với TypeScript 5.7.3, MongoDB 5.0 với Mongoose 8.15.1, JWT authentication
 - **Frontend**: Next.js 15.3.3 với TypeScript 5, Material-UI 7.1.1, SWR 2.3.3 cho state management
 - **Database**: MongoDB 5.0 (không phải PostgreSQL như đã ghi sai trước đây)
@@ -19,6 +21,7 @@ SprintFlow là một ứng dụng quản lý dự án và sprint với kiến tr
 ## Giai đoạn 1: Cải thiện Backend (Ưu tiên cao)
 
 ### 1.1 Sửa lỗi và tối ưu hóa code
+
 - [x] **Phân tích lỗi linting hiện tại**
 - [x] **Tách logic phức tạp trong `user-sessions.service.ts` (file quá dài)**
   - [x] Tạo `SessionStatisticsService` cho các phương thức thống kê
@@ -30,12 +33,15 @@ SprintFlow là một ứng dụng quản lý dự án và sprint với kiến tr
   - [x] Sửa lỗi require-await trong async functions
   - [x] Sửa lỗi unused variables bằng prefix `_`
   - [x] Sửa lỗi Grid component trong Material-UI
+- [x] **Chuẩn hóa cấu hình Husky, lint-staged, commitlint cho Node ESM**
 - [ ] **Tiếp tục sửa các lỗi còn lại:**
   - [ ] Sửa lỗi type issues với BaseQuery và TimeFrameQuery
   - [ ] Sửa lỗi max-lines-per-function trong các component lớn
   - [ ] Sửa lỗi no-misused-promises và no-floating-promises
+  - [ ] Sửa lỗi type cho Grid MUI
 
 ### 1.2 Hoàn thiện Authentication & Authorization
+
 - [ ] **Review và cải thiện security:**
   - [ ] Kiểm tra tất cả endpoints có proper authentication
   - [ ] Implement role-based access control (RBAC) đầy đủ
@@ -46,6 +52,7 @@ SprintFlow là một ứng dụng quản lý dự án và sprint với kiến tr
   - [ ] Implement session management
 
 ### 1.3 Testing Infrastructure
+
 - [ ] **Thiết lập testing framework:**
   - [ ] Unit tests cho các service chính
   - [ ] Integration tests cho API endpoints
@@ -57,6 +64,7 @@ SprintFlow là một ứng dụng quản lý dự án và sprint với kiến tr
 ## Giai đoạn 2: Hoàn thiện Frontend (Ưu tiên trung bình)
 
 ### 2.1 Cải thiện User Experience
+
 - [ ] **Responsive Design:**
   - [ ] Tối ưu hóa cho mobile devices
   - [ ] Cải thiện navigation và layout
@@ -67,6 +75,7 @@ SprintFlow là một ứng dụng quản lý dự án và sprint với kiến tr
   - [ ] Add lazy loading cho components
 
 ### 2.2 Feature Completion
+
 - [ ] **Project Management:**
   - [ ] Hoàn thiện CRUD operations
   - [ ] Thêm project templates
@@ -81,6 +90,7 @@ SprintFlow là một ứng dụng quản lý dự án và sprint với kiến tr
   - [ ] Progress tracking
 
 ### 2.3 Advanced Features
+
 - [ ] **Real-time Collaboration:**
   - [ ] WebSocket integration
   - [ ] Live updates
@@ -93,6 +103,7 @@ SprintFlow là một ứng dụng quản lý dự án và sprint với kiến tr
 ## Giai đoạn 3: Production Readiness (Ưu tiên thấp)
 
 ### 3.1 DevOps & Deployment
+
 - [ ] **CI/CD Pipeline:**
   - [ ] Automated testing
   - [ ] Automated deployment
@@ -103,6 +114,7 @@ SprintFlow là một ứng dụng quản lý dự án và sprint với kiến tr
   - [ ] Performance monitoring
 
 ### 3.2 Documentation & Maintenance
+
 - [ ] **API Documentation:**
   - [ ] Complete Swagger documentation
   - [ ] API usage examples
@@ -114,22 +126,28 @@ SprintFlow là một ứng dụng quản lý dự án và sprint với kiến tr
 
 ## Timeline dự kiến
 
-### Tuần 1-2: Backend Optimization ✅ Đang thực hiện
+### Tuần 1-2: Backend Optimization ✅ Đã hoàn thành phần lớn
+
 - [x] Sửa tất cả lỗi linting cơ bản
 - [x] Tái cấu trúc code (user-sessions.service.ts)
+- [x] Chuẩn hóa cấu hình Husky/lint-staged/commitlint
 - [ ] Hoàn thiện authentication
+- [ ] Sửa lỗi type issues, promise, function size, Grid MUI
 
 ### Tuần 3-4: Testing & Security
+
 - Implement comprehensive testing
 - Security audit và improvements
 - Performance optimization
 
 ### Tuần 5-6: Frontend Enhancement
+
 - UX improvements
 - Feature completion
 - Performance optimization
 
 ### Tuần 7-8: Production Preparation
+
 - DevOps setup
 - Documentation
 - Final testing và deployment
@@ -137,17 +155,20 @@ SprintFlow là một ứng dụng quản lý dự án và sprint với kiến tr
 ## Metrics for Success
 
 ### Code Quality
-- [x] Giảm lỗi linting từ 114 xuống 89 (22% improvement)
+
+- [x] Giảm lỗi linting từ 114 xuống 61 (46% improvement)
 - [ ] Zero linting errors
 - [ ] 80%+ test coverage
 - [ ] All security vulnerabilities resolved
 
 ### Performance
+
 - [ ] API response time < 200ms
 - [ ] Frontend load time < 3s
 - [ ] 99.9% uptime
 
 ### User Experience
+
 - [ ] Mobile responsive design
 - [ ] Intuitive navigation
 - [ ] Fast and reliable functionality
@@ -155,17 +176,19 @@ SprintFlow là một ứng dụng quản lý dự án và sprint với kiến tr
 ## Risk Mitigation
 
 ### Technical Risks
+
 - **Database performance issues**: Implement proper indexing và query optimization cho MongoDB
 - **Security vulnerabilities**: Regular security audits và updates
 - **Scalability concerns**: Design with scalability in mind từ đầu
 
 ### Project Risks
+
 - **Scope creep**: Strict adherence to roadmap
 - **Resource constraints**: Prioritize critical features
 - **Timeline delays**: Buffer time for unexpected issues
 
 ---
 
-**Trạng thái hiện tại**: Đang thực hiện Giai đoạn 1 - Backend Optimization
-**Tiến độ**: 22% giảm lỗi linting (114 → 89 lỗi)
-**Nhiệm vụ tiếp theo**: Tiếp tục sửa các lỗi linting còn lại, đặc biệt là type issues và max-lines-per-function 
+**Trạng thái hiện tại**: Đang thực hiện Giai đoạn 1 - Backend Optimization, chuẩn hóa codebase, chuẩn hóa cấu hình Husky/lint-staged/commitlint
+**Tiến độ**: 46% giảm lỗi linting (114 → 61 lỗi)
+**Nhiệm vụ tiếp theo**: Tiếp tục sửa các lỗi linting còn lại, bổ sung test coverage, bắt đầu real-time và Kanban board, chuẩn bị production deployment
