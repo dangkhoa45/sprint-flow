@@ -1,5 +1,5 @@
 import { attachmentsApi } from '@/api/attachments';
-import { Attachment, AttachmentQueryDto } from '@/types/attachment';
+import { AttachmentQueryDto } from '@/types/attachment';
 import useSWR from 'swr';
 
 export const useAttachments = (query?: AttachmentQueryDto) => {

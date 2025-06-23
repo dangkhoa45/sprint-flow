@@ -1,5 +1,4 @@
-import { ProjectStatus, ProjectPriority } from '../types/project';
-import { Flag } from '@mui/icons-material';
+import { ProjectStatus, ProjectPriority } from '@/types/project';
 
 export const getStatusColor = (status: ProjectStatus): string => {
   switch (status) {

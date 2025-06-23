@@ -101,6 +101,6 @@ async function bootstrap() {
 }
 
 bootstrap().catch(err => {
-  console.error('Error bootstrapping application:', err);
+  process.stderr.write(`Error bootstrapping application: ${err}\n`);
   process.exit(1);
 });

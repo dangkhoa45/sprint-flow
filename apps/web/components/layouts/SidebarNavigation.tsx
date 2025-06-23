@@ -138,7 +138,7 @@ interface SidebarNavigationProps {
   onClose: () => void;
   variant?: 'permanent' | 'persistent' | 'temporary';
   isCollapsed: boolean;
-  onToggleCollapse: () => void;
+  onToggleCollapse?: (_collapsed: boolean) => void;
 }
 
 const SidebarNavigation = ({
@@ -146,7 +146,7 @@ const SidebarNavigation = ({
   onClose,
   variant = 'permanent',
   isCollapsed,
-  onToggleCollapse,
+  onToggleCollapse: _onToggleCollapse,
 }: SidebarNavigationProps) => {
   const theme = useTheme();
   const router = useRouter();

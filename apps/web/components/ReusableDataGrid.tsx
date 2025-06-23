@@ -1,6 +1,6 @@
 'use client';
 import Box from '@mui/material/Box';
-import { useTheme, Theme } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
 import {
   DataGrid,
   GridColDef,

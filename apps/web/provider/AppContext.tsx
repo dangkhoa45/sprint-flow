@@ -8,5 +8,7 @@ export interface AppContextType {
 
 export const AppContext = createContext<AppContextType>({
   user: undefined,
-  setUser: () => {},
+  setUser: (_user: User | undefined) => {
+    // User setting functionality will be implemented
+  },
 });

@@ -1,4 +1,3 @@
-
 export function log(msg: string, ...params: any) {
   let logColor = '\x1b[37m%s\x1b[0m';
   switch (true) {

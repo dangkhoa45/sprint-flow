@@ -17,8 +17,8 @@ import ProjectTabs from '../components/ProjectTabs';
 
 export default function ProjectDetailPage() {
   const params = useParams();
-  const router = useRouter();
-  const { success, error: toastError } = useToast();
+  const _router = useRouter();
+  const { success: _success, error: toastError } = useToast();
 
   const [project, setProject] = useState<Project | null>(null);
   const [milestones, setMilestones] = useState<Milestone[]>([]);
@@ -44,7 +44,6 @@ export default function ProjectDetailPage() {
       setMilestones(milestonesData);
       setAttachments(attachmentsData);
     } catch (err: unknown) {
-      console.error('Error fetching project data:', err);
       const errorMessage =
         err instanceof Error ? err.message : 'Không thể tải thông tin project';
       setError(errorMessage);
@@ -56,7 +55,7 @@ export default function ProjectDetailPage() {
 
   useEffect(() => {
     if (projectId) {
-      fetchProjectData();
+      void fetchProjectData();
     }
   }, [projectId, fetchProjectData]);
 
@@ -65,7 +64,7 @@ export default function ProjectDetailPage() {
   };
 
   const handleEditSuccess = () => {
-    fetchProjectData();
+    void fetchProjectData();
     setEditDialogOpen(false);
   };
 

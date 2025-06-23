@@ -19,7 +19,9 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType>({
   mode: 'system',
   resolvedTheme: 'light',
-  setTheme: () => {},
+  setTheme: (_theme: ThemeMode) => {
+    // Theme setting functionality will be implemented
+  },
 });
 
 export const useThemeMode = () => {
