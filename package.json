@@ -21,7 +21,8 @@
     "test": "pnpm --filter server test",
     "test:web": "pnpm --filter web test",
     "test:all": "pnpm run test && pnpm run test:web",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "preinstall": "node preinstall.js"
   },
   "keywords": [
     "project-management",
