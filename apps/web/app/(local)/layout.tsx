@@ -10,6 +10,7 @@ import SidebarNavigation, {
   DRAWER_WIDTH,
 } from '@/components/layouts/SidebarNavigation';
 import DashboardHeader from '@/components/layouts/Header';
+import { RealtimeProvider } from '../../contexts/RealtimeContext';
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -48,7 +49,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
     : DRAWER_WIDTH;
 
   return (
-    <>
+    <RealtimeProvider>
       <DashboardHeader
         onMenuClick={() => {
           // Mobile menu toggle functionality
@@ -103,6 +104,6 @@ export default function AppLayout({ children }: AppLayoutProps) {
           </ErrorBoundary>
         </Box>
       </Box>
-    </>
+    </RealtimeProvider>
   );
 }

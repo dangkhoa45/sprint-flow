@@ -8,6 +8,8 @@ import { Milestone } from '@/types/milestone';
 import { Project } from '@/types/project';
 import { useParams, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
+import { useRealtimeProject } from '@/hooks/useRealtimeProject';
+import { TaskUpdateData, ProjectUpdateData } from '@/utils/webSocketService';
 import ProjectDetailWrapper from '../components/ProjectDetailWrapper';
 import ProjectError from '../components/ProjectError';
 import ProjectFormDialog from '../components/ProjectFormDialog';
@@ -28,6 +30,21 @@ export default function ProjectDetailPage() {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
 
   const projectId = params.id as string;
+
+  // Real-time updates
+  useRealtimeProject({
+    projectId,
+    onTaskUpdate: (data: TaskUpdateData) => {
+      console.log('📝 Real-time task update:', data);
+      // Refresh project data to get latest task information
+      void fetchProjectData();
+    },
+    onProjectUpdate: (data: ProjectUpdateData) => {
+      console.log('🔄 Real-time project update:', data);
+      // Refresh project data to get latest project information
+      void fetchProjectData();
+    },
+  });
 
   const fetchProjectData = useCallback(async () => {
     try {
