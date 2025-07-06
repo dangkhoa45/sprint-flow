@@ -2,13 +2,21 @@ import {
   Injectable,
   NotFoundException,
   ForbiddenException,
+  BadRequestException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Task, TaskDocument } from './entities/task.entity';
+import { TaskTemplate, TaskTemplateDocument } from './entities/task-template.entity';
+import { TaskComment, TaskCommentDocument } from './entities/task-comment.entity';
+import { TimeEntry, TimeEntryDocument } from './entities/time-entry.entity';
+import { Attachment, AttachmentDocument } from '../projects/entities/attachment.entity';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { TaskQueryDto } from './dto/task-query.dto';
+import { CreateTaskFromTemplateDto, BulkUpdateTaskDto, BulkDeleteTaskDto } from './dto/bulk-operations.dto';
+import { CreateTaskCommentDto, UpdateTaskCommentDto } from './dto/task-comment.dto';
+import { CreateTimeEntryDto, UpdateTimeEntryDto } from './dto/time-entry.dto';
 import { UsersService } from '../users/users.service';
 import { ProjectsService } from '../projects/projects.service';
 
@@ -16,6 +24,10 @@ import { ProjectsService } from '../projects/projects.service';
 export class TasksService {
   constructor(
     @InjectModel(Task.name) private taskModel: Model<TaskDocument>,
+    @InjectModel(TaskTemplate.name) private taskTemplateModel: Model<TaskTemplateDocument>,
+    @InjectModel(TaskComment.name) private taskCommentModel: Model<TaskCommentDocument>,
+    @InjectModel(TimeEntry.name) private timeEntryModel: Model<TimeEntryDocument>,
+    @InjectModel(Attachment.name) private attachmentModel: Model<AttachmentDocument>,
     private usersService: UsersService,
     private projectsService: ProjectsService,
   ) {}
@@ -60,6 +72,11 @@ export class TasksService {
       }
     }
 
+    // Validate dependencies
+    if (createTaskDto.dependencies?.length) {
+      await this.validateDependencies(createTaskDto.dependencies, createTaskDto.projectId);
+    }
+
     const task = new this.taskModel({
       ...createTaskDto,
       createdBy: new Types.ObjectId(userId),
@@ -70,9 +87,20 @@ export class TasksService {
       dueDate: createTaskDto.dueDate
         ? new Date(createTaskDto.dueDate)
         : undefined,
+      dependencies: createTaskDto.dependencies
+        ? createTaskDto.dependencies.map(dep => new Types.ObjectId(dep))
+        : [],
+      dependents: [],
     });
 
-    return task.save();
+    const savedTask = await task.save();
+
+    // Update dependent tasks
+    if (createTaskDto.dependencies?.length) {
+      await this.updateDependents(createTaskDto.dependencies, savedTask._id.toString());
+    }
+
+    return savedTask;
   }
 
   async findAll(
@@ -143,6 +171,8 @@ export class TasksService {
         .populate('assignedTo', 'username displayName avatar')
         .populate('createdBy', 'username displayName avatar')
         .populate('projectId', 'name status')
+        .populate('dependencies', 'title status')
+        .populate('dependents', 'title status')
         .sort(sort)
         .skip(skip)
         .limit(limit)
@@ -164,6 +194,8 @@ export class TasksService {
       .populate('assignedTo', 'username displayName avatar')
       .populate('createdBy', 'username displayName avatar')
       .populate('projectId', 'name status owner members')
+      .populate('dependencies', 'title status')
+      .populate('dependents', 'title status')
       .exec();
 
     if (!task) {
@@ -233,6 +265,11 @@ export class TasksService {
       }
     }
 
+    // Validate dependencies if being updated
+    if (updateTaskDto.dependencies) {
+      await this.validateDependencies(updateTaskDto.dependencies, project._id.toString());
+    }
+
     const updateData: any = {
       ...updateTaskDto,
       updatedBy: new Types.ObjectId(userId),
@@ -244,6 +281,32 @@ export class TasksService {
 
     if (updateTaskDto.dueDate) {
       updateData.dueDate = new Date(updateTaskDto.dueDate);
+    }
+
+    if (updateTaskDto.dependencies) {
+      updateData.dependencies = updateTaskDto.dependencies.map(dep => new Types.ObjectId(dep));
+      
+      // Remove this task from old dependencies' dependents
+      const oldDependencies = task.dependencies || [];
+      const oldDependencyIds = oldDependencies.map(dep => dep.toString());
+      const newDependencyIds = updateTaskDto.dependencies;
+      
+      const removedDependencies = oldDependencyIds.filter(id => !newDependencyIds.includes(id));
+      const addedDependencies = newDependencyIds.filter(id => !oldDependencyIds.includes(id));
+      
+      if (removedDependencies.length > 0) {
+        await this.taskModel.updateMany(
+          { _id: { $in: removedDependencies.map(id => new Types.ObjectId(id)) } },
+          { $pull: { dependents: task._id } },
+        );
+      }
+      
+      if (addedDependencies.length > 0) {
+        await this.taskModel.updateMany(
+          { _id: { $in: addedDependencies.map(id => new Types.ObjectId(id)) } },
+          { $addToSet: { dependents: task._id } },
+        );
+      }
     }
 
     const updatedTask = await this.taskModel
@@ -268,6 +331,21 @@ export class TasksService {
     if (!isOwner && !isCreator) {
       throw new ForbiddenException(
         'You do not have permission to delete this task',
+      );
+    }
+
+    // Check if task has dependents
+    if (task.dependents?.length > 0) {
+      throw new BadRequestException(
+        'Cannot delete task with dependent tasks. Delete dependent tasks first or use force delete.',
+      );
+    }
+
+    // Remove from dependents of dependencies
+    if (task.dependencies?.length > 0) {
+      await this.taskModel.updateMany(
+        { _id: { $in: task.dependencies } },
+        { $pull: { dependents: task._id } },
       );
     }
 
@@ -372,5 +450,480 @@ export class TasksService {
         CANCELLED: statsMap.CANCELLED || 0,
       },
     };
+  }
+
+  private async validateDependencies(dependencies: string[], projectId: string): Promise<void> {
+    const dependencyTasks = await this.taskModel
+      .find({
+        _id: { $in: dependencies.map(dep => new Types.ObjectId(dep)) },
+        projectId: new Types.ObjectId(projectId),
+      })
+      .exec();
+
+    if (dependencyTasks.length !== dependencies.length) {
+      throw new BadRequestException('Some dependency tasks not found or not in the same project');
+    }
+  }
+
+  private async updateDependents(dependencies: string[], taskId: string): Promise<void> {
+    await this.taskModel.updateMany(
+      { _id: { $in: dependencies.map(dep => new Types.ObjectId(dep)) } },
+      { $addToSet: { dependents: new Types.ObjectId(taskId) } }
+    );
+  }
+
+  async createTaskFromTemplate(
+    createTaskFromTemplateDto: CreateTaskFromTemplateDto,
+    userId: string,
+  ): Promise<Task> {
+    const template = await this.taskTemplateModel.findById(createTaskFromTemplateDto.templateId);
+    if (!template) {
+      throw new NotFoundException('Template not found');
+    }
+
+    // Check if user has access to the template
+    if (template.projectId) {
+      const project = await this.projectsService.findById(template.projectId.toString());
+      if (!project) {
+        throw new NotFoundException('Template project not found');
+      }
+
+      const isOwner = project.owner.toString() === userId;
+      const isMember = project.members.some(
+        (member: any) => member.toString() === userId,
+      );
+
+      if (!isOwner && !isMember) {
+        throw new ForbiddenException('You do not have permission to use this template');
+      }
+    }
+
+    const createTaskDto: CreateTaskDto = {
+      title: createTaskFromTemplateDto.title || template.taskTitle,
+      description: createTaskFromTemplateDto.description || template.taskDescription,
+      projectId: createTaskFromTemplateDto.projectId,
+      priority: template.defaultPriority,
+      estimatedTime: template.defaultEstimatedTime,
+      tags: template.defaultTags,
+      assignedTo: createTaskFromTemplateDto.assignedTo,
+      dueDate: createTaskFromTemplateDto.dueDate,
+    };
+
+    return this.create(createTaskDto, userId);
+  }
+
+  async bulkUpdateTasks(
+    bulkUpdateDto: BulkUpdateTaskDto,
+    userId: string,
+  ): Promise<{ updated: number; failed: string[] }> {
+    const tasks = await this.taskModel
+      .find({ _id: { $in: bulkUpdateDto.taskIds.map(id => new Types.ObjectId(id)) } })
+      .populate('projectId', 'owner members')
+      .exec();
+
+    const validTaskIds: string[] = [];
+    const failedTaskIds: string[] = [];
+
+    // Check permissions for each task
+    for (const task of tasks) {
+      const project = task.projectId as any;
+      const isOwner = project.owner.toString() === userId;
+      const isMember = project.members.some(
+        (member: any) => member.toString() === userId,
+      );
+      const isAssigned = task.assignedTo?.toString() === userId;
+      const isCreator = task.createdBy?.toString() === userId;
+
+      if (isOwner || isMember || isAssigned || isCreator) {
+        validTaskIds.push(task._id.toString());
+      } else {
+        failedTaskIds.push(task._id.toString());
+      }
+    }
+
+    const updateData: any = {
+      updatedBy: new Types.ObjectId(userId),
+    };
+
+    if (bulkUpdateDto.status) {
+      updateData.status = bulkUpdateDto.status;
+    }
+
+    if (bulkUpdateDto.priority) {
+      updateData.priority = bulkUpdateDto.priority;
+    }
+
+    if (bulkUpdateDto.assignedTo) {
+      updateData.assignedTo = new Types.ObjectId(bulkUpdateDto.assignedTo);
+    }
+
+    if (bulkUpdateDto.addTags?.length) {
+      updateData.$addToSet = { tags: { $each: bulkUpdateDto.addTags } };
+    }
+
+    if (bulkUpdateDto.removeTags?.length) {
+      updateData.$pull = { tags: { $in: bulkUpdateDto.removeTags } };
+    }
+
+    const result = await this.taskModel.updateMany(
+      { _id: { $in: validTaskIds.map(id => new Types.ObjectId(id)) } },
+      updateData,
+    );
+
+    return {
+      updated: result.modifiedCount,
+      failed: failedTaskIds,
+    };
+  }
+
+  async bulkDeleteTasks(
+    bulkDeleteDto: BulkDeleteTaskDto,
+    userId: string,
+  ): Promise<{ deleted: number; failed: string[] }> {
+    const tasks = await this.taskModel
+      .find({ _id: { $in: bulkDeleteDto.taskIds.map(id => new Types.ObjectId(id)) } })
+      .populate('projectId', 'owner members')
+      .exec();
+
+    const validTaskIds: string[] = [];
+    const failedTaskIds: string[] = [];
+
+    // Check permissions and dependencies for each task
+    for (const task of tasks) {
+      const project = task.projectId as any;
+      const isOwner = project.owner.toString() === userId;
+      const isCreator = task.createdBy?.toString() === userId;
+
+      if (!isOwner && !isCreator) {
+        failedTaskIds.push(task._id.toString());
+        continue;
+      }
+
+      // Check if task has dependents (unless force delete)
+      if (!bulkDeleteDto.force && task.dependents?.length > 0) {
+        failedTaskIds.push(task._id.toString());
+        continue;
+      }
+
+      validTaskIds.push(task._id.toString());
+    }
+
+    // Remove from dependents of dependencies
+    for (const taskId of validTaskIds) {
+      const task = tasks.find(t => t._id.toString() === taskId);
+      if (task?.dependencies?.length) {
+        await this.taskModel.updateMany(
+          { _id: { $in: task.dependencies } },
+          { $pull: { dependents: new Types.ObjectId(taskId) } },
+        );
+      }
+    }
+
+    const result = await this.taskModel.deleteMany(
+      { _id: { $in: validTaskIds.map(id => new Types.ObjectId(id)) } },
+    );
+
+    return {
+      deleted: result.deletedCount,
+      failed: failedTaskIds,
+    };
+  }
+
+  // Task Comments
+  async createComment(
+    createCommentDto: CreateTaskCommentDto,
+    userId: string,
+  ): Promise<TaskComment> {
+    // Verify user has access to the task
+    const task = await this.findById(createCommentDto.taskId, userId);
+
+    const comment = new this.taskCommentModel({
+      ...createCommentDto,
+      createdBy: new Types.ObjectId(userId),
+      taskId: new Types.ObjectId(createCommentDto.taskId),
+      parentId: createCommentDto.parentId
+        ? new Types.ObjectId(createCommentDto.parentId)
+        : undefined,
+      mentions: createCommentDto.mentions
+        ? createCommentDto.mentions.map(mention => new Types.ObjectId(mention))
+        : [],
+    });
+
+    return comment.save();
+  }
+
+  async getTaskComments(taskId: string, userId: string): Promise<TaskComment[]> {
+    // Verify user has access to the task
+    await this.findById(taskId, userId);
+
+    return this.taskCommentModel
+      .find({ taskId: new Types.ObjectId(taskId) })
+      .populate('createdBy', 'username displayName avatar')
+      .populate('mentions', 'username displayName')
+      .sort({ createdAt: 1 })
+      .exec();
+  }
+
+  async updateComment(
+    commentId: string,
+    updateCommentDto: UpdateTaskCommentDto,
+    userId: string,
+  ): Promise<TaskComment> {
+    const comment = await this.taskCommentModel.findById(commentId);
+    if (!comment) {
+      throw new NotFoundException('Comment not found');
+    }
+
+    // Only comment creator can update
+    if (comment.createdBy.toString() !== userId) {
+      throw new ForbiddenException('You can only update your own comments');
+    }
+
+    const updateData: any = {
+      ...updateCommentDto,
+      isEdited: true,
+      editedAt: new Date(),
+    };
+
+    if (updateCommentDto.mentions) {
+      updateData.mentions = updateCommentDto.mentions.map(mention => new Types.ObjectId(mention));
+    }
+
+    return this.taskCommentModel
+      .findByIdAndUpdate(commentId, updateData, { new: true })
+      .populate('createdBy', 'username displayName avatar')
+      .populate('mentions', 'username displayName')
+      .exec();
+  }
+
+  async deleteComment(commentId: string, userId: string): Promise<void> {
+    const comment = await this.taskCommentModel.findById(commentId);
+    if (!comment) {
+      throw new NotFoundException('Comment not found');
+    }
+
+    // Only comment creator can delete
+    if (comment.createdBy.toString() !== userId) {
+      throw new ForbiddenException('You can only delete your own comments');
+    }
+
+    await this.taskCommentModel.findByIdAndDelete(commentId);
+  }
+
+  // Time Entries
+  async createTimeEntry(
+    createTimeEntryDto: CreateTimeEntryDto,
+    userId: string,
+  ): Promise<TimeEntry> {
+    // Verify user has access to the task
+    const task = await this.findById(createTimeEntryDto.taskId, userId);
+
+    const timeEntry = new this.timeEntryModel({
+      ...createTimeEntryDto,
+      createdBy: new Types.ObjectId(userId),
+      userId: new Types.ObjectId(userId),
+      taskId: new Types.ObjectId(createTimeEntryDto.taskId),
+      startTime: new Date(createTimeEntryDto.startTime),
+      endTime: createTimeEntryDto.endTime ? new Date(createTimeEntryDto.endTime) : undefined,
+    });
+
+    return timeEntry.save();
+  }
+
+  async getTaskTimeEntries(taskId: string, userId: string): Promise<TimeEntry[]> {
+    // Verify user has access to the task
+    await this.findById(taskId, userId);
+
+    return this.timeEntryModel
+      .find({ taskId: new Types.ObjectId(taskId) })
+      .populate('userId', 'username displayName avatar')
+      .sort({ startTime: -1 })
+      .exec();
+  }
+
+  async updateTimeEntry(
+    timeEntryId: string,
+    updateTimeEntryDto: UpdateTimeEntryDto,
+    userId: string,
+  ): Promise<TimeEntry> {
+    const timeEntry = await this.timeEntryModel.findById(timeEntryId);
+    if (!timeEntry) {
+      throw new NotFoundException('Time entry not found');
+    }
+
+    // Only time entry creator can update
+    if (timeEntry.userId.toString() !== userId) {
+      throw new ForbiddenException('You can only update your own time entries');
+    }
+
+    const updateData: any = { ...updateTimeEntryDto };
+
+    if (updateTimeEntryDto.startTime) {
+      updateData.startTime = new Date(updateTimeEntryDto.startTime);
+    }
+
+    if (updateTimeEntryDto.endTime) {
+      updateData.endTime = new Date(updateTimeEntryDto.endTime);
+    }
+
+    return this.timeEntryModel
+      .findByIdAndUpdate(timeEntryId, updateData, { new: true })
+      .populate('userId', 'username displayName avatar')
+      .exec();
+  }
+
+  async deleteTimeEntry(timeEntryId: string, userId: string): Promise<void> {
+    const timeEntry = await this.timeEntryModel.findById(timeEntryId);
+    if (!timeEntry) {
+      throw new NotFoundException('Time entry not found');
+    }
+
+    // Only time entry creator can delete
+    if (timeEntry.userId.toString() !== userId) {
+      throw new ForbiddenException('You can only delete your own time entries');
+    }
+
+    await this.timeEntryModel.findByIdAndDelete(timeEntryId);
+  }
+
+  async getTimeTrackingStats(taskId: string, userId: string): Promise<any> {
+    // Verify user has access to the task
+    await this.findById(taskId, userId);
+
+    const stats = await this.timeEntryModel.aggregate([
+      { $match: { taskId: new Types.ObjectId(taskId) } },
+      {
+        $group: {
+          _id: '$userId',
+          totalDuration: { $sum: '$duration' },
+          entryCount: { $sum: 1 },
+          billableTime: {
+            $sum: {
+              $cond: [{ $eq: ['$isBillable', true] }, '$duration', 0],
+            },
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      {
+        $unwind: '$user',
+      },
+      {
+        $project: {
+          userId: '$_id',
+          username: '$user.username',
+          displayName: '$user.displayName',
+          totalDuration: 1,
+          entryCount: 1,
+          billableTime: 1,
+        },
+      },
+    ]);
+
+    const totalStats = await this.timeEntryModel.aggregate([
+      { $match: { taskId: new Types.ObjectId(taskId) } },
+      {
+        $group: {
+          _id: null,
+          totalDuration: { $sum: '$duration' },
+          totalEntries: { $sum: 1 },
+          totalBillableTime: {
+            $sum: {
+              $cond: [{ $eq: ['$isBillable', true] }, '$duration', 0],
+            },
+          },
+        },
+      },
+    ]);
+
+    return {
+      byUser: stats,
+      totals: totalStats[0] || {
+        totalDuration: 0,
+        totalEntries: 0,
+        totalBillableTime: 0,
+      },
+    };
+  }
+
+  // Task Attachments
+  async getTaskAttachments(taskId: string, userId: string): Promise<Attachment[]> {
+    // Verify user has access to the task
+    await this.findById(taskId, userId);
+
+    return this.attachmentModel
+      .find({ taskId: new Types.ObjectId(taskId) })
+      .populate('uploadedBy', 'username displayName avatar')
+      .sort({ createdAt: -1 })
+      .exec();
+  }
+
+  async uploadTaskAttachment(
+    file: Express.Multer.File,
+    taskId: string,
+    userId: string,
+    description?: string,
+    tags?: string[],
+  ): Promise<Attachment> {
+    // Verify user has access to the task
+    const task = await this.findById(taskId, userId);
+
+    const attachmentData = {
+      filename: `${Date.now()}-${file.originalname}`,
+      originalName: file.originalname,
+      mimeType: file.mimetype,
+      size: file.size,
+      path: file.path,
+      type: this.getFileType(file.mimetype),
+      taskId: new Types.ObjectId(taskId),
+      description,
+      tags: tags || [],
+      uploadedBy: new Types.ObjectId(userId),
+      createdBy: new Types.ObjectId(userId),
+    };
+
+    return this.attachmentModel.create(attachmentData);
+  }
+
+  async deleteTaskAttachment(attachmentId: string, userId: string): Promise<void> {
+    const attachment = await this.attachmentModel.findById(attachmentId);
+    if (!attachment) {
+      throw new NotFoundException('Attachment not found');
+    }
+
+    if (!attachment.taskId) {
+      throw new BadRequestException('Attachment is not associated with a task');
+    }
+
+    // Verify user has access to the task
+    await this.findById(attachment.taskId.toString(), userId);
+
+    // Only uploader or task owner can delete
+    const task = await this.findById(attachment.taskId.toString(), userId);
+    const project = task.projectId as any;
+    const isProjectOwner = project.owner.toString() === userId;
+    const isUploader = attachment.uploadedBy.toString() === userId;
+
+    if (!isProjectOwner && !isUploader) {
+      throw new ForbiddenException('You can only delete your own attachments or you must be the project owner');
+    }
+
+    await this.attachmentModel.findByIdAndDelete(attachmentId);
+  }
+
+  private getFileType(mimeType: string): string {
+    if (mimeType.startsWith('image/')) return 'image';
+    if (mimeType.startsWith('video/')) return 'video';
+    if (mimeType.startsWith('audio/')) return 'audio';
+    if (mimeType.includes('pdf') || mimeType.includes('document') || mimeType.includes('text/')) return 'document';
+    if (mimeType.includes('zip') || mimeType.includes('rar') || mimeType.includes('archive')) return 'archive';
+    return 'other';
   }
 }

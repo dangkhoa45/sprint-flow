@@ -56,13 +56,21 @@ export class Task extends BaseEntity {
   @ApiProperty()
   actualTime?: number; // in hours
 
-  @Prop([String])
+  @Prop({ type: [String], default: [] })
   @ApiProperty()
   tags: string[];
 
   @Prop({ type: Object })
   @ApiProperty()
   metadata?: Record<string, any>;
+
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'Task' }], default: [] })
+  @ApiProperty()
+  dependencies: Types.ObjectId[];
+
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'Task' }], default: [] })
+  @ApiProperty()
+  dependents: Types.ObjectId[];
 }
 
 export type TaskDocument = HydratedDocument<Task>;
@@ -77,3 +85,5 @@ TaskSchema.index({ createdBy: 1 });
 TaskSchema.index({ dueDate: 1 });
 TaskSchema.index({ createdAt: -1 });
 TaskSchema.index({ title: 'text', description: 'text' });
+TaskSchema.index({ dependencies: 1 });
+TaskSchema.index({ dependents: 1 });

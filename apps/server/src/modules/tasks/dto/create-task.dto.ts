@@ -64,4 +64,10 @@ export class CreateTaskDto {
   @IsArray()
   @IsString({ each: true })
   tags?: string[];
+
+  @ApiProperty({ description: 'Task dependencies (prerequisite tasks)', required: false })
+  @IsOptional()
+  @IsArray()
+  @IsMongoId({ each: true })
+  dependencies?: string[];
 }
