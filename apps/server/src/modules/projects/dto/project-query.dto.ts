@@ -5,10 +5,15 @@ import {
   IsEnum,
   IsOptional,
   IsString,
+  IsNumber,
+  IsBoolean,
+  Min,
+  Max,
 } from 'class-validator';
 import { BaseQuery } from 'src/shared/base.input';
 import { ProjectPriority, ProjectStatus } from '../entities/project.entity';
 import { Project } from '../entities/project.entity';
+import { Transform } from 'class-transformer';
 
 export class ProjectQueryDto extends BaseQuery<Project> {
   @ApiProperty({ required: false })
@@ -16,15 +21,19 @@ export class ProjectQueryDto extends BaseQuery<Project> {
   @IsString()
   search?: string;
 
-  @ApiProperty({ enum: ProjectStatus, required: false })
+  @ApiProperty({ type: [String], enum: ProjectStatus, required: false })
   @IsOptional()
-  @IsEnum(ProjectStatus)
-  status?: ProjectStatus;
+  @IsArray()
+  @IsEnum(ProjectStatus, { each: true })
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
+  status?: ProjectStatus[];
 
-  @ApiProperty({ enum: ProjectPriority, required: false })
+  @ApiProperty({ type: [String], enum: ProjectPriority, required: false })
   @IsOptional()
-  @IsEnum(ProjectPriority)
-  priority?: ProjectPriority;
+  @IsArray()
+  @IsEnum(ProjectPriority, { each: true })
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
+  priority?: ProjectPriority[];
 
   @ApiProperty({ required: false })
   @IsOptional()
@@ -61,6 +70,102 @@ export class ProjectQueryDto extends BaseQuery<Project> {
   @IsArray()
   @IsString({ each: true })
   tags?: string[];
+
+  // Enhanced filtering options
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(100)
+  progressFrom?: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(100)
+  progressTo?: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  estimatedHoursFrom?: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  estimatedHoursTo?: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  actualHoursFrom?: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  actualHoursTo?: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsBoolean()
+  overdue?: boolean;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsBoolean()
+  myProjects?: boolean;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsBoolean()
+  myOwnedProjects?: boolean;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  createdBy?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsDateString()
+  createdFrom?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsDateString()
+  createdTo?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsDateString()
+  updatedFrom?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsDateString()
+  updatedTo?: string;
+
+  // Advanced search options
+  @ApiProperty({ type: [String], required: false })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  searchFields?: string[];
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsBoolean()
+  exactMatch?: boolean;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsBoolean()
+  caseSensitive?: boolean;
 }
 
 export class ProjectStatsDto {
@@ -87,4 +192,36 @@ export class ProjectStatsDto {
 
   @ApiProperty()
   averageProgress: number;
+}
+
+export class ProjectAdvancedStatsDto extends ProjectStatsDto {
+  @ApiProperty()
+  totalEstimatedHours: number;
+
+  @ApiProperty()
+  totalActualHours: number;
+
+  @ApiProperty()
+  averageEstimatedHours: number;
+
+  @ApiProperty()
+  averageActualHours: number;
+
+  @ApiProperty()
+  projectsCreatedThisMonth: number;
+
+  @ApiProperty()
+  projectsCompletedThisMonth: number;
+
+  @ApiProperty()
+  mostUsedTags: { tag: string; count: number }[];
+
+  @ApiProperty()
+  projectsByPriority: { priority: string; count: number }[];
+
+  @ApiProperty()
+  projectsByStatus: { status: string; count: number }[];
+
+  @ApiProperty()
+  efficiencyRatio: number; // actual vs estimated hours ratio
 }

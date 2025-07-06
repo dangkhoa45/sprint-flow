@@ -32,13 +32,24 @@ import { ProjectQueryDto, ProjectStatsDto } from './dto/project-query.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { Project } from './entities/project.entity';
 import { ProjectsService } from './projects.service';
+import { ProjectExportService } from './project-export.service';
+import { TimelineVisualizationService } from './timeline-visualization.service';
+import { ExportProjectsDto } from './dto/export-projects.dto';
+import {
+  ManageProjectDependenciesDto,
+  UpdateResourceAllocationDto,
+} from './dto/project-dependencies.dto';
 
 @ApiTags('Projects')
 @ApiBearerAuth()
 @UseGuards(AuthGuard)
 @Controller('projects')
 export class ProjectsController {
-  constructor(private readonly projectsService: ProjectsService) {}
+  constructor(
+    private readonly projectsService: ProjectsService,
+    private readonly projectExportService: ProjectExportService,
+    private readonly timelineVisualizationService: TimelineVisualizationService,
+  ) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a new project' })
@@ -94,6 +105,138 @@ export class ProjectsController {
   @ApiOkResponse({ type: ProjectStatsDto })
   async getStats(@CurrentUser() user: TokenPayload): Promise<ProjectStatsDto> {
     return this.projectsService.getProjectStats(user.sub);
+  }
+
+  @Get('analytics')
+  @ApiOperation({ summary: 'Get advanced project analytics for current user' })
+  @ApiOkResponse({ description: 'Advanced project analytics' })
+  async getAdvancedStats(@CurrentUser() user: TokenPayload) {
+    return this.projectsService.getAdvancedProjectStats(user.sub);
+  }
+
+  @Post('export')
+  @ApiOperation({ summary: 'Export projects data in various formats' })
+  @ApiCreatedResponse({ description: 'Export file generated successfully' })
+  @ApiBadRequestResponse({ type: BadRequestResponse })
+  async exportProjects(
+    @Body() exportDto: ExportProjectsDto,
+    @CurrentUser() user: TokenPayload,
+  ) {
+    const result = await this.projectExportService.exportProjects(
+      exportDto,
+      user.sub,
+    );
+    return {
+      filename: result.filename,
+      downloadUrl: `/api/projects/download/${result.filename}`,
+      fileSize: result.fileSize,
+      generatedAt: new Date(),
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
+    };
+  }
+
+  @Post(':id/dependencies')
+  @ApiOperation({ summary: 'Manage project dependencies' })
+  @ApiOkResponse({ type: Project })
+  @ApiBadRequestResponse({ type: BadRequestResponse })
+  @ApiNotFoundResponse({ description: 'Project not found' })
+  async manageDependencies(
+    @Param('id') projectId: string,
+    @Body() dependenciesDto: ManageProjectDependenciesDto,
+    @CurrentUser() user: TokenPayload,
+  ): Promise<Project> {
+    return this.projectsService.manageDependencies(
+      projectId,
+      dependenciesDto.dependencies,
+      user.sub,
+    );
+  }
+
+  @Get(':id/dependencies/analysis')
+  @ApiOperation({ summary: 'Get project dependency analysis' })
+  @ApiOkResponse({ description: 'Project dependency analysis' })
+  @ApiNotFoundResponse({ description: 'Project not found' })
+  async getDependencyAnalysis(
+    @Param('id') projectId: string,
+    @CurrentUser() user: TokenPayload,
+  ) {
+    return this.projectsService.getDependencyAnalysis(projectId, user.sub);
+  }
+
+  @Put(':id/resource-allocation')
+  @ApiOperation({ summary: 'Update project resource allocation' })
+  @ApiOkResponse({ type: Project })
+  @ApiBadRequestResponse({ type: BadRequestResponse })
+  @ApiNotFoundResponse({ description: 'Project not found' })
+  async updateResourceAllocation(
+    @Param('id') projectId: string,
+    @Body() resourceDto: UpdateResourceAllocationDto,
+    @CurrentUser() user: TokenPayload,
+  ): Promise<Project> {
+    return this.projectsService.updateResourceAllocation(
+      projectId,
+      resourceDto.resourceAllocation,
+      user.sub,
+    );
+  }
+
+  @Get(':id/resource-allocation')
+  @ApiOperation({ summary: 'Get project resource allocation' })
+  @ApiOkResponse({ description: 'Project resource allocation' })
+  @ApiNotFoundResponse({ description: 'Project not found' })
+  async getResourceAllocation(
+    @Param('id') projectId: string,
+    @CurrentUser() user: TokenPayload,
+  ) {
+    return this.projectsService.getResourceAllocation(projectId, user.sub);
+  }
+
+  @Get('resource-utilization')
+  @ApiOperation({ summary: 'Get resource utilization summary' })
+  @ApiOkResponse({ description: 'Resource utilization summary' })
+  async getResourceUtilization(@CurrentUser() user: TokenPayload) {
+    return this.projectsService.getResourceUtilization(user.sub);
+  }
+
+  @Get('timeline/visualization')
+  @ApiOperation({ summary: 'Get timeline visualization data' })
+  @ApiOkResponse({ description: 'Timeline visualization data' })
+  @ApiQuery({ name: 'dateFrom', required: false, type: String })
+  @ApiQuery({ name: 'dateTo', required: false, type: String })
+  @ApiQuery({ name: 'projectIds', required: false, type: [String] })
+  async getTimelineVisualization(
+    @Query('dateFrom') dateFrom?: string,
+    @Query('dateTo') dateTo?: string,
+    @Query('projectIds') projectIds?: string[],
+    @CurrentUser() user: TokenPayload,
+  ) {
+    return this.timelineVisualizationService.getTimelineVisualization(
+      user.sub,
+      dateFrom ? new Date(dateFrom) : undefined,
+      dateTo ? new Date(dateTo) : undefined,
+      projectIds,
+    );
+  }
+
+  @Get('timeline/stats')
+  @ApiOperation({ summary: 'Get timeline statistics' })
+  @ApiOkResponse({ description: 'Timeline statistics' })
+  async getTimelineStats(@CurrentUser() user: TokenPayload) {
+    return this.timelineVisualizationService.getTimelineStats(user.sub);
+  }
+
+  @Get(':id/timeline')
+  @ApiOperation({ summary: 'Get project timeline' })
+  @ApiOkResponse({ description: 'Project timeline data' })
+  @ApiNotFoundResponse({ description: 'Project not found' })
+  async getProjectTimeline(
+    @Param('id') projectId: string,
+    @CurrentUser() user: TokenPayload,
+  ) {
+    return this.timelineVisualizationService.getProjectTimeline(
+      projectId,
+      user.sub,
+    );
   }
 
   @Get('recent')

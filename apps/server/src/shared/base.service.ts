@@ -54,7 +54,7 @@ export abstract class BaseService<
     if (search && searchFields) {
       if (Array.isArray(searchFields)) {
         filter.$or = searchFields.map(field => ({
-          [field as any]: { $regex: search },
+          [field]: { $regex: search },
         }));
       } else {
         filter[searchFields as keyof Data] = {
