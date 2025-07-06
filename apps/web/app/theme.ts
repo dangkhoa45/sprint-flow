@@ -1,12 +1,12 @@
 'use client';
-import { Inter } from 'next/font/google';
+// import { Inter } from 'next/font/google';
 import { createTheme, PaletteMode } from '@mui/material/styles';
 
-const inter = Inter({
-  weight: ['300', '400', '500', '600', '700'],
-  subsets: ['latin'],
-  display: 'swap',
-});
+// const inter = Inter({
+//   weight: ['300', '400', '500', '600', '700'],
+//   subsets: ['latin'],
+//   display: 'swap',
+// });
 
 // Modern Minimal Color System
 export const colorTokens = {
@@ -180,7 +180,7 @@ export const createAppTheme = (mode: PaletteMode) =>
             },
     },
     typography: {
-      fontFamily: inter.style.fontFamily,
+      fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
       fontSize: 14,
       h1: {
         fontSize: '2.25rem',
