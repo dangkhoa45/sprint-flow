@@ -2,6 +2,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { IoAdapter } from '@nestjs/platform-socket.io';
 import MongoStore from 'connect-mongo';
 import * as express from 'express';
 import * as session from 'express-session';
@@ -10,6 +11,9 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  // Configure Socket.IO adapter
+  app.useWebSocketAdapter(new IoAdapter(app));
 
   app.set('trust proxy', 1);
   app.setGlobalPrefix('api');

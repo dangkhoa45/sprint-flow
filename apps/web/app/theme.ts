@@ -1,12 +1,13 @@
 'use client';
-import { Inter } from 'next/font/google';
+// import { Inter } from 'next/font/google';
 import { createTheme, PaletteMode } from '@mui/material/styles';
 
-const inter = Inter({
-  weight: ['300', '400', '500', '600', '700'],
-  subsets: ['latin'],
-  display: 'swap',
-});
+// Fallback font configuration for offline building
+const inter = {
+  style: {
+    fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+  }
+};
 
 // Modern Minimal Color System
 export const colorTokens = {

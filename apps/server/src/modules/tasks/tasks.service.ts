@@ -11,6 +11,7 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 import { TaskQueryDto } from './dto/task-query.dto';
 import { UsersService } from '../users/users.service';
 import { ProjectsService } from '../projects/projects.service';
+import { EventsGateway } from '../events/events.gateway';
 
 @Injectable()
 export class TasksService {
@@ -18,6 +19,7 @@ export class TasksService {
     @InjectModel(Task.name) private taskModel: Model<TaskDocument>,
     private usersService: UsersService,
     private projectsService: ProjectsService,
+    private eventsGateway: EventsGateway,
   ) {}
 
   async create(createTaskDto: CreateTaskDto, userId: string): Promise<Task> {
@@ -72,7 +74,27 @@ export class TasksService {
         : undefined,
     });
 
-    return task.save();
+    const savedTask = await task.save();
+    
+    // Emit real-time event for task creation
+    this.eventsGateway.emitTaskUpdate(createTaskDto.projectId, {
+      taskId: savedTask._id.toString(),
+      projectId: createTaskDto.projectId,
+      type: 'task-created',
+      data: { task: savedTask },
+      timestamp: new Date(),
+    });
+
+    // Emit notification if task is assigned to someone
+    if (createTaskDto.assignedTo) {
+      this.eventsGateway.emitTaskAssigned(
+        createTaskDto.assignedTo,
+        savedTask._id.toString(),
+        createTaskDto.projectId,
+      );
+    }
+
+    return savedTask;
   }
 
   async findAll(
@@ -252,6 +274,38 @@ export class TasksService {
       .populate('createdBy', 'username displayName avatar')
       .populate('projectId', 'name status')
       .exec();
+
+    // Emit real-time event for task update
+    const projectId = (task.projectId as any)._id.toString();
+    this.eventsGateway.emitTaskUpdate(projectId, {
+      taskId: id,
+      projectId,
+      type: 'task-updated',
+      data: { task: updatedTask, changes: updateTaskDto },
+      timestamp: new Date(),
+    });
+
+    // Emit status change event if status was changed
+    if (updateTaskDto.status && updateTaskDto.status !== task.status) {
+      this.eventsGateway.emitTaskStatusChanged(
+        projectId,
+        id,
+        updateTaskDto.status,
+        userId,
+      );
+    }
+
+    // Emit notification if task is newly assigned
+    if (
+      updateTaskDto.assignedTo &&
+      updateTaskDto.assignedTo !== (task.assignedTo as any)?._id?.toString()
+    ) {
+      this.eventsGateway.emitTaskAssigned(
+        updateTaskDto.assignedTo,
+        id,
+        projectId,
+      );
+    }
 
     return updatedTask;
   }

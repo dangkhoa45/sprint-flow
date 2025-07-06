@@ -31,6 +31,7 @@ import ThemeToggle from '@/components/ThemeToggle';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { useThemeMode } from '@/provider/ThemeContext';
 import { log } from '@/utils/logger';
+import { RealtimeNotifications } from '../RealtimeNotifications';
 
 interface DashboardHeaderProps {
   onMenuClick?: () => void;
@@ -182,67 +183,7 @@ const DashboardHeader = ({
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.7 }}>
           <ThemeToggle />
-
-          {/* <IconButton
-            size="small"
-            sx={{
-              color: theme.palette.text.secondary,
-              border: `1px solid ${theme.palette.divider}`,
-              borderRadius: 1.2,
-              p: 0.7,
-              "&:hover": {
-                backgroundColor: "#00acc120",
-                borderColor: "#00acc1",
-                color: "#00acc1",
-              },
-              transition: "all 0.2s ease",
-            }}
-          >
-            <Badge
-              badgeContent={3}
-              color="error"
-              sx={{
-                "& .MuiBadge-badge": {
-                  fontSize: "0.65rem",
-                  minWidth: 14,
-                  height: 14,
-                  top: 4,
-                  right: 4,
-                },
-              }}
-            >
-              <ChatIcon fontSize="small" />
-            </Badge>
-          </IconButton>
-
-          <IconButton
-            size="medium"
-            sx={{
-              color: theme.palette.text.secondary,
-              border: `1px solid ${theme.palette.divider}`,
-              borderRadius: 2,
-              "&:hover": {
-                backgroundColor: "#e91e6320",
-                borderColor: "#e91e63",
-                color: "#e91e63",
-              },
-              transition: "all 0.2s ease",
-            }}
-          >
-            <Badge
-              badgeContent={5}
-              color="error"
-              sx={{
-                "& .MuiBadge-badge": {
-                  fontSize: "0.7rem",
-                  minWidth: 16,
-                  height: 16,
-                },
-              }}
-            >
-              <NotificationsIcon fontSize="small" />
-            </Badge>
-          </IconButton> */}
+          <RealtimeNotifications />
 
           <IconButton
             onClick={handleMenuClick}
