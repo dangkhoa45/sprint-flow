@@ -9,6 +9,8 @@ import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ReactNode } from 'react';
+import { useProjectTasks } from '@/hooks/useTasks';
+import { KanbanBoard } from '@/components/kanban';
 import AttachmentList from './AttachmentList';
 import FileUpload from './FileUpload';
 import MilestoneList from './MilestoneList';
@@ -52,7 +54,7 @@ interface ProjectTabsProps {
   onDataRefresh: () => void;
 }
 
-const TABS = ['overview', 'milestones', 'timeline', 'files'];
+const TABS = ['overview', 'kanban', 'milestones', 'timeline', 'files'];
 
 export default function ProjectTabs({
   project,
@@ -68,11 +70,19 @@ export default function ProjectTabs({
 
   const tabValue = TABS.includes(currentTab) ? TABS.indexOf(currentTab) : 0;
 
+  // Fetch project tasks for Kanban board
+  const { tasks, mutate: refreshTasks } = useProjectTasks(projectId);
+
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     const newTab = TABS[newValue];
     const params = new URLSearchParams(searchParams);
     params.set('tab', newTab);
     router.push(`${pathname}?${params.toString()}`);
+  };
+
+  const handleTaskUpdate = () => {
+    refreshTasks();
+    onDataRefresh();
   };
 
   return (
@@ -105,9 +115,10 @@ export default function ProjectTabs({
           scrollButtons='auto'
         >
           <Tab label='Tổng quan' {...a11yProps(0)} />
-          <Tab label='Mốc công việc' {...a11yProps(1)} />
-          <Tab label='Dòng thời gian' {...a11yProps(2)} />
-          <Tab label='Tệp' {...a11yProps(3)} />
+          <Tab label='Kanban' {...a11yProps(1)} />
+          <Tab label='Mốc công việc' {...a11yProps(2)} />
+          <Tab label='Dòng thời gian' {...a11yProps(3)} />
+          <Tab label='Tệp' {...a11yProps(4)} />
         </Tabs>
       </Box>
 
@@ -120,6 +131,14 @@ export default function ProjectTabs({
       </TabPanel>
 
       <TabPanel value={tabValue} index={1}>
+        <KanbanBoard
+          tasks={tasks}
+          onTaskUpdate={handleTaskUpdate}
+          projectId={projectId}
+        />
+      </TabPanel>
+
+      <TabPanel value={tabValue} index={2}>
         <MilestoneList
           projectId={projectId}
           milestones={milestones}
@@ -127,11 +146,11 @@ export default function ProjectTabs({
         />
       </TabPanel>
 
-      <TabPanel value={tabValue} index={2}>
+      <TabPanel value={tabValue} index={3}>
         <MilestoneTimeline milestones={milestones} />
       </TabPanel>
 
-      <TabPanel value={tabValue} index={3}>
+      <TabPanel value={tabValue} index={4}>
         <Grid container spacing={4}>
           <Grid size={{ xs: 12 }}>
             <FileUpload
