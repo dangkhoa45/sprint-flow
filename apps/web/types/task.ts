@@ -40,6 +40,63 @@ export interface Task {
   actualTime?: number;
   tags: string[];
   metadata?: Record<string, any>;
+  dependencies: TaskDependency[];
+  dependents: TaskDependency[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TaskDependency {
+  _id: string;
+  title: string;
+  status: TaskStatus;
+}
+
+export interface TaskTemplate {
+  _id: string;
+  name: string;
+  description?: string;
+  taskTitle: string;
+  taskDescription?: string;
+  defaultPriority: TaskPriority;
+  defaultEstimatedTime?: number;
+  defaultTags: string[];
+  projectId?: TaskProject;
+  metadata?: Record<string, any>;
+  isActive: boolean;
+  createdBy: TaskUser;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TaskComment {
+  _id: string;
+  content: string;
+  taskId: string;
+  parentId?: string;
+  mentions: TaskUser[];
+  isEdited: boolean;
+  editedAt?: string;
+  metadata?: Record<string, any>;
+  createdBy: TaskUser;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TimeEntry {
+  _id: string;
+  duration: number; // in minutes
+  startTime: string;
+  endTime?: string;
+  description?: string;
+  type: 'manual' | 'timer' | 'imported';
+  taskId: string;
+  userId: TaskUser;
+  isBillable: boolean;
+  hourlyRate?: number;
+  tags: string[];
+  metadata?: Record<string, any>;
+  createdBy: TaskUser;
   createdAt: string;
   updatedAt: string;
 }
@@ -54,6 +111,7 @@ export interface CreateTaskDto {
   dueDate?: string;
   estimatedTime?: number;
   tags?: string[];
+  dependencies?: string[];
 }
 
 export interface UpdateTaskDto {
@@ -65,6 +123,87 @@ export interface UpdateTaskDto {
   dueDate?: string;
   estimatedTime?: number;
   actualTime?: number;
+  tags?: string[];
+  dependencies?: string[];
+}
+
+export interface CreateTaskTemplateDto {
+  name: string;
+  description?: string;
+  taskTitle: string;
+  taskDescription?: string;
+  defaultPriority?: TaskPriority;
+  defaultEstimatedTime?: number;
+  defaultTags?: string[];
+  projectId?: string;
+  isActive?: boolean;
+}
+
+export interface UpdateTaskTemplateDto {
+  name?: string;
+  description?: string;
+  taskTitle?: string;
+  taskDescription?: string;
+  defaultPriority?: TaskPriority;
+  defaultEstimatedTime?: number;
+  defaultTags?: string[];
+  isActive?: boolean;
+}
+
+export interface CreateTaskFromTemplateDto {
+  templateId: string;
+  projectId: string;
+  title?: string;
+  description?: string;
+  assignedTo?: string;
+  dueDate?: string;
+}
+
+export interface BulkUpdateTaskDto {
+  taskIds: string[];
+  status?: TaskStatus;
+  priority?: TaskPriority;
+  assignedTo?: string;
+  addTags?: string[];
+  removeTags?: string[];
+}
+
+export interface BulkDeleteTaskDto {
+  taskIds: string[];
+  force?: boolean;
+}
+
+export interface CreateTaskCommentDto {
+  content: string;
+  taskId: string;
+  parentId?: string;
+  mentions?: string[];
+}
+
+export interface UpdateTaskCommentDto {
+  content?: string;
+  mentions?: string[];
+}
+
+export interface CreateTimeEntryDto {
+  duration: number;
+  startTime: string;
+  endTime?: string;
+  description?: string;
+  type?: 'manual' | 'timer' | 'imported';
+  taskId: string;
+  isBillable?: boolean;
+  hourlyRate?: number;
+  tags?: string[];
+}
+
+export interface UpdateTimeEntryDto {
+  duration?: number;
+  startTime?: string;
+  endTime?: string;
+  description?: string;
+  isBillable?: boolean;
+  hourlyRate?: number;
   tags?: string[];
 }
 

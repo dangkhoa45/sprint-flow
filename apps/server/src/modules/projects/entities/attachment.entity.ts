@@ -38,15 +38,19 @@ export class Attachment extends BaseEntity {
   @ApiProperty({ enum: AttachmentType })
   type: AttachmentType;
 
-  @Prop({ type: Types.ObjectId, ref: 'Project', required: true })
+  @Prop({ type: Types.ObjectId, ref: 'Project' })
   @ApiProperty()
-  projectId: Types.ObjectId;
+  projectId?: Types.ObjectId;
+
+  @Prop({ type: Types.ObjectId, ref: 'Task' })
+  @ApiProperty()
+  taskId?: Types.ObjectId;
 
   @Prop({ trim: true })
   @ApiProperty()
   description?: string;
 
-  @Prop([String])
+  @Prop({ type: [String], default: [] })
   @ApiProperty()
   tags: string[];
 
@@ -60,6 +64,7 @@ export const AttachmentSchema = SchemaFactory.createForClass(Attachment);
 
 // Add indexes for better query performance
 AttachmentSchema.index({ projectId: 1 });
+AttachmentSchema.index({ taskId: 1 });
 AttachmentSchema.index({ type: 1 });
 AttachmentSchema.index({ uploadedBy: 1 });
 AttachmentSchema.index({ createdAt: -1 });
