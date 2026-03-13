@@ -45,6 +45,23 @@ export interface Project extends BaseObject {
   metadata?: Record<string, unknown>;
   createdBy?: User;
   updatedBy?: User;
+
+  // Enhanced features
+  dependencies?: string[];
+  dependents?: string[];
+  resourceAllocation?: {
+    budget?: number;
+    spentBudget?: number;
+    teamMembers?: number;
+    requiredSkills?: string[];
+    allocatedResources?: {
+      resourceId: string;
+      resourceType: string;
+      allocation: number;
+      startDate?: string;
+      endDate?: string;
+    }[];
+  };
 }
 
 export interface CreateProjectDto {
@@ -67,8 +84,8 @@ export interface UpdateProjectDto extends Partial<CreateProjectDto> {
 
 export interface ProjectQueryDto {
   search?: string;
-  status?: ProjectStatus;
-  priority?: ProjectPriority;
+  status?: ProjectStatus[];
+  priority?: ProjectPriority[];
   owner?: string;
   member?: string;
   startDateFrom?: string;
@@ -76,6 +93,29 @@ export interface ProjectQueryDto {
   endDateFrom?: string;
   endDateTo?: string;
   tags?: string[];
+
+  // Enhanced filtering options
+  progressFrom?: number;
+  progressTo?: number;
+  estimatedHoursFrom?: number;
+  estimatedHoursTo?: number;
+  actualHoursFrom?: number;
+  actualHoursTo?: number;
+  overdue?: boolean;
+  myProjects?: boolean;
+  myOwnedProjects?: boolean;
+  createdBy?: string;
+  createdFrom?: string;
+  createdTo?: string;
+  updatedFrom?: string;
+  updatedTo?: string;
+
+  // Advanced search options
+  searchFields?: string[];
+  exactMatch?: boolean;
+  caseSensitive?: boolean;
+
+  // Pagination and sorting
   offset?: number;
   limit?: number;
   sortField?: string;

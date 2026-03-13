@@ -75,6 +75,30 @@ export class Project extends BaseEntity {
   @Prop({ type: Object })
   @ApiProperty()
   metadata?: Record<string, any>;
+
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'Project' }], default: [] })
+  @ApiProperty()
+  dependencies: Types.ObjectId[];
+
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'Project' }], default: [] })
+  @ApiProperty()
+  dependents: Types.ObjectId[];
+
+  @Prop({ type: Object })
+  @ApiProperty()
+  resourceAllocation?: {
+    budget?: number;
+    spentBudget?: number;
+    teamMembers?: number;
+    requiredSkills?: string[];
+    allocatedResources?: {
+      resourceId: string;
+      resourceType: string;
+      allocation: number; // percentage
+      startDate?: Date;
+      endDate?: Date;
+    }[];
+  };
 }
 
 export type ProjectDocument = HydratedDocument<Project>;
